@@ -1,0 +1,42 @@
+# Runs the same offline checks a student runs locally: npm ci → npm run setup → npm run verify.
+# No secrets are used: SEC and OpenRouter calls are never made in CI (fixture/mocked mode only).
+name: verify
+
+on:
+  push:
+    branches: [main, template, 'milestone/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install launcher lockfile
+        run: npm ci
+      - name: Setup (venv, frontend deps, project-local Chromium)
+        run: npm run setup
+      - name: Linux system libraries for Chromium (CI only)
+        run: sudo npx --yes playwright@1.64.1 install-deps chromium
+      - name: Verify (offline)
+        run: npm run verify
+      - name: Upload screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-output
+          path: |
+            .logs/
+            **/test-results/
+          if-no-files-found: ignore

@@ -140,8 +140,8 @@ if (tracked !== null) {
   else passes.push('no .env files tracked');
 }
 
-// The project permissions must keep blocking .env reads/edits and destructive git commands.
-// (Guard added after an unexplained rewrite emptied these lists during the bootstrap; see PROGRESS.md.)
+// The project permissions must keep blocking .env reads/edits and force-pushes. Ask rules are the
+// owner's choice (they may remove them with /permissions) and are deliberately not checked here.
 try {
   const settings = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, '.claude', 'settings.json'), 'utf8'));
   const deny = settings?.permissions?.deny ?? [];

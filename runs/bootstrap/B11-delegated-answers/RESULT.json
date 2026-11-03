@@ -1,0 +1,28 @@
+{
+  "stepId": "B11-delegated-answers",
+  "milestone": "bootstrap",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "delegated-product-owner",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "default",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T17:38:22.013Z",
+  "startCommit": "14c2d3912f5e4a25e6b7632e24772e1488a6e699",
+  "promptSha256": "bcf3a4c2189f81bcbd79134233e4a0e5e20c0eb12447a44a273c541cf1857307",
+  "promptFileSha256": "9e0d807b80aee968699620ed9f2c531534386c19cb25893c79c5857fc2740f9f",
+  "status": "completed",
+  "finishedAt": "2026-11-03T17:41:07.826Z",
+  "exitCode": 0,
+  "sessionId": "efc43ca2-2c1b-4f65-9218-7b9d33be375b",
+  "numTurns": 6,
+  "durationMs": 164922,
+  "totalCostUsd": 0.6536148,
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "endCommit": "14c2d3912f5e4a25e6b7632e24772e1488a6e699",
+  "workingTreeChanged": 12,
+  "responseSha256": "01a445fd67d7b3e442553b6502c7c6dadb877a4a67737787024d9e1b06b4cde6",
+  "missingRecord": null
+}

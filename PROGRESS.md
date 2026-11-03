@@ -35,7 +35,7 @@ Phase 0 — audit and plan (in progress)
 | D5 | Frontend pins (newest stable ≥ 2 weeks old on 2026-11-03): next 16.4.2, react/react-dom 19.3.1, tailwindcss 4.3.3, recharts 3.10.1, @playwright/test 1.64.1, typescript 6.0.3 (TS 7 avoided until Next documents support), eslint 10.13.0, eslint-config-next 16.4.2, vitest 4.1.12 | npm registry `time` metadata |
 | D6 | Backend pins: fastapi 0.150.0, uvicorn 0.54.0, httpx 0.28.1, pydantic 2.14.1, pytest 9.1.1, ruff 0.17.1, respx 0.23.1, beautifulsoup4 4.15.0; supported Python 3.10–3.13 | PyPI metadata |
 | D7 | Root launcher has no runtime npm dependencies (portable `node:` built-ins); root `npm ci` still documented | GOAL §4 portability |
-| D5b | Amended after B05: Node floor **22.12** (vitest 5 + eslint 10 + Playwright support 22/24/26; Node 20 is EOL); vitest **5.0.5**; TS 6.0.3 kept because typescript-eslint peer is `<6.1.0`; add pins @tailwindcss/postcss 4.3.3, postcss, react-is 19.3.1, @types/*, vite 8.x, @vitejs/plugin-react, jsdom, @testing-library/*; shadcn components generated once and committed (CLI never runs at student install) | runs/bootstrap/B05-research-stack, docs/research/stack-versions.md |
+| D5b | Amended after B05: Node floor **22.12**, then **22.13** after B08 (eslint 10 engines) (vitest 5 + eslint 10 + Playwright support 22/24/26; Node 20 is EOL); vitest **5.0.5**; TS 6.0.3 kept because typescript-eslint peer is `<6.1.0`; add pins @tailwindcss/postcss 4.3.3, postcss, react-is 19.3.1, @types/*, vite 8.x, @vitejs/plugin-react, jsdom, @testing-library/*; shadcn components generated once and committed (CLI never runs at student install) | runs/bootstrap/B05-research-stack, docs/research/stack-versions.md |
 | D8 | SEC planning docs (product/architecture/acceptance/plan) live in `milestones/`; generic app docs default to `app/docs/` (configurable in `app-creator.config.json`) | template must contain prompts but no SEC implementation |
 
 ## Phase log
@@ -64,4 +64,4 @@ Not started.
 
 ## Failures / blockers log
 
-(none yet)
+- **Correction (owner error).** The two `.claude/settings.json` "rewrites" at ~17:31Z and 17:37:09Z were the **user's own `/permissions` edits** (deleting Ask rules), not an unexplained writer. The owner wrongly reverted them twice with `git restore` and added a guard requiring an Ask rule. Fixed 2026-11-03 at the user's request: the effective sources were inspected (project `.claude/settings.json` was the only file that ever defined `Bash(git commit *)` / `Bash(git push *)` Ask rules; `.claude/settings.local.json` and `~/.claude/settings.json` define none; no managed policy file exists). The user's current file (`ask: []`) is kept as saved; no settings file needed editing. All deny rules (`.env` read/edit, force-push, `reset --hard`, `clean`) are intact. `check-toolkit` now checks only the deny rules, never Ask rules. Rule for the rest of the build: never restore or overwrite the user's settings changes.

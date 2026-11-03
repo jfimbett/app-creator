@@ -8,3 +8,6 @@
 **/.streamlit/secrets.toml
 **/.venv/
 **/.browser-checks/
+# Project-local caches and logs (test browser, verify builds, launcher logs)
+.cache/
+.logs/

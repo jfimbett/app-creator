@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Starter for building a web app (Next.js + FastAPI) with an AI coding assistant. Root launchers use Node built-ins only.",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "engines": {
     "node": ">=22.13"
   },
