@@ -1,7 +1,7 @@
 # Acceptance criteria
 
-Each criterion is checkable: a starting state, an action, an expected result. Status: `open`, `passing
-(test: <test name>)`, `checked by hand on <date>`, or `failing`.
+Each criterion is checkable: a starting state with concrete data, one action, an observable result. Status:
+`open`, `passing (test: <file::test name>)`, `checked by hand on <date> by <who>`, or `failing`.
 
 ## Main user journey
 
@@ -13,12 +13,13 @@ Each criterion is checkable: a starting state, an action, an expected result. St
 
 | Id | Screen / state | Expected | Test | Browser check | Looked at by |
 |---|---|---|---|---|---|
-| V1 | <dashboard, normal data, phone width> | <cards wrap, no sideways scrolling, chart readable> | <test name or –> | <date or "not run"> | <Claude (screenshots) / student, date> |
+| V1 | <dashboard, normal data, 390 px> | <cards wrap, no sideways scrolling, chart readable> | <test name or –> | <Playwright spec, date, or "not run"> | <assistant (screenshots) / owner, date> |
+| V2 | <dashboard, normal data, 1366 px> | | | | |
 
 ## Calculations (known answers)
 
 Expected values are established independently of the code: by written hand working (every step), a cited source
-value, or the student's spreadsheet; then cross-checked by a separate computation that does not use the app's code.
+value, or the owner's spreadsheet; then cross-checked by a separate computation that does not use the app's code.
 
 | Id | Number | Inputs (example) | Hand working or source | Expected result | Tolerance | Status |
 |---|---|---|---|---|---|---|
@@ -28,7 +29,7 @@ value, or the student's spreadsheet; then cross-checked by a separate computatio
 
 | Id | Situation | Expected behaviour | Status |
 |---|---|---|---|
-| E1 | <missing value, empty upload, API down, wrong user> | <clear message, no crash, nothing leaked> | open |
+| E1 | <empty data, invalid input, backend down, external API down, offline demo> | <clear message with a next step, no crash, no stack trace, nothing leaked> | open |
 | E2 | <a value is missing / zero / negative / from a period that is not comparable> | <shown as "n/a" with a reason / "0.0" / with a minus sign / no change computed, with a note> | open |
 
 ## Permissions (only if accounts exist)

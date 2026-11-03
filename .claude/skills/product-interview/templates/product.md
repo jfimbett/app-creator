@@ -18,22 +18,23 @@ Status: draft | agreed on <YYYY-MM-DD>
 ## Screens and visuals
 
 Look: <a table of figures | a dashboard with summary cards and charts | forms and lists>. Used on a phone: <yes / no>.
-Visual references: <a site or report the student likes, and what they like about it; or "none">.
+Theme: <dark default, light secondary | light only | follows the system>. Density: <compact | comfortable>.
+Visual references: <a site or app the owner likes, and what they like about it; or "none">.
 
-| Screen | Purpose | The user sees first | Cards / charts / tables (unit, period) | The user can | Loading / empty / error |
+| Screen | Purpose | The user sees first | Cards / charts / tables (unit, period) | The user can | States |
 |---|---|---|---|---|---|
-| | | | <e.g. card "Revenue, USD m, latest FY, change vs prior FY"; bars "Revenue by FY, USD m"> | <choose company, switch period> | <what each state shows> |
+| | | | <e.g. card "Weekly distance, km, week 12, change vs week 11"; bars "Distance by week, km"> | <search, choose an item, switch period> | <loading / empty / error / offline / missing-data text> |
 
 Agreed visuals (each one: the question it answers, chart type, series, how gaps and negatives are shown):
-<list, or "table only, by the student's choice">
+<list, or "table only, by the owner's choice">
 
 ## MVP features (must have)
 
-| Id | Feature | Why the customer needs it |
-|---|---|---|
-| F1 | | |
-| F2 | | |
-| F3 | | |
+| Id | Feature (what the user can do) | Why the customer needs it | Criteria |
+|---|---|---|---|
+| F1 | | | AC1 |
+| F2 | | | |
+| F3 | | | |
 
 ## Explicitly not in the MVP
 
@@ -41,13 +42,13 @@ Agreed visuals (each one: the question it answers, chart type, series, how gaps 
 
 ## Data and calculations
 
-| Data | Source | Freshness | Licence / terms checked? |
-|---|---|---|---|
-| | | | [to confirm] |
+| Data | Source | Freshness | Offline demo data (fixtures) | Licence / terms checked? |
+|---|---|---|---|---|
+| | | | <recorded sample, its date and source / none> | [to confirm] |
 
-| Number the app shows | Formula | Units and currency | Source of inputs |
-|---|---|---|---|
-| | | | |
+| Number the app shows | Formula | Units | Source of inputs | Known-answer example |
+|---|---|---|---|---|
+| | | | | CALC1 |
 
 ## Capabilities
 
@@ -57,11 +58,14 @@ Agreed visuals (each one: the question it answers, chart type, series, how gaps 
 | Per-user saved data | no | |
 | File uploads | no | |
 | Payments | no | |
+| Background jobs / scheduled refresh | no | |
+| Works offline (`npm run demo`) | yes | recorded sample data, clearly labelled |
 | Must be online for others | no | demo on a laptop is enough |
 
 ## Team and constraints
 
+- Mode: <interactive | delegated by `<brief>` §n; decisions in `<decisions file>`>
 - Experience: <e.g. first app for all members>
 - Time available: <hours until the deadline>
-- Budget: <EUR per month; 0 is fine>
+- Budget: <per month; 0 is fine>
 - Rules to respect: <course rules, data terms, client constraints>

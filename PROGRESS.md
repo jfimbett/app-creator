@@ -43,9 +43,14 @@ Phase 0 — audit and plan (in progress)
 - B01 orchestrator plan (accepted); B00 tooling commit 10e8c6f; starter import 47dbf85; B02–B05 research done (docs/research/).
 - Incident: an unquoted heredoc expanded backticks while writing B07 prompts (ran harmless failing `npm ci`/usage commands; no files changed). Corrupted undispatched prompts deleted and regenerated with quoted heredocs.
 
+- B06 agents (13) committed 2dd841e. B08 launcher/scaffold + B07c2 process skills committed a9f221e. Node floor raised to 22.13 (eslint 10 engines) b127968.
+- B07c dispatched to github-coach by mistake (no write tools) → terminated (exit 143), recorded as failed; same text re-dispatched as B07c2 to docs-writer (completed).
+- Live discovery evidence: this running session listed newly created project skills and agents without restart (system notices after B06/B07).
+- Local note: other services (not ours) occupy ports 3000/8000 on this machine; `npm run dev` refuses them by design; use BACKEND_PORT/FRONTEND_PORT.
+
 ## Next actions
 
-1. Initial commit (audit + plan). 2. Research official docs (bootstrap step). 3. Toolkit. 4. Delegated product interview. 5. Prompts → template checkpoint.
+1. Finish B07a/B07b (skills) → commit. 2. B09 root docs ∥ B10 interview questions. 3. B11 delegated answers → B12 decisions + planning docs → B13 milestone prompts → B14 orchestrator review → repairs. 4. Toolkit review (code/security reviewers), discovery check, gate → `template` + `template-v1`.
 
 ## Checkpoints
 

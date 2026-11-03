@@ -1,0 +1,28 @@
+{
+  "stepId": "B07b-skills-engineering-quality",
+  "milestone": "bootstrap",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "docs-writer",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "bypassPermissions",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T17:20:20.113Z",
+  "startCommit": "2dd841e3d0674cf0231b7e65b80921c5d2ec55f0",
+  "promptSha256": "3b92f0c24a73604d14cc30988148ed58ddada9fc2d9b0419ca7b02469992ea24",
+  "promptFileSha256": "dd864daeea400f9fc764e6a0670408bc918e3a27d46f6ab036dad969ce20cd60",
+  "status": "completed",
+  "finishedAt": "2026-11-03T17:34:32.395Z",
+  "exitCode": 0,
+  "sessionId": "d101536d-c024-4fc8-ad87-86c4a7e44b1f",
+  "numTurns": 68,
+  "durationMs": 851484,
+  "totalCostUsd": 3.9382697999999996,
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "endCommit": "b1279688bb3b3aaf2ead5f8c18b8356cd4b0070b",
+  "workingTreeChanged": 38,
+  "responseSha256": "4186fb3235e09b579b7f19dfed085aa38932474589f22e724a5f10b72d0b03ec",
+  "missingRecord": null
+}
