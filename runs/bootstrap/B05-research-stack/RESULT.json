@@ -1,0 +1,29 @@
+{
+  "stepId": "B05-research-stack",
+  "milestone": "bootstrap",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "default",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "bypassPermissions",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T17:05:44.534Z",
+  "startCommit": "10e8c6fc24d173b0392e0319260c64c0eec0d146",
+  "promptSha256": "10d17147731275bf9aa4406e2ca4c77fc2d9958ec44cda6995c3bf3a4001dbbf",
+  "promptFileSha256": "222da4b83d92d4e9877ef850576f73de7b5dac65a76666fdc18561738b18d592",
+  "status": "completed",
+  "finishedAt": "2026-11-03T17:08:46.600Z",
+  "exitCode": 0,
+  "sessionId": "53107e3c-1e3d-4467-a8ac-5653a45d74c2",
+  "numTurns": 13,
+  "durationMs": 181198,
+  "totalCostUsd": 0.8735077150000001,
+  "modelsUsed": [
+    "claude-opus-5-5",
+    "claude-haiku-5-5"
+  ],
+  "endCommit": "47dbf85f8a2b67128b61cc1180717d209fa9e22c",
+  "workingTreeChanged": 11,
+  "responseSha256": "f83a7bd79807b06613f112ec0471ca5f4cb11536643ea13bde11d38d743ad63a",
+  "missingRecord": null
+}

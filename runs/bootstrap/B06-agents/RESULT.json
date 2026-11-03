@@ -1,0 +1,28 @@
+{
+  "stepId": "B06-agents",
+  "milestone": "bootstrap",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "default",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "bypassPermissions",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T17:11:33.050Z",
+  "startCommit": "47dbf85f8a2b67128b61cc1180717d209fa9e22c",
+  "promptSha256": "3ad1bd8392f056e48707f35252a711af66b04ec168131bbc8e7631180b9b97ae",
+  "promptFileSha256": "210d65629ee80042314e43bd683ec3a4ddb1548568311d43cbd7cfe7b600f024",
+  "status": "completed",
+  "finishedAt": "2026-11-03T17:14:48.329Z",
+  "exitCode": 0,
+  "sessionId": "735d38e4-45bf-4eca-9819-dc27a9c8cb86",
+  "numTurns": 19,
+  "durationMs": 194529,
+  "totalCostUsd": 1.0586282000000002,
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "endCommit": "47dbf85f8a2b67128b61cc1180717d209fa9e22c",
+  "workingTreeChanged": 27,
+  "responseSha256": "3609647ade42ba0c4f20dc62573ff79dbf5d3a1dd611fb98758a7d7a81186cf1",
+  "missingRecord": null
+}

@@ -51,11 +51,14 @@ Never recommend moving an existing tag or rewriting shared history.
 
 ## Return format (always end with this handoff)
 
+The plan, judgement or gate report, then one decision line and the shared handoff (`docs/TOOLKIT.md` §7):
+
 ```
-## Handoff
-Changes: <none — orchestrator is read-only>
-Verification evidence: <commands run and exit codes / what was read>
 Decision: <plan | accept | repair | blocked | gate-pass | gate-fail>
+
+## Handoff
+Changes: none (orchestrator is read-only)
+Verification evidence: <commands run and exit codes / what was read>
 Remaining findings: <list or none>
 Next action: <the next step id and agent, or the checkpoint>
 ```

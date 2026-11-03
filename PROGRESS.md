@@ -35,7 +35,13 @@ Phase 0 — audit and plan (in progress)
 | D5 | Frontend pins (newest stable ≥ 2 weeks old on 2026-11-03): next 16.4.2, react/react-dom 19.3.1, tailwindcss 4.3.3, recharts 3.10.1, @playwright/test 1.64.1, typescript 6.0.3 (TS 7 avoided until Next documents support), eslint 10.13.0, eslint-config-next 16.4.2, vitest 4.1.12 | npm registry `time` metadata |
 | D6 | Backend pins: fastapi 0.150.0, uvicorn 0.54.0, httpx 0.28.1, pydantic 2.14.1, pytest 9.1.1, ruff 0.17.1, respx 0.23.1, beautifulsoup4 4.15.0; supported Python 3.10–3.13 | PyPI metadata |
 | D7 | Root launcher has no runtime npm dependencies (portable `node:` built-ins); root `npm ci` still documented | GOAL §4 portability |
+| D5b | Amended after B05: Node floor **22.12** (vitest 5 + eslint 10 + Playwright support 22/24/26; Node 20 is EOL); vitest **5.0.5**; TS 6.0.3 kept because typescript-eslint peer is `<6.1.0`; add pins @tailwindcss/postcss 4.3.3, postcss, react-is 19.3.1, @types/*, vite 8.x, @vitejs/plugin-react, jsdom, @testing-library/*; shadcn components generated once and committed (CLI never runs at student install) | runs/bootstrap/B05-research-stack, docs/research/stack-versions.md |
 | D8 | SEC planning docs (product/architecture/acceptance/plan) live in `milestones/`; generic app docs default to `app/docs/` (configurable in `app-creator.config.json`) | template must contain prompts but no SEC implementation |
+
+## Phase log
+
+- B01 orchestrator plan (accepted); B00 tooling commit 10e8c6f; starter import 47dbf85; B02–B05 research done (docs/research/).
+- Incident: an unquoted heredoc expanded backticks while writing B07 prompts (ran harmless failing `npm ci`/usage commands; no files changed). Corrupted undispatched prompts deleted and regenerated with quoted heredocs.
 
 ## Next actions
 

@@ -10,25 +10,33 @@ install packages, commit, or call paid or external services, and never print the
 secret. If you would like to fix something, write the fix as the suggested correction. The main session decides
 what to change.
 
-You may start the app with the run command from `AGENTS.md` to look at it (stop it when you are done), and run the
-project's own browser check (`app/checks/browser_check.py`, see `app/README.md`) if it is installed; it writes
-screenshots only into the git-ignored `app/.browser-checks/`. Open the screenshots to inspect them. Do not install
-anything, and do not use a browser tool that belongs to someone's personal setup rather than the project unless the
-main session asked for it; if you do, say so in "Checks run".
+You may start the app with `npm run demo` (offline demo settings; stop it with Ctrl+C or by ending your own process
+when you are done) to look at it, and run the project-local Playwright browser suite through `npm run verify` (or
+the narrower `e2e` command in the app's README). It writes screenshots only into the git-ignored `test-results/`
+folder of the frontend. Open the screenshots to inspect them. Do not install anything, and do not use a browser
+tool that belongs to someone's personal setup rather than the project unless the main session asked for it; if
+you do, say so in "Checks run".
 
 **Scope and test data.** Review the commit or diff you were given, not unrelated work in progress. Tests that the
 main session names as deliberately failing for the next slice go under "Not checked", not into findings. When you
 run the app or its tests, use the test runner's temporary database or test fixtures, never the student's local
 database, and leave no data behind.
 
+**Where the app is.** Read `app-creator.config.json` at the repository root: `app.frontendDir`, `app.backendDir`
+and `app.docsDir` say where the frontend, backend and product documents live (below, `<docs>` means `app.docsDir`).
+If `app` is `null`, no app is configured: review only the files you were given. Checks run from the root:
+`npm run verify` (toolkit checks, backend lint and tests, frontend lint, typecheck, unit tests, build, and the
+project-local Playwright suite), or `npm run verify -- --quick` (no build or browser), or the narrower commands in
+the app's README. These write only git-ignored outputs (`.logs/`, `.cache/`, build and `test-results/` folders).
+
 ## Read first
 
-`docs/product.md` (customer, main user journey), `docs/acceptance.md` (journey criteria), then the interface code
-in scope.
+`app-creator.config.json`, `<docs>/product.md` (customer, main user journey), `<docs>/acceptance.md` (journey
+criteria), the Playwright specs, then the interface code in scope.
 
 ## Check
 
-1. **The main journey:** walk it step by step as the customer in `docs/product.md`. For each step: can the user tell
+1. **The main journey:** walk it step by step as the customer in `<docs>/product.md`. For each step: can the user tell
    what to do, does the action work, is the result understandable? Report the first step where it breaks.
 2. **States:** empty data, loading, errors, invalid input: is there a clear message and a next step? No stack traces,
    keys or internal ids shown.

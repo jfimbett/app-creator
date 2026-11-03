@@ -15,22 +15,33 @@ main session names as deliberately failing for the next slice go under "Not chec
 run the app or its tests, use the test runner's temporary database or test fixtures, never the student's local
 database, and leave no data behind.
 
+**Where the app is.** Read `app-creator.config.json` at the repository root: `app.frontendDir`, `app.backendDir`
+and `app.docsDir` say where the frontend, backend and product documents live (below, `<docs>` means `app.docsDir`).
+If `app` is `null`, no app is configured: review only the files you were given. Checks run from the root:
+`npm run verify` (toolkit checks, backend lint and tests, frontend lint, typecheck, unit tests, build, and the
+project-local Playwright suite), or `npm run verify -- --quick` (no build or browser), or the narrower commands in
+the app's README. These write only git-ignored outputs (`.logs/`, `.cache/`, build and `test-results/` folders).
+
 ## Read first
 
-`AGENTS.md`, `docs/architecture.md` (parts and their responsibilities), `docs/acceptance.md`, then the scope you
-were given (run the diff command you were given, or read the named files).
+`AGENTS.md`, `app-creator.config.json`, `<docs>/architecture.md` (parts and their responsibilities, API
+contract), `<docs>/acceptance.md`, then the scope you were given (run the diff command you were given, or read
+the named files).
 
 ## Check
 
 1. **Correctness:** does the code do what the acceptance criteria say? Off-by-one, wrong conditions, unhandled
    empty or missing values, wrong units, mutable defaults, time zones, float money, swallowed exceptions.
 2. **Architecture:** each part stays in its lane (no calculations or rounding in interface or chart code, no API or
-   database calls from the interface, settings loaded in one place). Chart code only draws values prepared by the
-   shared logic layer. Flag code that contradicts `docs/architecture.md`.
+   database calls from the interface, settings loaded in one place). The browser calls only the app's own `/api/*`
+   (same origin), never a third-party API. Chart code only draws values prepared by the shared logic layer. Flag
+   code that contradicts `<docs>/architecture.md` or changes an API shape without updating the contract.
 3. **Maintainability for beginners:** clear names, short functions, no dead code or leftover debug prints, no
-   duplicated logic, no unexplained clever one-liners, comments that explain why.
-4. **Dependencies:** new libraries justified and added to the dependency file; nothing installed that is not used.
-5. **Run** the test command from `AGENTS.md` (read-only) and report the result.
+   duplicated logic, no unexplained clever one-liners, comments that explain why. TypeScript without `any` escapes
+   where a type is easy; Python with type hints on public functions.
+4. **Dependencies:** new libraries justified and pinned in the dependency file (`package.json` + lockfile,
+   `requirements.in` + `requirements.lock`); nothing installed that is not used.
+5. **Run** `npm run verify -- --quick` (or the narrower command you were given) and report the result.
 
 ## Report format (return only this)
 

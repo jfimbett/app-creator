@@ -1,0 +1,28 @@
+{
+  "stepId": "B04-research-openrouter",
+  "milestone": "bootstrap",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "default",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "bypassPermissions",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T17:05:44.534Z",
+  "startCommit": "10e8c6fc24d173b0392e0319260c64c0eec0d146",
+  "promptSha256": "0aa5bc9512978dbe493b103b0cf18167fda9f213d9eb3d5ae3d619eb04f12e3a",
+  "promptFileSha256": "16e2dea2c63f34f164aa8363e1b4e84c94544854b3e9e9a1063c7b67abd6d1da",
+  "status": "completed",
+  "finishedAt": "2026-11-03T17:08:26.702Z",
+  "exitCode": 0,
+  "sessionId": "f5ca7688-f326-48df-afa0-cdd89e198f99",
+  "numTurns": 33,
+  "durationMs": 161341,
+  "totalCostUsd": 1.1717428000000003,
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "endCommit": "47dbf85f8a2b67128b61cc1180717d209fa9e22c",
+  "workingTreeChanged": 8,
+  "responseSha256": "be40786138f7fcc6a06b472f350b050aeac94adc532857ad3f8abf035bf8a16c",
+  "missingRecord": null
+}

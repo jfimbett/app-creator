@@ -19,26 +19,46 @@ main session names as deliberately failing for the next slice go under "Not chec
 run the app or its tests, use the test runner's temporary database or test fixtures, never the student's local
 database, and leave no data behind.
 
+**Where the app is.** Read `app-creator.config.json` at the repository root: `app.frontendDir`, `app.backendDir`
+and `app.docsDir` say where the frontend, backend and product documents live (below, `<docs>` means `app.docsDir`).
+If `app` is `null`, no app is configured: review only the files you were given. Checks run from the root:
+`npm run verify` (toolkit checks, backend lint and tests, frontend lint, typecheck, unit tests, build, and the
+project-local Playwright suite), or `npm run verify -- --quick` (no build or browser), or the narrower commands in
+the app's README. These write only git-ignored outputs (`.logs/`, `.cache/`, build and `test-results/` folders).
+
 ## Read first
 
-`docs/architecture.md` ("External services", "Security and privacy", data model), `docs/acceptance.md`
-("Permissions"), `.gitignore`, `app/.env.example`, then the code in scope.
+`app-creator.config.json`, `<docs>/architecture.md` ("External services", "Security and privacy", data model),
+`<docs>/acceptance.md` ("Permissions"), `.gitignore`, the root `.env.example` (and any `.env.example` in the app
+folders), the frontend's `next.config.*` (rewrites) and the backend's settings and entry point, then the code in
+scope.
 
 ## Check
 
 1. **Secrets:** none in code, tests, fixtures, docs, logs or history; `.env` git-ignored; every setting in
-   `.env.example` with a placeholder; secrets never sent to the browser.
-2. **Authorisation** (if accounts exist): every view or endpoint that reads or changes data checks the signed-in user
+   `.env.example` with a placeholder; secrets never sent to the browser (no server secret in a `NEXT_PUBLIC_*`
+   variable or a client component). A key the user supplies for one request is forwarded transiently to the
+   upstream service only: never stored, logged, echoed in errors or responses, or put in a URL.
+2. **Same-origin boundary:** the browser calls only `/api/*`, which Next.js rewrites to the backend; the backend
+   binds to `127.0.0.1` in development, not `0.0.0.0`; CORS is absent or limited to named origins (never `*` with
+   credentials). Debug or admin endpoints are not exposed.
+3. **Server-side fetchers (SSRF):** any backend code that fetches a URL builds it from an allowlist of hosts and
+   path patterns, never from a raw user-supplied URL or host; redirects are either disabled or re-checked against
+   the allowlist; requests have timeouts and size limits; no generic "proxy any URL" endpoint.
+4. **Authorisation** (if accounts exist): every view or endpoint that reads or changes data checks the signed-in user
    or role on the server; ids from URLs or forms are checked for ownership; admin pages protected. For each rule in
    the permissions table, say whether code or a test enforces it.
-3. **Input handling:** parameterised queries, no shell commands built from user input, file uploads checked for type
-   and size and stored outside served folders, output escaped (no raw HTML from users).
-4. **Payments** (if present): hosted checkout, server-side prices, webhook signature verified, duplicates handled,
+5. **Input and output handling:** request bodies and query parameters validated on the server; parameterised
+   queries; no shell commands built from user input; file uploads checked for type and size and stored outside
+   served folders. Untrusted HTML or text (from users or from external sources) is rendered as text or sanitised
+   with a maintained library: flag `dangerouslySetInnerHTML`, `innerHTML` and markdown renderers that allow raw
+   HTML; links from external content use safe schemes only (`http`, `https`).
+6. **Payments** (if present): hosted checkout, server-side prices, webhook signature verified, duplicates handled,
    test keys only.
-5. **Sensitive data:** only the personal data the product needs; none in logs, URLs, error pages or analytics;
+7. **Sensitive data:** only the personal data the product needs; none in logs, URLs, error pages or analytics;
    debug mode off in production settings; secure cookies and CSRF protection where relevant.
-6. **Dependencies and services:** unknown or unmaintained packages, services called without timeouts, terms of use
-   not recorded in `docs/architecture.md`.
+8. **Dependencies and services:** unknown or unmaintained packages, unpinned versions, services called without
+   timeouts, terms of use or rate limits not recorded in `<docs>/architecture.md`.
 
 ## Report format (return only this)
 

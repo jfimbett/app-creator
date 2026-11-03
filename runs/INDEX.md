@@ -3,3 +3,8 @@
 Append-only. One line per dispatched step.
 
 - 2026-11-03T17:04Z · **bootstrap/B01-orchestrator-bootstrap-plan** · project-orchestrator · completed · [prompt](bootstrap/B01-orchestrator-bootstrap-plan/PROMPT.md) · [response](bootstrap/B01-orchestrator-bootstrap-plan/RESPONSE.md) · [result](bootstrap/B01-orchestrator-bootstrap-plan/RESULT.json)
+- 2026-11-03T17:08Z · **bootstrap/B03-research-sec-edgar** · default · completed · [prompt](bootstrap/B03-research-sec-edgar/PROMPT.md) · [response](bootstrap/B03-research-sec-edgar/RESPONSE.md) · [result](bootstrap/B03-research-sec-edgar/RESULT.json)
+- 2026-11-03T17:08Z · **bootstrap/B04-research-openrouter** · default · completed · [prompt](bootstrap/B04-research-openrouter/PROMPT.md) · [response](bootstrap/B04-research-openrouter/RESPONSE.md) · [result](bootstrap/B04-research-openrouter/RESULT.json)
+- 2026-11-03T17:08Z · **bootstrap/B02-research-claude-code** · default · completed · [prompt](bootstrap/B02-research-claude-code/PROMPT.md) · [response](bootstrap/B02-research-claude-code/RESPONSE.md) · [result](bootstrap/B02-research-claude-code/RESULT.json)
+- 2026-11-03T17:08Z · **bootstrap/B05-research-stack** · default · completed · [prompt](bootstrap/B05-research-stack/PROMPT.md) · [response](bootstrap/B05-research-stack/RESPONSE.md) · [result](bootstrap/B05-research-stack/RESULT.json)
+- 2026-11-03T17:14Z · **bootstrap/B06-agents** · default · completed · [prompt](bootstrap/B06-agents/PROMPT.md) · [response](bootstrap/B06-agents/RESPONSE.md) · [result](bootstrap/B06-agents/RESULT.json)
