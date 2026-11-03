@@ -3,7 +3,7 @@
 //
 //   node scripts/dispatch-step.mjs --step runs/<milestone>/<step-id> --agent <agent-name> \
 //        [--mode acceptEdits|bypassPermissions|default|plan] [--resume <session-id>] [--model <id>] \
-//        [--milestone <name>] [--role-from <sender>] [--timeout-min 90]
+//        [--milestone <name>] [--role-from <sender>] [--timeout-min 120]
 //
 // Contract (see .claude/skills/orchestrate-steps/SKILL.md):
 //   * <step>/PROMPT.md must already exist (saved BEFORE dispatch). The exact text sent is the part between

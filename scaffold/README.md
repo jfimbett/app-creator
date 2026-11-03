@@ -35,4 +35,4 @@ light theme follows the system setting.
 
 Exact versions are pinned: `frontend/package.json` plus `package-lock.json` (`.npmrc` keeps new installs exact)
 and `backend/requirements.lock` (generated from `backend/requirements.in`; its header says how). Supported:
-Node 22.12 or newer, Python 3.10–3.13.
+Node 22.13 or newer, Python 3.10–3.13.

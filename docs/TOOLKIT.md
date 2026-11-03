@@ -38,7 +38,7 @@ but `npm ci` still installs the lockfile.
 
 | Command | Does | With no app configured (template) |
 |---|---|---|
-| `npm run setup` | checks Node ≥ 20.9 and finds a supported Python (3.10–3.13; `APP_PYTHON` overrides). Creates `<backend>/.venv` and installs `requirements.lock`; runs `npm ci` in `<frontend>`; installs Playwright Chromium into `.cache/ms-playwright`. Idempotent: it skips steps whose lockfile hash has not changed. It never calls `npm run setup` recursively. | checks versions, prints next steps, exits 0 |
+| `npm run setup` | checks Node ≥ 22.13 and finds a supported Python (3.10–3.13; `APP_PYTHON` overrides). Creates `<backend>/.venv` and installs `requirements.lock`; runs `npm ci` in `<frontend>`; installs Playwright Chromium into `.cache/ms-playwright`. Idempotent: it skips steps whose lockfile hash has not changed. It never calls `npm run setup` recursively. | checks versions, prints next steps, exits 0 |
 | `npm run dev` | starts the backend (127.0.0.1) and frontend. It refuses occupied ports (never kills them) and stops only its own child processes on Ctrl+C | prints guidance, exits 0 |
 | `npm run demo` | like `dev`, but with the config's `demoEnv` (for example offline fixture mode, no keys, no network) | prints guidance, exits 0 |
 | `npm run verify` | runs the toolkit checks, then for the app: backend lint and tests, frontend lint, typecheck, unit tests, production build in a separate dist dir, then both services on spare ports with a Playwright smoke test. Exits nonzero on any failure | runs the toolkit checks plus a scaffold check in a temporary copy |

@@ -5,7 +5,7 @@
   "description": "Starter for building a web app (Next.js + FastAPI) with an AI coding assistant. Root launchers use Node built-ins only.",
   "license": "UNLICENSED",
   "engines": {
-    "node": ">=22.12"
+    "node": ">=22.13"
   },
   "scripts": {
     "setup": "node scripts/setup.mjs",

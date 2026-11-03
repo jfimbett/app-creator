@@ -18,7 +18,7 @@ export const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url
 export const CONFIG_PATH = path.join(REPO_ROOT, 'app-creator.config.json');
 export const CACHE_DIR = path.join(REPO_ROOT, '.cache');
 export const BROWSERS_PATH = path.join(CACHE_DIR, 'ms-playwright');
-export const NODE_MIN = [22, 12, 0];
+export const NODE_MIN = [22, 13, 0];
 export const PYTHON_MIN = [3, 10];
 export const PYTHON_MAX = [3, 13];
 
