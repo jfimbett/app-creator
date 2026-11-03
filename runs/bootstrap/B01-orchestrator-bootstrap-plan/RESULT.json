@@ -1,0 +1,29 @@
+{
+  "stepId": "B01-orchestrator-bootstrap-plan",
+  "milestone": "bootstrap",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "project-orchestrator",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "default",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T17:03:33.315Z",
+  "startCommit": "6e8314a6addd92aa035bf26d3e96dd479f30b5fd",
+  "promptSha256": "55a2ecc32a0a9cc16cde322e48be2bb607b917cc65d307284f311d5fb519ab0a",
+  "promptFileSha256": "da18332628e5e0bbdaa8deafbe6640d13f276c109bfa62ceb2e7f3dce6377637",
+  "status": "completed",
+  "finishedAt": "2026-11-03T17:04:43.231Z",
+  "exitCode": 0,
+  "sessionId": "197beebb-a91d-46c3-aa18-19ab8d601c34",
+  "numTurns": 6,
+  "durationMs": 69205,
+  "totalCostUsd": 0.3200562,
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "endCommit": "6e8314a6addd92aa035bf26d3e96dd479f30b5fd",
+  "workingTreeChanged": 3,
+  "responseSha256": "a950e5181d2979a7b1441e7c48e7f155870594c9b4e0184b5f40b6d4ca8092bc",
+  "missingRecord": null,
+  "notes": "Started before scripts/dispatch-step.mjs, the agent file and this record were committed (they were untracked drafts at 6e8314a); committed afterwards in B00 (owner). Recorded per orchestrator risk 3."
+}
