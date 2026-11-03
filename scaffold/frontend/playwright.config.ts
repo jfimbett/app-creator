@@ -8,7 +8,10 @@ export default defineConfig({
   outputDir: "./test-results",
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  retries: 0,
+  // One retry: in a clean-worktree run the first screenshot after a cold browser start once hung for 30 s
+  // (2026-11-03, assertions had passed). Playwright labels a pass-on-retry "flaky" in the report, so it stays
+  // visible; a real defect still fails twice.
+  retries: 1,
   reporter: [["list"]],
   use: {
     baseURL: process.env.BASE_URL || "http://127.0.0.1:3000",
