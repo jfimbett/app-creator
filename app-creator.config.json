@@ -1,0 +1,19 @@
+{
+  "$comment": [
+    "Tells the root commands (npm run setup / dev / demo / verify) which app to run.",
+    "\"app\": null means template mode: no app yet. `npm run create-app` (or the product-interview skill) sets it.",
+    "When set, \"app\" is an object with these fields (paths are relative to this file, with forward slashes):",
+    "  name        - the app's display name, e.g. \"My App\" (required)",
+    "  frontendDir - the Next.js folder, e.g. \"app/frontend\" (required)",
+    "  backendDir  - the FastAPI folder with requirements.lock; its .venv is created here (required)",
+    "  docsDir     - where product.md, architecture.md, acceptance.md and plan.md live, e.g. \"app/docs\"",
+    "  backendApp  - the uvicorn import path, default \"app.main:app\"",
+    "  healthPath  - backend URL that answers when it is up, default \"/api/health\"",
+    "  ports       - {\"backend\": 8000, \"frontend\": 3000}; BACKEND_PORT / FRONTEND_PORT (environment or root .env) override them",
+    "  devEnv      - extra environment variables for `npm run dev`, e.g. {\"DATA_MODE\": \"live\"}",
+    "  demoEnv     - extra environment variables for `npm run demo` and the verify browser test, e.g. {\"DATA_MODE\": \"fixtures\"}",
+    "  smokeSpec   - Playwright test filter run by `npm run verify`, default \"e2e\"",
+    "APP_PYTHON (environment or root .env) picks the Python used to create the backend .venv. Never put secrets in this file."
+  ],
+  "app": null
+}

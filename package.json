@@ -1,0 +1,18 @@
+{
+  "name": "app-creator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Starter for building a web app (Next.js + FastAPI) with an AI coding assistant. Root launchers use Node built-ins only.",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "node scripts/dev.mjs",
+    "demo": "node scripts/demo.mjs",
+    "verify": "node scripts/verify.mjs",
+    "create-app": "node scripts/create-app.mjs",
+    "check-toolkit": "node scripts/check-toolkit.mjs"
+  }
+}

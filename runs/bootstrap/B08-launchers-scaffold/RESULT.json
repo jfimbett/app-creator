@@ -1,0 +1,28 @@
+{
+  "stepId": "B08-launchers-scaffold",
+  "milestone": "bootstrap",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "default",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "bypassPermissions",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T17:11:33.049Z",
+  "startCommit": "47dbf85f8a2b67128b61cc1180717d209fa9e22c",
+  "promptSha256": "5b73b71e9d40cbe2fadf6ce5cf5e67a7bf0c04579288a4cc2789844f519cf584",
+  "promptFileSha256": "72430b81ef3992a1e3e485f3c1a32eaff160c09c3bc0134e140e896927bef0ab",
+  "status": "completed",
+  "finishedAt": "2026-11-03T17:23:27.123Z",
+  "exitCode": 0,
+  "sessionId": "0dda4977-3d38-4952-a925-36d45513b030",
+  "numTurns": 98,
+  "durationMs": 713293,
+  "totalCostUsd": 3.7720282000000007,
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "endCommit": "2dd841e3d0674cf0231b7e65b80921c5d2ec55f0",
+  "workingTreeChanged": 27,
+  "responseSha256": "305f90bdf8541006a01dc82f3d8e74b3dc193555a4652cf8d09842e20ef884ef",
+  "missingRecord": null
+}
