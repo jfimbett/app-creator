@@ -8,14 +8,14 @@ export default defineConfig({
   outputDir: "./test-results",
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  // One retry: in a clean-worktree run the first screenshot after a cold browser start once hung for 30 s
-  // (2026-11-03, assertions had passed). Playwright labels a pass-on-retry "flaky" in the report, so it stays
-  // visible; a real defect still fails twice.
-  retries: 1,
+  retries: 0,
   reporter: [["list"]],
   use: {
     baseURL: process.env.BASE_URL || "http://127.0.0.1:3000",
     trace: "retain-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  // channel "chromium" = Playwright's full Chromium in new headless mode (installed by `npm run setup`).
+  // The separate headless shell was dropped: on macOS (2026-11-03) its screenshots hung while the full
+  // Chromium, tested at the same moment, captured in about 1 s (diagnosis in PROGRESS.md, failures log).
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"], channel: "chromium" } }],
 });

@@ -20,7 +20,7 @@ the final visual check: ask for it, and record it in `<docs>/acceptance.md` as `
 The browser tool is installed **by the project**, so every teammate, reviewer and CI run gets the same result:
 
 - `@playwright/test` is a pinned dev dependency of `<frontend>/package.json` (scaffold: `1.64.1`).
-- `npm run setup` installs Chromium (headless shell) into `.cache/ms-playwright` at the repository root
+- `npm run setup` installs Playwright's full Chromium (used in new headless mode via `channel: "chromium"`) into `.cache/ms-playwright` at the repository root
   (git-ignored), using `PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright`. Nothing goes into a global cache.
 - `<frontend>/playwright.config.ts` reads `BASE_URL`; tests live in `<frontend>/e2e/`; output goes to
   `<frontend>/test-results/` (git-ignored, emptied at the start of each run).
@@ -45,8 +45,8 @@ npx playwright show-trace test-results/<test-folder>/trace.zip   # after a failu
 
 The relative `PLAYWRIGHT_BROWSERS_PATH` above assumes `<frontend>` is `app/frontend`; adjust the `../` count, or
 use an absolute path. Windows PowerShell: `$env:BASE_URL="http://127.0.0.1:3000"; npx playwright test`.
-`--headed` needs the full Chromium (`npx playwright install chromium` with the same `PLAYWRIGHT_BROWSERS_PATH`);
-setup installs only the headless shell. If port 3000 is busy, `npm run dev` refuses it: set `FRONTEND_PORT` and
+`--headed` works with the same full Chromium that setup installs (`npx playwright install --no-shell chromium`);
+the headless shell is not used (its screenshots hung on macOS in testing). If port 3000 is busy, `npm run dev` refuses it: set `FRONTEND_PORT` and
 use that URL.
 
 ## A journey spec with the starter's checks (`<frontend>/e2e/journey.spec.ts`)

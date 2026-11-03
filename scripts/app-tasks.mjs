@@ -75,11 +75,11 @@ export async function setupApp(app, { force = false, log } = {}) {
   // 4. Project-local Playwright browser (headless Chromium shell) in .cache/ms-playwright.
   heading('Browser for checks (Playwright Chromium, project-local)');
   const pwVersion = installedVersion(app.frontendDir, '@playwright/test');
-  const pwHash = sha256(`${pwVersion}|${BROWSERS_PATH}`);
-  if (!force && readStamp('playwright', BROWSERS_PATH) === pwHash && hasChromiumShell()) {
+  const pwHash = sha256(`${pwVersion}|${BROWSERS_PATH}|full-chromium`);
+  if (!force && readStamp('playwright', BROWSERS_PATH) === pwHash && hasChromium()) {
     say(c.green(`up to date (Playwright ${pwVersion})`));
   } else {
-    const code = await run(localBin(app.frontendDir, 'playwright', 'playwright', ['install', '--only-shell', 'chromium']),
+    const code = await run(localBin(app.frontendDir, 'playwright', 'playwright', ['install', '--no-shell', 'chromium']),
       { cwd: app.frontendDir, env: mergedEnv({ PLAYWRIGHT_BROWSERS_PATH: BROWSERS_PATH }), log });
     if (code) return code;
     writeStamp('playwright', BROWSERS_PATH, pwHash);
@@ -93,8 +93,8 @@ function installedVersion(dir, pkg) {
   } catch { return 'unknown'; }
 }
 
-function hasChromiumShell() {
-  try { return fs.readdirSync(BROWSERS_PATH).some((d) => d.startsWith('chromium_headless_shell-')); } catch { return false; }
+function hasChromium() {
+  try { return fs.readdirSync(BROWSERS_PATH).some((d) => /^chromium-\d+$/.test(d)); } catch { return false; }
 }
 
 /** Returns a list of human-readable problems if setup has not been run for this app. */
