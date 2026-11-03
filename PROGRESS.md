@@ -4,7 +4,7 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 
 ## Current phase
 
-Phase 0 — audit and plan (in progress)
+M1 Foundation (template-v1 created at d387e3d)
 
 ## Audit (2026-11-03)
 
@@ -55,13 +55,13 @@ Phase 0 — audit and plan (in progress)
 
 ## Next actions
 
-1. Clean-worktree verification of the template candidate. 2. B19 orchestrator re-check of prompts + template gate. 3. Create `template` branch and annotated `template-v1`. 4. M1 via its PROMPT.md.
+1. m1-01 orchestrator plans M1 from milestones/01-foundation/PROMPT.md. 2. Implementation steps embed the brief verbatim plus a step scope. 3. Reviews, repairs, clean verify, gate → `milestone/01-foundation` + `m1`.
 
 ## Checkpoints
 
 | Ref | SHA | Verified |
 |---|---|---|
-| (none yet) | | |
+| `template` / `template-v1` (annotated) | d387e3d82f55a3ef385eade69598784fff0cf148 | clean worktree npm ci → setup → verify exit 0 (2026-11-03 18:23Z); orchestrator gate-pass (B19) |
 
 ## Publication status
 

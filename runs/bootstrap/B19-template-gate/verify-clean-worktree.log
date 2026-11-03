@@ -1,0 +1,24 @@
+ref=d387e3d sha=d387e3d82f55a3ef385eade69598784fff0cf148 started=2026-11-03T18:22:48Z node=v22.14.0
+... (full log kept locally in .logs/verify-d387e3d-20261103T182248Z.log, git-ignored)
+
+  2 passed (5.0s)
+[backend] INFO:     Shutting down
+[backend] INFO:     Waiting for application shutdown.
+[backend] INFO:     Application shutdown complete.
+[backend] INFO:     Finished server process [89439]
+
+Step                                       Result  Seconds
+-----------------------------------------  ------  -------
+toolkit checks                             pass        0.1
+scaffold copy + setup                      pass       17.5
+scaffold: backend lint (ruff)              pass        0.4
+scaffold: backend tests (pytest)           pass        0.8
+scaffold: frontend lint                    pass        2.1
+scaffold: frontend typecheck               pass        1.4
+scaffold: frontend unit tests              pass        1.8
+scaffold: frontend build                   pass        7.6
+scaffold: browser smoke test (Playwright)  pass        6.7
+
+All checks passed.
+Full log: .logs/verify-2026-11-03T18-22-49-487Z.log
+finished=2026-11-03T18:23:27Z exit=0
