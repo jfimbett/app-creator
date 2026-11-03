@@ -126,6 +126,26 @@ get their own rows after fixture capture, with hand working that quotes concept,
 Cross-check: before the tests are finalized, a separate person or a spreadsheet recomputes CALC1–CALC11 without the
 app's code.
 
+### Known answers from the recorded fixtures (snapshot 2026-11-03)
+
+**AUTHENTIC SEC VALUES**, read by hand from `examples/sec-analytics/fixtures/companyfacts/CIK##########.json`
+(captured 2026-11-03 by `be/scripts/capture_fixtures.py`, step m1-05), not from the app's output. Taxonomy `us-gaap`.
+Hand working for each row: list every fact of the revenue concepts (priority order) and `NetIncomeLoss` whose `end` is
+the company's latest annual end date in the file; keep `form` 10-K/10-K/A and a duration `end − start` of 350–380
+days; group by (concept, unit, start, end) and keep the latest `filed`. A recapture changes these values: work them
+out again first.
+
+| Id | Number | Fact quoted from the fixture (concept · unit · start → end · form · accession · filed · `val`) | Hand working | Expected result | Tolerance | Status |
+|---|---|---|---|---|---|---|
+| FX1 | Apple latest annual revenue, FY2026 (ends 2026-09-26) | `RevenueFromContractWithCustomerExcludingAssessedTax` · USD · 2025-09-28 → 2026-09-26 · 10-K · `0000320193-26-000026` · filed 2026-11-03 · `val` 478834000000 (fy 2026, fp FY) | `Revenues` has no fact for this period, so the second priority concept is used; one 10-K fact, no duplicate; duration 363 days (annual) | 478,834,000,000 USD = 478,834 USD millions | exact | open |
+| FX2 | Apple latest annual net income, FY2026 (ends 2026-09-26) | `NetIncomeLoss` · USD · 2025-09-28 → 2026-09-26 · 10-K · `0000320193-26-000026` · filed 2026-11-03 · `val` 132175000000 (fy 2026, fp FY) | one 10-K fact for the period, no duplicate; 363 days | 132,175,000,000 USD = 132,175 USD millions | exact | open |
+| FX3 | Microsoft latest annual revenue, FY2026 (ends 2026-06-30) | `RevenueFromContractWithCustomerExcludingAssessedTax` · USD · 2025-07-01 → 2026-06-30 · 10-K · `0001193125-26-323660` · filed 2026-07-29 · `val` 331839000000 (fy 2026, fp FY) | `Revenues` has no fact for this period; one 10-K fact; 364 days | 331,839,000,000 USD = 331,839 USD millions | exact | open |
+| FX4 | Microsoft latest annual net income, FY2026 (ends 2026-06-30) | `NetIncomeLoss` · USD · 2025-07-01 → 2026-06-30 · 10-K · `0001193125-26-323660` · filed 2026-07-29 · `val` 133749000000 (fy 2026, fp FY) | the file also holds the same period from a `DEF 14A` (accession `0001193125-26-427849`, filed 2026-10-21, same `val`); it is not a 10-K/10-K/A, so it is excluded even though it was filed later; 364 days | 133,749,000,000 USD = 133,749 USD millions; provenance accession `0001193125-26-323660` | exact | open |
+
+Annual periods in the snapshot (10-K/10-K/A, 350–380 days, revenue and net income; from `manifest.json` `periods`,
+checked by hand): Apple 20 (2007-09-29 to 2026-09-26), Microsoft 19 (2008-06-30 to 2026-06-30), Alphabet 13
+(2013-12-31 to 2025-12-31). Each has at least 5.
+
 ## Edge cases and errors
 
 | Id | M | Situation (synthetic unless stated) | Expected behaviour | Check | Status |

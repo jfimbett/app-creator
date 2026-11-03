@@ -31,3 +31,5 @@ Append-only. One line per dispatched step.
 - 2026-11-03T18:32Z · **m1/m1-04-sec-client** · backend-engineer · completed · [prompt](m1/m1-04-sec-client/PROMPT.md) · [response](m1/m1-04-sec-client/RESPONSE.md) · [result](m1/m1-04-sec-client/RESULT.json)
 - 2026-11-03T18:32Z · **m1/m1-08-design-shell** · design-lead · completed · [prompt](m1/m1-08-design-shell/PROMPT.md) · [response](m1/m1-08-design-shell/RESPONSE.md) · [result](m1/m1-08-design-shell/RESULT.json)
 - 2026-11-03T18:33Z · **m1/m1-09-frontend-lib** · frontend-engineer · completed · [prompt](m1/m1-09-frontend-lib/PROMPT.md) · [response](m1/m1-09-frontend-lib/RESPONSE.md) · [result](m1/m1-09-frontend-lib/RESULT.json)
+- 2026-11-03T18:36Z · **m1/m1-07-periods** · backend-engineer · completed · [prompt](m1/m1-07-periods/PROMPT.md) · [response](m1/m1-07-periods/RESPONSE.md) · [result](m1/m1-07-periods/RESULT.json)
+- 2026-11-03T18:38Z · **m1/m1-05-capture-fixtures** · backend-engineer · completed · [prompt](m1/m1-05-capture-fixtures/PROMPT.md) · [response](m1/m1-05-capture-fixtures/RESPONSE.md) · [result](m1/m1-05-capture-fixtures/RESULT.json)
