@@ -9,7 +9,8 @@ Five milestones are five **student-facing releases**. Each one is built in sever
 **Ground rules for every slice:**
 
 - Start from the previous milestone's tag.
-- Do not touch the toolkit: `.claude/`, `scripts/`, `scaffold/`, `AGENTS.md`, `CLAUDE.md`, `docs/TOOLKIT.md`.
+- Do not touch the toolkit (`.claude/`, `scripts/`, `scaffold/`, `AGENTS.md`, `CLAUDE.md`, `docs/TOOLKIT.md`), except
+  that slice 1.1 adds `.claude/agents/sec-data-specialist.md`.
 - Do not touch the milestone `PROMPT.md` files, which are immutable once committed.
 - End with `npm run verify` exiting 0, then update the slice status and progress log here and the statuses in
   [acceptance.md](acceptance.md).
@@ -21,7 +22,7 @@ Paths are relative to `examples/sec-analytics/` (written `fe/` for the frontend 
 | # | Slice | Criteria | Owner (agent) | May touch | Must not touch | Skills | Status |
 |---|---|---|---|---|---|---|---|
 | 1.1 | Example skeleton: copy `scaffold/` into `examples/sec-analytics/` (`npm run create-app -- --name "SEC Analytics" --dir examples/sec-analytics`), set `docsDir` to `milestones` and `demoEnv`/`devEnv` in `app-creator.config.json`, write `examples/sec-analytics/CLAUDE.md` (SEC rules from [architecture.md](architecture.md#financial-data-rules)) | M1-AC6 (skeleton passes) | backend-engineer | `examples/sec-analytics/**`, `app-creator.config.json` | `milestones/*.md` except status updates | build-feature | todo |
-| 1.2 | Authentic fixtures: `be/scripts/capture_fixtures.py` (allowlisted, throttled, owner's `SEC_USER_AGENT`), trimmed submissions, Company Facts, ticker entries and 10-K/10-Q excerpts for AAPL, MSFT, GOOGL; `fixtures/manifest.json`. If blocked: record the blocker (N2), no manufactured data | M1-AC7 | backend-engineer | `be/scripts/`, `fixtures/`, `.env.example` (names only) | `fe/` | integrate-api, manage-data | todo |
+| 1.2 | Authentic fixtures: `be/scripts/capture_fixtures.py` (allowlisted, throttled, owner's `SEC_USER_AGENT`), trimmed submissions, Company Facts and ticker entries for AAPL, MSFT, GOOGL; `fixtures/manifest.json`. If blocked: record the blocker (N2), no manufactured data | M1-AC7 | backend-engineer | `be/scripts/`, `fixtures/`, `.env.example` (names only) | `fe/` | integrate-api, manage-data | todo |
 | 1.3 | Backend M1 API: settings, `data/fixtures.py`, `logic/cik.py`, `logic/search.py`, `/api/meta`, `/api/companies/search`, `/api/companies/{cik}`, error envelope | M1-AC3, M1-AC4, M1-E2 | backend-engineer | `be/app/`, `be/tests/` | `fe/`, `fixtures/` | build-feature, test-and-check, plan-architecture | todo |
 | 1.4 | Overview data: first version of `logic/periods.py` (annual selection, dedupe) for revenue and net income; `/api/companies/{cik}/overview` with provenance | M1-AC5 | backend-engineer | `be/app/logic/`, `be/app/api/`, `be/tests/` | `fe/` | test-and-check | todo |
 | 1.5 | Dark terminal shell, keyboard search, profile and dashboard, `SourceBadge`, demo-universe note, loading/empty/error states | M1-AC1, M1-AC2, M1-AC5, M1-E1, V1–V3 | frontend-engineer (with design-lead) | `fe/app/`, `fe/components/`, `fe/lib/` | `be/` | design-interface, build-feature | todo |
@@ -43,7 +44,7 @@ Paths are relative to `examples/sec-analytics/` (written `fe/` for the frontend 
 | # | Slice | Criteria | Owner | May touch | Must not touch | Skills | Status |
 |---|---|---|---|---|---|---|---|
 | 3.1 | Filing list: submissions (+ older pages when needed), 10-K/10-Q/amendments, `/api/companies/{cik}/filings`, "Latest in snapshot" label | M3-AC1, M3-AC2, M3-E1, M3-E4 | backend-engineer | `be/app/`, `be/tests/` | `fe/` | integrate-api, test-and-check | todo |
-| 3.2 | Document fetch, `logic/sanitize.py`, `logic/sections.py` (TOC skip, fallback), `/api/companies/{cik}/filings/{accession}` | M3-AC3, M3-AC4, M3-AC7, M3-E2, M3-E3, M3-E5 | backend-engineer | `be/app/`, `be/tests/` | `fe/` | test-and-check | todo |
+| 3.2 | Document fetch, `capture_fixtures.py --filings`, `logic/sanitize.py`, `logic/sections.py` (TOC skip, fallback), `/api/companies/{cik}/filings/{accession}` | M3-AC3, M3-AC4, M3-AC7, M3-E2, M3-E3, M3-E5 | backend-engineer | `be/app/`, `be/tests/` | `fe/` | test-and-check | todo |
 | 3.3 | Filings view and reader: section navigation, text search, source link | M3-AC1, M3-AC3–M3-AC6, V1–V3 | frontend-engineer | `fe/` | `be/` | design-interface, build-feature | todo |
 | 3.4 | E2E, security review (sanitization), README, checkpoint | all M3 | test-engineer, reviewers | `fe/e2e/`, `milestones/03-filing-intelligence/README.md` | – | review-changes, orchestrate-steps | todo |
 

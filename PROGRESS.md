@@ -10,7 +10,7 @@ Phase 0 — audit and plan (in progress)
 
 | Item | Finding |
 |---|---|
-| Folder | `/Users/juan/Documents/app-creator`; contained only `GOAL.md` and `app-starter.zip`; was **not** a git repo; no parent repo |
+| Folder | `/Users/[REDACTED:user]/Documents/app-creator`; contained only `GOAL.md` and `app-starter.zip`; was **not** a git repo; no parent repo |
 | Git | 2.45.2; repo initialised here on `main`; commit identity from the user's existing global config (not invented) |
 | GitHub CLI | 2.72.0; authenticated as personal account `jfimbett` (scopes include `repo`, `workflow`) |
 | Remote | `jfimbett/app-creator` query returned "Could not resolve to a Repository" (GraphQL, authenticated) → name appears free; re-check before creation |
@@ -48,9 +48,14 @@ Phase 0 — audit and plan (in progress)
 - Live discovery evidence: this running session listed newly created project skills and agents without restart (system notices after B06/B07).
 - Local note: other services (not ours) occupy ports 3000/8000 on this machine; `npm run dev` refuses them by design; use BACKEND_PORT/FRONTEND_PORT.
 
+- B09 root docs, CI (de1627f). B10 questions (44) → B11 delegated answers → B12 decisions + planning docs (49dd630). B13 milestone prompts (23e9a15). B15a/B15b toolkit reviews: pass with minor issues, no blockers; B16 repaired code #1–#12 and security #3–#8 (6727dc2). B14 orchestrator review: M1/M4 accept, M2/M3/M5 repair → B17 applied all edits; owner fixed 2 stale lines B17 flagged (M1 prompt line 451, product.md line 106). B18 fresh-session discovery: all 15 project skills and 13 agents loaded.
+- Home paths in tracked records redacted with `[REDACTED:user]` (scripts/redact-records.mjs). One over-match (a regex quoted in B15b's response) was reverted to verbatim and the pattern tightened.
+- **Open owner decisions (not delegable, reported, not changed):** security #1, the commit author email (the user's own global git identity) becomes public on push; security #2, harden `.claude/settings.json` deny rules (e.g. `Read(./**/.env.*)`, `Bash(* .env*)`). The file belongs to the user, so it is left unchanged.
+- Prompt hashes (sha256) at template candidate: M1 2984572…03ac, M2 35112cc…45b, M3 a1b6939…20f7, M4 47af2b5…0b32, M5 c3caadf…8c99 (full values in runs/bootstrap/B19 RESULT and docs/PROMPT-EXECUTION-LOG.md later).
+
 ## Next actions
 
-1. Finish B07a/B07b (skills) → commit. 2. B09 root docs ∥ B10 interview questions. 3. B11 delegated answers → B12 decisions + planning docs → B13 milestone prompts → B14 orchestrator review → repairs. 4. Toolkit review (code/security reviewers), discovery check, gate → `template` + `template-v1`.
+1. Clean-worktree verification of the template candidate. 2. B19 orchestrator re-check of prompts + template gate. 3. Create `template` branch and annotated `template-v1`. 4. M1 via its PROMPT.md.
 
 ## Checkpoints
 

@@ -103,7 +103,7 @@ From GOAL.md §1, §4, §5, §6 and §7 (Q17, Q34), plus delegated exclusions:
 | Ticker ↔ CIK map | `www.sec.gov/files/company_tickers.json` | live, cached 24 h (assumption Q35) | the 3 entries for AAPL, MSFT, GOOGL | SEC fair access: declared User-Agent, ≤ 10 req/s ([research](../docs/research/sec-edgar.md) §5) |
 | Company metadata, filing list | `data.sec.gov/submissions/CIK##########.json` (+ older pages when needed) | live, cached 24 h | trimmed to 10-K/10-Q entries | same |
 | Financial facts | `data.sec.gov/api/xbrl/companyfacts/CIK##########.json` | live, cached 24 h | trimmed to mapped concepts, values unmodified, ≥ 5 annual periods (assumption Q20) | same |
-| Filing documents | `www.sec.gov/Archives/edgar/data/<cik>/<accession>/<document>` | immutable per accession, cached until deleted | excerpts of the latest 10-K and 10-Q primary documents, trimming recorded | same |
+| Filing documents | `www.sec.gov/Archives/edgar/data/<cik>/<accession>/<document>` | immutable per accession, cached until deleted | the latest 10-K and 10-Q primary documents, gzip-compressed and unmodified (added in M3) | same |
 | AI answers | OpenRouter, the student's own key | per request, never stored | none: mocked in tests | OpenRouter docs ([research](../docs/research/openrouter.md)) |
 
 Fixtures are authentic SEC snapshots with a manifest (source URL, retrieval date, accession, periods, scope). If they

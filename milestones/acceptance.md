@@ -23,7 +23,7 @@ the earlier ones.
 | M1-AC3 | M1-F2 | fixture mode | the user searches `320193`, `0000320193`, `Microsoft` and `GOOGL` | each finds exactly the matching demo company (CIK normalized to 10 digits); `tesla` gives "No match in the demo universe (3 companies)" | unit (`logic/cik.py`, `logic/search.py`), API | open |
 | M1-AC4 | M1-F3 | fixture mode | the user opens Apple | the profile shows name, ticker(s), 10-digit CIK, exchange, SIC code and description, fiscal year-end and former names, exactly as in the fixture submissions file; no invented description text | API, E2E | open |
 | M1-AC5 | M1-F4 | fixture mode | the user views the Apple dashboard | key figures and the revenue / net income chart show values from the fixture, each with fiscal year-end, unit and the label `RECORDED SEC DEMO · snapshot <manifest date>`; hovering a value shows its concept and accession | API, E2E | open |
-| M1-AC6 | M1-F1 | the `m1` checkout | `npm run verify` runs | it exits 0 with no network; it includes backend lint and tests, frontend lint, typecheck, unit tests, build and the Playwright journey of M1-AC1/AC2/AC5 at 1440 and 390 px | command | open |
+| M1-AC6 | M1-F1 | the `m1` checkout | `npm run verify` runs | it exits 0 with no network; it includes backend lint and tests, frontend lint, typecheck, unit tests, build and the Playwright journey of M1-AC1/AC2/AC5 at 1440, 1366 and 390 px | command | open |
 | M1-AC7 | – | the fixtures folder | a reviewer opens `fixtures/manifest.json` | every fixture file has source URL, retrieval date, accession(s), periods and scope; synthetic test data lives only in `backend/tests/synthetic/` and is marked `SYNTHETIC` | unit (manifest check), review | open |
 
 ## M2 — Financial intelligence
@@ -34,7 +34,7 @@ the earlier ones.
 | M2-AC2 | M2-F1 | `npm run dev` without `SEC_USER_AGENT` | the user selects Live and searches | the message "Live SEC data is not configured: set SEC_USER_AGENT (see .env.example and docs/SETUP.md)" appears; Demo still works | API, E2E | open |
 | M2-AC3 | M2-F1 | live mode; SEC returns 503 or times out (mocked) | the user opens a company | the error panel says SEC is unavailable, offers "Use recorded demo data", and the mode does **not** change by itself | API, E2E (mocked backend) | open |
 | M2-AC4 | M2-F2 | fixture mode | the user opens Apple's financials with 10 years | income, balance and cash-flow summary tables show one column per annual period available (at least 5), each headed `FY<year> (ends YYYY-MM-DD)`, with the note "Values may reflect later restatements; not point-in-time." | API, E2E | open |
-| M2-AC5 | M2-F3 | fixture mode | the user selects net margin and FCF in the explorer | a line chart shows both series by fiscal year with a visible zero baseline; a missing year is a gap, not zero | E2E, look | open |
+| M2-AC5 | M2-F3 | fixture mode | the user selects net margin and FCF in the explorer | stacked line charts, one per metric, sharing the fiscal-year axis, show both series with a visible zero baseline; a missing year is a gap, not zero | E2E, look | open |
 | M2-AC6 | M2-F4 | fixture mode | the user hovers revenue for one year | the tooltip shows concept, taxonomy, unit, start–end, form, accession, filing date and a source link; a derived value shows its formula and input values instead | API, E2E | open |
 | M2-AC7 | M2-F4 | the illustrative inputs below | the ratio functions run | they return exactly the CALC1–CALC10 results | unit | open |
 | M2-AC8 | M2-F5 | a period with no mapped revenue concept (synthetic) | the user views that year | revenue shows `MISSING · no mapped revenue concept`, and every ratio needing revenue shows `unavailable` with that reason | unit, API | open |
@@ -61,7 +61,7 @@ the earlier ones.
 | M4-AC3 | M4-F2 | two demo companies whose fiscal year-ends differ in the fixtures (expected: AAPL late September, MSFT 30 June; `[verify against fixtures]`) | the user compares revenue | every column or tooltip shows each company's own period end date; the legend states "Fiscal years are not aligned" | API, E2E | open |
 | M4-AC4 | M4-F2 | two companies with different reporting currencies (synthetic) | the user compares revenue | no shared absolute axis is drawn; the warning "Different reporting currencies (USD, EUR): not converted" appears; ratios are still shown | unit, API | open |
 | M4-AC5 | M4-F3 | the illustrative inputs of CALC11 | the user toggles "Index = 100 at first common fiscal year" | the indexed values are 100.0 and 125.0 for Example Co and 100.0 and 80.0 for Sample Ltd; the label lists each company's fiscal year-end | unit, E2E | open |
-| M4-AC6 | M4-F4 | a comparison on screen | the user clicks "Export CSV" | the file has the header `company,ticker,cik,fiscal_year_label,fiscal_year_end,period_start,period_end,metric,value,unit,kind,indexed,source_concept,accession,data_source` and exactly the rows shown, in the same order | unit (`logic/csv_export.py`), API | open |
+| M4-AC6 | M4-F4 | a comparison on screen | the user clicks "Export CSV" | the file has the header `company,ticker,cik,fiscal_year_label,fiscal_year_end,period_start,period_end,metric,value,unit,kind,indexed,source_concept,accession,data_source` and exactly the data points shown (one line per company × metric × fiscal year), in table order | unit (`logic/csv_export.py`), API | open |
 | M4-AC7 | M4-F4 | a comparison with a missing value | it is exported | the `value` cell is empty (not `0`), and the row is still present | unit | open |
 
 ## M5 — AI analyst
@@ -83,7 +83,7 @@ the earlier ones.
 | Id | Screen / state | Expected | Browser check | Looked at by |
 |---|---|---|---|---|
 | V1 | each milestone's main screens, fixture data, 1440 px | dense dark terminal layout, tabular numerals, no overlap, source badges readable | Playwright screenshots (`npm run verify`) | assistant (screenshots), then owner |
-| V2 | the same screens at 390 px | no sideways page scrolling; wide tables scroll inside their own box; search and badges usable | Playwright screenshots | assistant, then owner |
+| V2 | the same screens at 1366 and 390 px | no sideways page scrolling; wide tables scroll inside their own box; search and badges usable | Playwright screenshots | assistant, then owner |
 | V3 | missing / unavailable / error / offline states | text explains the reason and next step; meaning never carried by colour alone | Playwright on synthetic states | assistant, then owner |
 
 ## Calculations (known answers)

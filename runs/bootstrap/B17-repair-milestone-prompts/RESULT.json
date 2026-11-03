@@ -1,0 +1,35 @@
+{
+  "stepId": "B17-repair-milestone-prompts",
+  "milestone": "bootstrap",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "product-architect",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "bypassPermissions",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T18:11:28.287Z",
+  "startCommit": "6727dc248d5be4f8a13d735b1cc51f9f73ed3e94",
+  "promptSha256": "e2359781cc453fccfd2b656f4dde6cde28d3f2b11e7c15815e78123fadee9d22",
+  "promptFileSha256": "d1253c7a8e11f4be3ce1467f701b98eb4128465bea234f9be3d76d4107a213b9",
+  "status": "completed",
+  "finishedAt": "2026-11-03T18:12:49.253Z",
+  "exitCode": 0,
+  "signal": null,
+  "failureReason": null,
+  "sessionId": "c6f11ee6-5b2e-40fa-adab-b563e1527084",
+  "numTurns": 9,
+  "durationMs": 79986,
+  "totalCostUsd": 0.5225926000000001,
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "endCommit": "6727dc248d5be4f8a13d735b1cc51f9f73ed3e94",
+  "workingTreeChanged": 14,
+  "responseSha256": "72ccd5997d0f9d2c41fff522fdc9ac9e2eab5ad525064bd3400d95ede07741d2",
+  "responseRedactedSha256": "72ccd5997d0f9d2c41fff522fdc9ac9e2eab5ad525064bd3400d95ede07741d2",
+  "redactions": {},
+  "stderrRedactions": {
+    "user": 2
+  },
+  "missingRecord": null
+}

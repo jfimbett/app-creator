@@ -45,7 +45,7 @@ browser ──same-origin /api/*──▶ Next.js (rewrite) ──▶ FastAPI on
 | Logic | `backend/app/logic/`: `cik.py`, `search.py`, `concepts.py`, `periods.py`, `statements.py`, `metrics.py`, `compare.py`, `csv_export.py`, `sanitize.py`, `sections.py`, `retrieval.py`, `scope.py`, `prompting.py`, `citations.py` | pure functions: CIK normalization, annual-period selection, dedupe and restatement, ratios, indexing, CSV, HTML → text, section detection, passage retrieval, source ids, citation validation | network, files, clock (the current time is passed in) |
 | Data access | `backend/app/data/fixtures.py`, `data/cache.py`, `data/source.py` | read fixtures and the manifest, read/write the disk cache, decide fixture vs cache vs live per request and label the result | business rules |
 | External clients | `backend/app/clients/sec.py`, `clients/openrouter.py` | allowlisted SEC fetches (User-Agent, throttle, timeout, backoff, Retry-After); one OpenRouter call per request with the user's key | store or log keys; follow non-allowlisted redirects |
-| Settings | `backend/app/settings.py` (pydantic `BaseSettings`) | read the setting names below | hold defaults that enable network in tests |
+| Settings | `backend/app/settings.py` (a plain pydantic model validating the environment; no `pydantic-settings` package) | read the setting names below | hold defaults that enable network in tests |
 | Tests | `backend/tests/` (pytest; synthetic data in `tests/synthetic/`, marked `SYNTHETIC`), `frontend/**/*.test.ts(x)` (Vitest), `frontend/e2e/` (Playwright, fixture mode) | logic, data access with mocked HTTP, journeys | call SEC or OpenRouter (live smoke checks are separate scripts, run by hand) |
 
 ## Data modes and their labels
@@ -152,7 +152,7 @@ the value ([research](../docs/research/sec-edgar.md) §2).
 | `fixtures/company_tickers.json` | the 3 ticker-map entries | backend reads |
 | `fixtures/submissions/CIK##########.json` | submissions trimmed to 10-K/10-Q entries | backend reads |
 | `fixtures/companyfacts/CIK##########.json` | Company Facts trimmed to mapped concepts, original structure, values unmodified | backend reads |
-| `fixtures/filings/<cik>/<accession>/<document>` | latest 10-K and 10-Q primary-document excerpts | backend reads |
+| `fixtures/filings/<CIK10>/<accession>/<primaryDocument>.gz` | the latest 10-K and 10-Q primary documents, gzip-compressed and unmodified (added in M3) | backend reads |
 | `<backend>/.cache/sec/<sha256 of URL>.json` (`SEC_CACHE_DIR`) | `{url, retrieved_at, status, body}` | backend reads/writes; git-ignored (`.cache/`) |
 
 Fixture capture is a one-off script, `backend/scripts/capture_fixtures.py` (M1). It uses the live client, so it
@@ -252,7 +252,7 @@ Tests and `npm run demo` need no `.env`.
 - Install: `npm ci` (once), then `npm run setup`.
 - Offline demo: `npm run demo` (`DATA_MODE=fixtures`). Development: `npm run dev`, then open http://127.0.0.1:3000.
 - Check everything: `npm run verify`. It runs the toolkit checks, backend lint and pytest, frontend lint, typecheck,
-  Vitest, the production build and a Playwright smoke test in fixture mode at 1440 and 390 px, with no network
+  Vitest, the production build and a Playwright smoke test in fixture mode at 1440, 1366 and 390 px, with no network
   (Q40, Q14).
 - Live checks: SEC live smoke and OpenRouter live are separate, run by hand, and reported separately from `verify`.
 

@@ -1,6 +1,6 @@
 # M1 Foundation
 
-**What it delivers.** On top of the earlier milestones, SEC Analytics adds a dark, terminal-style shell; keyboard search (`/` or Ctrl/Cmd-K) by name, ticker or CIK over the three demo companies (Apple, Microsoft, Alphabet); a company profile with its SEC identifiers; and a small dashboard of annual revenue and net income built from authentic recorded SEC data, labelled `RECORDED SEC DEMO · snapshot <date>`, with the source of every number on hover. It also adds the example's own rules for assistants (`examples/sec-analytics/CLAUDE.md`), a nested `sec-edgar-data` skill and the fixture builder with its manifest.
+**What it delivers.** SEC Analytics starts with a dark, terminal-style shell; keyboard search (`/` or Ctrl/Cmd-K) by name, ticker or CIK over the three demo companies (Apple, Microsoft, Alphabet); a company profile with its SEC identifiers; and a small dashboard of annual revenue and net income built from authentic recorded SEC data, labelled `RECORDED SEC DEMO · snapshot <date>`, with the source of every number on hover. It also adds the example's own rules for assistants (`examples/sec-analytics/CLAUDE.md`), a nested `sec-edgar-data` skill and the fixture builder with its manifest.
 
 ## Inspect it at its tag
 

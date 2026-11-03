@@ -158,6 +158,7 @@ that one upstream call and drops it. Logic stays pure; the client is the only co
 | `fe/lib/types.ts` | AI types |
 | `fe/e2e/m5-analyst.spec.ts` | section 9 |
 | `examples/sec-analytics/CLAUDE.md`, nested skill, `examples/sec-analytics/README.md` | AI boundary rules, grounding, key handling, per-student keys, live AI status |
+| `docs/SETUP.md` | add a section "SEC Analytics: optional AI analyst": your own limited-credit key, memory-only vs this-tab storage and its risk, the possible small charge for the connection test, separate keys per student or group, and that this is separate from Claude Code's or Cline's model settings. No key values and no `OPENROUTER_*` names. |
 | `milestones/acceptance.md`, `plan.md`, `architecture.md` | statuses (M5-AC9 stays `blocked: N1` unless the owner runs it), progress log, decision-log rows |
 
 No new server setting: the server holds no AI key or default model. Do not add `OPENROUTER_*` names to
@@ -199,9 +200,9 @@ from the pre-check returns 200 with `refusal` set, `answer` empty and no upstrea
 - Logs: the redaction filter (above); request bodies are not logged; errors keep a reference id, not the key.
 
 **Network boundary.** The backend binds to 127.0.0.1 (unchanged). No CORS middleware is added. `/api/ai/*` rejects a
-request whose `Origin` header is present and is not `http://127.0.0.1:<port>` or `http://localhost:<port>` (any
-port, so `npm run verify`'s spare ports work), and whose `Sec-Fetch-Site`, when present, is not `same-origin` or
-`none`, with 403 `forbidden_origin`. This is a local teaching app, not a public inference proxy; the README says so.
+request with 403 `forbidden_origin` if **either** its `Origin` header is present and is not `http://127.0.0.1:<port>`
+or `http://localhost:<port>` (any port, so `npm run verify`'s spare ports work), **or** its `Sec-Fetch-Site` header
+is present and is not `same-origin` or `none`. This is a local teaching app, not a public inference proxy; the README says so.
 
 **Limits** (Q44): request body ≤ 64 KB (checked from `Content-Length` and the bytes read) → 413
 `request_too_large`; question 1–2,000 characters; at most 60 facts and 8 passages and about 24,000 characters of
@@ -299,8 +300,9 @@ Failing test first; no test reaches the network (respx with no pass-through for 
 - `test_ai_security.py`: M5-E5 the key `test-key-not-real-0000` appears in no log line (caplog at DEBUG), no error
   body and no response, for success and every failure; M5-E6 a 70 KB body → 413 `request_too_large`; a third
   concurrent chat → 409 `ai_busy` and the slot is freed after the others finish or are cancelled (M5-AC8 backend
-  part); `Origin: http://evil.example` → 403 `forbidden_origin`; `Origin: http://127.0.0.1:3123` accepted; no key →
-  400 `ai_key_missing`; no model → 422.
+  part); `Origin: http://evil.example` → 403 `forbidden_origin`; `Origin: http://127.0.0.1:3123` accepted;
+  `Sec-Fetch-Site: cross-site` with an allowed Origin → 403 `forbidden_origin`; no key → 400 `ai_key_missing`; no
+  model → 422.
 - `test_retrieval.py` (M5-AC5): a scope with more than 60 facts and 8 passages yields at most 60 and 8 and ≤ 24,000
   characters; deterministic order across runs; fact values equal the app's computed metrics for the same scope (not
   re-derived in the test from the answer); the request uses `max_completion_tokens` 800 and the user's model.

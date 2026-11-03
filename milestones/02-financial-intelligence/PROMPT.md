@@ -167,10 +167,11 @@ result, and only `clients/sec.py` talks to SEC.
 | `fe/e2e/m2-financials.spec.ts` | section 9 |
 | `examples/sec-analytics/CLAUDE.md`, nested `sec-edgar-data` skill | the verified concept mapping, the formulas, the restatement policy, the cache and throttle |
 | `examples/sec-analytics/README.md` | live mode, the setting, the classroom note, the smoke script |
+| `docs/SETUP.md` | create it if missing, otherwise extend it: a section "SEC Analytics: live SEC mode" covering `npm run dev` → Live, what `SEC_USER_AGENT` must contain (a descriptive name plus your own contact email, set only by you in your shell or the ignored root `.env`; no example address), the cache and the 1 request/s throttle, the note that a class on one public IP should use demo data, and `be/scripts/live_sec_smoke.py`. The live-mode error message points here. |
 | `milestones/acceptance.md`, `plan.md`, `architecture.md` | statuses, fixture-based calculation rows, progress log, decision-log rows (including any new error code) |
 
-**API added or changed at M2** (shared shapes `SourceInfo`, `Provenance`, `MetricValue`, `FilingMeta` and the
-error envelope as in architecture.md):
+**API added or changed at M2** (shared shapes `SourceInfo`, `Provenance`, `MetricValue` and the error envelope
+as in architecture.md; `FilingMeta` arrives in M3):
 
 | Method and path | Request | Response | Errors |
 |---|---|---|---|
@@ -327,7 +328,8 @@ never from the code's output. No test reaches the network (respx with no pass-th
   next request served from the cache labelled `CACHED · retrieved <date>`; M2-E12 429 with `Retry-After: 5` then 200
   (waits ≥ 5 s, ≤ 2 retries); 403 → no retry, `sec_refused`; timeout → `sec_unavailable`; M2-E13 redirect to
   `https://example.com/` or a non-allowlisted SEC path → `upstream_not_allowed`, no request made; missing
-  `SEC_USER_AGENT` → `sec_contact_not_configured`.
+  `SEC_USER_AGENT` → `sec_contact_not_configured`. Any fake User-Agent is built from a reserved `.invalid` domain,
+  never a real address.
 - `test_cache.py`: TTL expiry with an injected clock; corrupt file ignored; atomic write; key is the URL hash.
 - `test_api_m2.py`: `/api/metrics` catalog; `/financials` for Apple in demo (≥ 5 periods, headings, notes, every
   value has provenance or formula, M2-AC4, M2-AC6); `/metrics` with `ids=net_margin,fcf` and 422

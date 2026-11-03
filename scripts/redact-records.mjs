@@ -6,7 +6,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 
-const HOME = /(\/Users\/|\/home\/|C:\\Users\\)(?!\[REDACTED)[^/\\\s"'`)<>]+/g;
+const HOME = /(\/Users\/|\/home\/|C:\\Users\\)(?![[<])[^/\\\s"'`)<>[\]]+/g;
 const check = process.argv.includes('--check');
 const files = execFileSync('git', ['ls-files', 'runs', 'PROGRESS.md', 'docs'], { encoding: 'utf8' })
   .split('\n').filter(Boolean);

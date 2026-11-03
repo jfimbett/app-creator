@@ -14,8 +14,8 @@ earlier ones did and works on its own checkout, with `npm run demo` offline.
 | 05 AI analyst | `milestones/05-ai-financial-analyst/` | optional OpenRouter analyst grounded in app data, with validated source references | `m4` | `m5` |
 
 Ref chain: `template-v1` → `m1` → `m2` → `m3` → `m4` → `m5`. Each tag also has a branch (`template`,
-`milestone/01-foundation`, … `milestone/05-ai-financial-analyst`). The milestone folders, with each build brief
-(`PROMPT.md`), follow-ups and README, are added in the next bootstrap step.
+`milestone/01-foundation`, … `milestone/05-ai-financial-analyst`). Each milestone folder holds its build brief
+(`PROMPT.md`), its follow-up prompts (`FOLLOWUPS.md`) and a README.
 
 ## Shared planning documents
 

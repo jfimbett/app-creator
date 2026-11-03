@@ -393,8 +393,8 @@ Write the failing test first for logic, then the code. Keep tests offline: no te
   `source.label` starts with `RECORDED SEC DEMO · snapshot `.
 - `test_fixtures_manifest.py` (M1-AC7): every file under `fixtures/` except `README.md`, `.gitattributes` and the
   manifest is listed; each entry has `source_url`, `retrieved_at`, `accessions`, `periods`, `scope` and `trimmed`;
-  `sha256` matches; `synthetic` is false; no file under `fixtures/` contains the string `SYNTHETIC`; nothing under
-  `be/tests/synthetic/` lacks the marker; companyfacts keeps only `CAPTURE_CONCEPTS`.
+  `sha256` matches; `synthetic` is false; no file under `fixtures/` contains the marker `SYNTHETIC: invented for
+  tests` or a `"_synthetic"` key; nothing under `be/tests/synthetic/` lacks the marker; companyfacts keeps only `CAPTURE_CONCEPTS`.
 - `test_sec_client.py` (respx, fake clock and sleep, never real waiting): a non-allowlisted URL and a redirect to
   `https://example.com/` are refused before any request; a redirect to an allowlisted path is followed; a missing or
   malformed User-Agent refuses with a message naming `SEC_USER_AGENT`; 429 with `Retry-After: 5` then 200 waits ≥ 5 s
@@ -448,7 +448,7 @@ present for each kind).
 - [ ] M1-AC5 key figures and chart come from the fixture with fiscal year-end, unit and
   `RECORDED SEC DEMO · snapshot <date>`; hovering shows concept and accession.
 - [ ] M1-AC6 `npm run verify` exits 0 offline, including backend lint and tests, frontend lint, typecheck, unit
-  tests, build and the Playwright journey at 1440 and 390 px (this prompt adds 1366 px).
+  tests, build and the Playwright journey at 1440, 1366 and 390 px.
 - [ ] M1-AC7 the manifest records source URL, retrieval date, accessions, periods and scope for every file;
   synthetic data only in `be/tests/synthetic/`, marked `SYNTHETIC`.
 - [ ] M1-E1 backend down shows the plain message; M1-E2 invalid CIKs give 422 `invalid_cik`.

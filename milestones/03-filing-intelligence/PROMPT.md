@@ -156,7 +156,7 @@ and labels, only `clients/sec.py` reaches SEC.
 | Method and path | Request | Response | Errors |
 |---|---|---|---|
 | `GET /api/companies/{cik}/filings` | `forms` (comma subset of `10-K,10-K/A,10-Q,10-Q/A`, default all four), `years` (1–10, default 10), `source` | `{cik, latest: {annual: FilingMeta\|null, quarterly: FilingMeta\|null, annual_amended_by: FilingMeta\|null, quarterly_amended_by: FilingMeta\|null, label: str}, history: [FilingMeta], coverage: {from: date, to: date, complete: bool, note: str\|null}, source}` | 422 `invalid_cik`, 422 `invalid_forms`, 404 `company_not_found`, 409 `live_disabled`, SEC errors as in M2 |
-| `GET /api/companies/{cik}/filings/{accession}` | `accession` `^\d{10}-\d{2}-\d{6}$`, `source` | `{meta: FilingMeta, section_status: "detected"\|"not_detected", note: str, sections: [{id, item, title, block_start}], blocks: [{id: int, section_id: str\|null, kind: "text"\|"heading"\|"table_row", text: str}], source_link: str, source}` | 422 `invalid_accession`, 404 `filing_not_found` (not in this company's 10-K/10-Q list; no SEC request made), 404 `document_not_in_snapshot` (demo), 413 `document_too_large` (over 20 MB raw), SEC errors as in M2 |
+| `GET /api/companies/{cik}/filings/{accession}` | `accession` `^\d{10}-\d{2}-\d{6}$`, `source` | `{meta: FilingMeta, section_status: "detected"\|"not_detected", note: str, sections: [{id, item, title, block_start}], blocks: [{id: int, section_id: str\|null, kind: "text"\|"heading"\|"table_row", text: str}], source_link: str, source}` | 422 `invalid_accession`, 404 `filing_not_found` (not in this company's 10-K/10-Q list; no SEC request made), 404 `document_not_in_snapshot` (demo), 413 `document_too_large` (over 20 MB raw), enforced while the response is read (stop after 20 MB of decoded bytes), SEC errors as in M2 |
 
 `FilingMeta` is `{accession, form, is_amendment, filing_date, report_date, primary_document, document_url,
 index_url}` plus one new field `document_in_snapshot: bool | null` (demo: whether the document is in the fixtures;
@@ -329,8 +329,9 @@ Update the statuses in `milestones/acceptance.md` and the slices and progress lo
   prefetching, an arbitrary URL proxy, non-SEC companies, market prices and valuation metrics, currency conversion,
   calendar alignment, invented descriptions, light mode as a done criterion.
 - Do not edit `milestones/*/PROMPT.md`, `FOLLOWUPS.md`, the toolkit (`.claude/`, `scripts/`, `scaffold/`,
-  `AGENTS.md`, `CLAUDE.md`, `docs/TOOLKIT.md`), `GOAL.md`, `PROGRESS.md`, `runs/`, or the existing fixture files
-  (only add the new ones and their manifest entries). The milestone README's "Results" section is filled in by the
+  `AGENTS.md`, `CLAUDE.md`, `docs/TOOLKIT.md`), `GOAL.md`, `PROGRESS.md`, `runs/`, or the existing fixture data
+  files (`company_tickers.json`, `submissions/CIK##########.json`, `companyfacts/`); only add the new files, their
+  manifest entries and the `fixtures/README.md` update from section 6. The milestone README's "Results" section is filled in by the
   owner after the checkpoint.
 
 ## 12. Handoff
