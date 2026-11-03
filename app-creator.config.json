@@ -15,5 +15,23 @@
     "  smokeSpec   - Playwright test filter run by `npm run verify`, default \"e2e\"",
     "APP_PYTHON (environment or root .env) picks the Python used to create the backend .venv. Never put secrets in this file."
   ],
-  "app": null
+  "app": {
+    "name": "SEC Analytics",
+    "frontendDir": "examples/sec-analytics/frontend",
+    "backendDir": "examples/sec-analytics/backend",
+    "docsDir": "milestones",
+    "backendApp": "app.main:app",
+    "healthPath": "/api/health",
+    "ports": {
+      "backend": 8000,
+      "frontend": 3000
+    },
+    "devEnv": {
+      "DATA_MODE": "fixtures"
+    },
+    "demoEnv": {
+      "DATA_MODE": "fixtures"
+    },
+    "smokeSpec": "e2e"
+  }
 }

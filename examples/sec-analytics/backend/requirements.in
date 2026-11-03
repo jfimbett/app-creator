@@ -1,0 +1,9 @@
+# Direct backend dependencies (exact versions). requirements.lock pins these plus everything they need.
+# After changing this file, regenerate requirements.lock (see the header of requirements.lock).
+fastapi==0.150.0
+uvicorn==0.54.0
+httpx==0.28.1
+pydantic==2.14.1
+pytest==9.1.1
+ruff==0.17.1
+respx==0.23.1

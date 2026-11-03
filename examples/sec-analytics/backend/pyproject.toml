@@ -1,0 +1,22 @@
+# Tool settings for the backend. Dependencies are pinned in requirements.lock (installed by `npm run setup`).
+[project]
+name = "app-backend"
+version = "0.1.0"
+requires-python = ">=3.10,<3.14"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+# E/W: style errors, F: real mistakes (unused names...), I: import order, B: likely bugs, UP: modern syntax
+select = ["E", "W", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
+# Starlette 1.7 announces that its TestClient will move from httpx to httpx2. Nothing to fix in this app yet;
+# remove this line when the pinned FastAPI/Starlette versions are upgraded.
+filterwarnings = ["ignore:Using `httpx` with `starlette.testclient` is deprecated"]

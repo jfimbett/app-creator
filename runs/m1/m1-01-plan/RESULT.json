@@ -1,0 +1,35 @@
+{
+  "stepId": "m1-01-plan",
+  "milestone": "m1",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "project-orchestrator",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "bypassPermissions",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T18:26:22.988Z",
+  "startCommit": "776a7b641db85a2b0131ca71ec8de4ebbb0e917b",
+  "promptSha256": "c81854faa3e8538dfacbe62e2a1151b012dcc8c2dfc507af2f3f3f3fde879773",
+  "promptFileSha256": "c04597a97159996d124ade48499ff3e72e344c5d995fbfa8b9136c0af540c772",
+  "status": "completed",
+  "finishedAt": "2026-11-03T18:27:23.038Z",
+  "exitCode": 0,
+  "signal": null,
+  "failureReason": null,
+  "sessionId": "52b5656d-4ccc-4fc9-8c32-b14d7528b46f",
+  "numTurns": 6,
+  "durationMs": 59324,
+  "totalCostUsd": 0.5053316000000001,
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "endCommit": "776a7b641db85a2b0131ca71ec8de4ebbb0e917b",
+  "workingTreeChanged": 1,
+  "responseSha256": "1993c14c65e88de7e1b9c243c343c75ee2ff9ed355da91c38b84a4aba3c17417",
+  "responseRedactedSha256": "1993c14c65e88de7e1b9c243c343c75ee2ff9ed355da91c38b84a4aba3c17417",
+  "redactions": {},
+  "stderrRedactions": {
+    "user": 2
+  },
+  "missingRecord": null
+}
