@@ -1,7 +1,7 @@
 """M1 API: health, meta, search and profile over the recorded fixtures (M1-AC3, M1-AC4, M1-E2).
 
 Expected profile values are read straight from the fixture submissions files, not from the app.
-The overview cases are added by step m1-07b.
+Overview expectations come from the hand-worked rows FX1-FX4 in milestones/acceptance.md.
 """
 
 import json
@@ -190,6 +190,75 @@ def test_profile_outside_demo_snapshot_is_404(client) -> None:
     assert error["details"] == {"cik": "0001318605"}
 
 
+# --- overview (M1-AC5) -----------------------------------------------------------------------
+
+
+def _companyfacts_url(cik: str) -> str:
+    return f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
+
+
+def test_overview_shape_and_apple_known_answers(client) -> None:
+    response = client.get(f"/api/companies/{APPLE}/overview")
+    assert response.status_code == 200
+    body = response.json()
+    assert set(body) == {"cik", "key_figures", "chart", "notes", "source"}
+    assert body["cik"] == APPLE
+    figures = {m["metric_id"]: m for m in body["key_figures"]}
+    assert set(figures) == {"revenue", "net_income"}
+    # FX1 and FX2 (acceptance.md): whole USD, not millions.
+    assert figures["revenue"]["value"] == 478834000000
+    assert figures["net_income"]["value"] == 132175000000
+    for figure in figures.values():
+        assert (figure["unit"], figure["kind"], figure["status"]) == ("USD", "reported", "ok")
+        assert (figure["fiscal_year_label"], figure["period_end"]) == ("FY2026", "2026-09-26")
+        assert figure["provenance"]["accession"] == "0000320193-26-000026"
+        assert figure["provenance"]["source_url"] == _companyfacts_url(APPLE)
+    assert "Values may reflect later restatements; not point-in-time." in body["notes"]
+    assert body["source"]["source_urls"] == [_companyfacts_url(APPLE)]
+
+
+def test_overview_microsoft_known_answers(client) -> None:
+    body = client.get("/api/companies/789019/overview").json()
+    figures = {m["metric_id"]: m for m in body["key_figures"]}
+    assert figures["revenue"]["value"] == 331839000000  # FX3
+    assert figures["net_income"]["value"] == 133749000000  # FX4
+    assert figures["net_income"]["provenance"]["accession"] == "0001193125-26-323660"
+
+
+@pytest.mark.parametrize("cik", [APPLE, MICROSOFT, ALPHABET])
+def test_overview_has_at_least_five_annual_periods(client, cik) -> None:
+    chart = client.get(f"/api/companies/{cik}/overview").json()["chart"]
+    assert len(chart) >= 5
+    for row in chart:
+        assert set(row) == {"fiscal_year_label", "period_end", "revenue", "net_income"}
+        assert row["fiscal_year_label"] == f"FY{row['period_end'][:4]}"
+
+
+def test_overview_years_limits_the_chart(client) -> None:
+    body = client.get(f"/api/companies/{APPLE}/overview", params={"years": 5}).json()
+    assert [r["period_end"] for r in body["chart"]][-1] == "2026-09-26"
+    assert len(body["chart"]) == 5
+
+
+@pytest.mark.parametrize("years", ["0", "21", "five"])
+def test_overview_rejects_bad_years(client, years) -> None:
+    response = client.get(f"/api/companies/{APPLE}/overview", params={"years": years})
+    error = _assert_envelope(response, 422, "invalid_request")
+    assert error["details"] == {"parameters": ["years"]}
+
+
+def test_overview_invalid_cik(client) -> None:
+    error = _assert_envelope(client.get("/api/companies/abc/overview"), 422, "invalid_cik")
+    assert error["message"] == "A CIK has up to 10 digits"
+
+
+def test_overview_outside_demo_snapshot_is_404(client) -> None:
+    error = _assert_envelope(
+        client.get("/api/companies/1318605/overview"), 404, "company_not_found"
+    )
+    assert "not in the demo snapshot" in error["message"]
+
+
 # --- errors and labels -----------------------------------------------------------------------
 
 
@@ -223,6 +292,8 @@ def test_unexpected_exception_is_generic_500() -> None:
         ("/api/companies/search", {"q": "tesla"}),
         (f"/api/companies/{APPLE}", None),
         (f"/api/companies/{ALPHABET}", None),
+        (f"/api/companies/{APPLE}/overview", None),
+        (f"/api/companies/{ALPHABET}/overview", {"years": 3}),
     ],
 )
 def test_every_source_label_is_recorded_sec_demo(client, path, params) -> None:

@@ -42,7 +42,7 @@ def _read_json(path: Path) -> Any:
 
 
 class FixtureStore:
-    """Read-only access to one fixtures folder: manifest, tickers and submissions."""
+    """Read-only access to one fixtures folder: manifest, tickers, submissions, facts."""
 
     def __init__(self, root: Path) -> None:
         self.root = Path(root)
@@ -56,6 +56,11 @@ class FixtureStore:
             for entry in self._entries.values()
             if entry.get("kind") == "submissions"
         }
+        self._companyfacts = {
+            entry["cik"]: self._load(entry["path"])
+            for entry in self._entries.values()
+            if entry.get("kind") == "companyfacts"
+        }
 
     def _load(self, relative: str) -> Any:
         """Load a file listed in the manifest; refuse files the manifest does not list."""
@@ -66,7 +71,10 @@ class FixtureStore:
     @cached_property
     def synthetic(self) -> bool:
         """True unless the manifest says `synthetic: false` and no loaded file is marked."""
-        files = [self.manifest, self._tickers, *self._submissions.values()]
+        files = [
+            self.manifest, self._tickers, *self._submissions.values(),
+            *self._companyfacts.values(),
+        ]
         marked = any(isinstance(f, dict) and SYNTHETIC_KEY in f for f in files)
         return self.manifest.get("synthetic") is not False or marked
 
@@ -98,6 +106,14 @@ class FixtureStore:
     def submissions(self, cik: str) -> dict[str, Any] | None:
         """The recorded submissions JSON for a 10-digit CIK, or None if not in the snapshot."""
         return self._submissions.get(cik)
+
+    def companyfacts_path(self, cik: str) -> str:
+        """Relative path of a company's Company Facts fixture."""
+        return f"companyfacts/CIK{cik}.json"
+
+    def companyfacts(self, cik: str) -> dict[str, Any] | None:
+        """The recorded Company Facts JSON for a 10-digit CIK, or None if not in the snapshot."""
+        return self._companyfacts.get(cik)
 
     def universe_files(self) -> list[str]:
         """The fixture files the search universe is built from."""

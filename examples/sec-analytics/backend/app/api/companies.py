@@ -1,4 +1,4 @@
-"""Company search and profile over the demo snapshot (overview arrives in step m1-07b)."""
+"""Company search, profile and overview over the demo snapshot."""
 
 from typing import Annotated, Any
 
@@ -9,7 +9,14 @@ from app.data.fixtures import FixtureStore
 from app.errors import AppError
 from app.logic.cik import InvalidCik, normalize_cik
 from app.logic.search import search
-from app.models.companies import CompanyProfile, FormerName, SearchResponse, SearchResult
+from app.logic.statements import overview
+from app.models.companies import (
+    CompanyProfile,
+    FormerName,
+    OverviewResponse,
+    SearchResponse,
+    SearchResult,
+)
 
 router = APIRouter(prefix="/api/companies", tags=["companies"])
 
@@ -66,6 +73,16 @@ def _former_names(raw: list[dict[str, Any]] | None) -> list[FormerName]:
     ]
 
 
+def _not_found(cik10: str) -> AppError:
+    """404 `company_not_found` for a valid CIK outside the demo snapshot."""
+    return AppError(
+        "company_not_found",
+        f"CIK {cik10} is not in the demo snapshot (Apple, Microsoft, Alphabet).",
+        404,
+        {"cik": cik10},
+    )
+
+
 @router.get("/{cik}", response_model=CompanyProfile)
 def company_profile(
     cik: str, store: Annotated[FixtureStore, Depends(get_store)]
@@ -74,12 +91,7 @@ def company_profile(
     cik10 = parse_cik(cik)
     raw = store.submissions(cik10)
     if raw is None:
-        raise AppError(
-            "company_not_found",
-            f"CIK {cik10} is not in the demo snapshot (Apple, Microsoft, Alphabet).",
-            404,
-            {"cik": cik10},
-        )
+        raise _not_found(cik10)
     return CompanyProfile(
         cik=cik10,
         name=raw["name"],
@@ -91,4 +103,26 @@ def company_profile(
         state_of_incorporation=_text(raw.get("stateOfIncorporation")),
         former_names=_former_names(raw.get("formerNames")),
         source=store.source_info([store.submissions_path(cik10)]),
+    )
+
+
+@router.get("/{cik}/overview", response_model=OverviewResponse)
+def company_overview(
+    cik: str,
+    store: Annotated[FixtureStore, Depends(get_store)],
+    years: Annotated[int | None, Query(ge=1, le=20, description="Latest N fiscal years")] = None,
+) -> OverviewResponse:
+    """Key figures and annual revenue / net income (whole USD) from the recorded Company Facts."""
+    cik10 = parse_cik(cik)
+    facts = store.companyfacts(cik10)
+    if store.submissions(cik10) is None or facts is None:
+        raise _not_found(cik10)
+    path = store.companyfacts_path(cik10)
+    result = overview(facts, store.source_url(path), years)
+    return OverviewResponse(
+        cik=cik10,
+        key_figures=result.key_figures,
+        chart=result.chart,
+        notes=result.notes,
+        source=store.source_info([path]),
     )

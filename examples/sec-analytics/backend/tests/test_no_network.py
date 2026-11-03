@@ -1,7 +1,6 @@
 """In fixture mode the app serves every M1 endpoint without any network access.
 
 respx is active with no routes (any httpx call would fail) and opening a socket raises.
-The overview endpoint joins this list in step m1-07b.
 """
 
 import socket
@@ -21,6 +20,9 @@ M1_REQUESTS = [
     ("/api/companies/0000320193", None),
     ("/api/companies/789019", None),
     ("/api/companies/CIK1652044", None),
+    ("/api/companies/320193/overview", None),
+    ("/api/companies/0000789019/overview", None),
+    ("/api/companies/1652044/overview", {"years": 5}),
 ]
 
 
