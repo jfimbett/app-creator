@@ -1,0 +1,10 @@
+# Keeps these out of Cline's automatic context. NOT a security boundary (see .clinerules/cline.md).
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+**/.streamlit/secrets.toml
+**/.venv/
+**/.browser-checks/
