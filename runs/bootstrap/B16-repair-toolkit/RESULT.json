@@ -1,0 +1,28 @@
+{
+  "stepId": "B16-repair-toolkit",
+  "milestone": "bootstrap",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "backend-engineer",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "bypassPermissions",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T17:53:42.564Z",
+  "startCommit": "49dd630446da7bbab4a1420f8eb1e5e10611a3e7",
+  "promptSha256": "a5f28c2649a4ac8f04a20b2b4ff7555ffc8de278ed7f5a704b559014ef60e050",
+  "promptFileSha256": "0ea76ddcc9d1d5161f2981205856ac88ee550e0d7fa53ca6fc6e6d042821202c",
+  "status": "completed",
+  "finishedAt": "2026-11-03T18:07:32.765Z",
+  "exitCode": 0,
+  "sessionId": "faad6fee-786e-4069-bb57-38b574a2c109",
+  "numTurns": 58,
+  "durationMs": 829406,
+  "totalCostUsd": 3.9262444000000003,
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "endCommit": "23e9a15f4c91f980733e3501967756c59786a867",
+  "workingTreeChanged": 18,
+  "responseSha256": "c79390f0ed4addc6bddef751cd48de2da04b44c41ab71b7d50ed772ff2cd5519",
+  "missingRecord": null
+}

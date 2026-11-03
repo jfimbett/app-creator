@@ -1,11 +1,14 @@
 // Shared by dev.mjs and demo.mjs: starts the backend and frontend, prints the URL, stops both on Ctrl+C.
 import { setupProblems, startApp } from './app-tasks.mjs';
 import { printTemplateGuidance } from './guidance.mjs';
-import { c, checkNode, fail, heading, isStopping, loadConfig, requireFreePort, stopServices } from './lib.mjs';
+import {
+  c, checkNode, fail, heading, isStopping, keepDotEnvFromChildren, loadConfig, requireFreePort, stopServices,
+} from './lib.mjs';
 
-/** mode: 'dev' (config.devEnv) or 'demo' (config.demoEnv). */
+/** mode: 'dev' (config.devEnv, root .env passed on) or 'demo' (config.demoEnv, root .env not passed on). */
 export async function serve(mode) {
   checkNode();
+  if (mode === 'demo') keepDotEnvFromChildren();
   const { app } = loadConfig();
   if (!app) {
     printTemplateGuidance(mode);
@@ -14,8 +17,8 @@ export async function serve(mode) {
   const problems = setupProblems(app);
   if (problems.length) fail(`setup has not been run: ${problems.join('; ')}.\n  Run \`npm run setup\` first.`);
 
-  await requireFreePort(app.ports.backend, 'BACKEND_PORT', 'backend');
-  await requireFreePort(app.ports.frontend, 'FRONTEND_PORT', 'frontend');
+  await requireFreePort(app.ports.backend, 'BACKEND_PORT', 'backend', mode);
+  await requireFreePort(app.ports.frontend, 'FRONTEND_PORT', 'frontend', mode);
 
   const extraEnv = mode === 'demo' ? app.demoEnv : app.devEnv;
   heading(`Starting ${app.name} (${mode === 'demo' ? 'demo mode' : 'development mode'})`);
@@ -32,6 +35,7 @@ export async function serve(mode) {
     await stopServices();
     process.exit(1);
   } catch (err) {
+    if (isStopping()) return; // Ctrl+C during start-up: the signal handler stops everything and exits.
     await stopServices();
     fail(err.message);
   }

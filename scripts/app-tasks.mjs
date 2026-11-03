@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   BROWSERS_PATH, REPO_ROOT, c, cmdSpec, findPython, heading, localBin, mergedEnv, npmCommand, probePython,
-  isSupportedPython, readStamp, run, sha256, sha256File, startService, venvPython, waitForUrl, writeStamp,
+  isSuccess, isSupportedPython, readStamp, run, sha256, sha256File, startService, venvPython, waitForUrl, writeStamp,
 } from './lib.mjs';
 
 const rel = (p) => path.relative(REPO_ROOT, p) || '.';
@@ -116,7 +116,7 @@ export async function startApp(app, { backendPort, frontendPort, mode = 'dev', e
   const env = mergedEnv({ ...extraEnv, BACKEND_URL: backendUrl, ...(distDir ? { NEXT_DIST_DIR: distDir } : {}) });
   const backend = startService('backend', cmdSpec(venvPython(app.backendDir),
     ['-m', 'uvicorn', app.backendApp, '--host', '127.0.0.1', '--port', String(backendPort)]), { cwd: app.backendDir, env, log });
-  if (!(await waitForUrl(`${backendUrl}${app.healthPath}`, { timeoutMs: 60000, service: backend }))) {
+  if (!(await waitForUrl(`${backendUrl}${app.healthPath}`, { timeoutMs: 60000, service: backend, accept: isSuccess }))) {
     throw new Error(`the backend did not answer at ${backendUrl}${app.healthPath} (see the [backend] lines above).`);
   }
   const nextArgs = mode === 'dev'

@@ -1,5 +1,7 @@
 # Runs the same offline checks a student runs locally: npm ci → npm run setup → npm run verify.
 # No secrets are used: SEC and OpenRouter calls are never made in CI (fixture/mocked mode only).
+# Actions are pinned to full commit SHAs (a tag can be moved; a SHA cannot); the comment names the release.
+# SHAs looked up on 2026-11-03 with `gh api repos/<owner>/<repo>/git/ref/tags/<tag>`.
 name: verify
 
 on:
@@ -16,24 +18,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: '22'
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.12'
       - name: Install launcher lockfile
         run: npm ci
       - name: Setup (venv, frontend deps, project-local Chromium)
         run: npm run setup
+      # Uses the frontend's own locked Playwright, so its version never drifts from the scaffold or app.
+      # In template mode `npm run setup` installs nothing, so the scaffold frontend is installed here first
+      # (verify's scaffold copy skips node_modules). Playwright calls sudo for apt-get itself.
       - name: Linux system libraries for Chromium (CI only)
-        run: sudo npx --yes playwright@1.64.1 install-deps chromium
+        run: |
+          FRONTEND=$(node -p "require('./app-creator.config.json').app?.frontendDir ?? 'scaffold/frontend'")
+          [ -d "$FRONTEND/node_modules/playwright" ] || npm ci --prefix "$FRONTEND" --no-audit --no-fund
+          cd "$FRONTEND" && npx --no-install playwright install-deps chromium
       - name: Verify (offline)
         run: npm run verify
       - name: Upload screenshots and logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: verify-output
           path: |

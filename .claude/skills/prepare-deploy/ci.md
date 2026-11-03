@@ -16,6 +16,7 @@ example github.com/actions/checkout) and update them before use.
 - **Same commands as locally.** No CI-only test scripts; if CI fails, `npm run verify` on a laptop shows the same
   failure.
 - **Least privilege:** `permissions: contents: read`. No deployment, no publishing, no tokens with write access.
+- **Actions pinned to full commit SHAs** with the release as a comment (`uses: actions/checkout@<40-hex sha> # v5.1.0`), looked up with `gh api repos/<owner>/<repo>/git/ref/tags/<tag>` (for `"type": "tag"`, dereference with `gh api repos/<owner>/<repo>/git/tags/<sha>`); the `@v5` examples below are shorthand.
 - **Pinned toolchain:** Node 22 (the scaffold's `engines` field asks for 22.12 or newer) and a Python between
   3.10 and 3.13 passed to setup through `APP_PYTHON`.
 

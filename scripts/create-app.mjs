@@ -21,10 +21,13 @@ const PLACEHOLDER = 'My App';
 
 const rel = toConfigPath(target);
 if (rel.startsWith('..') || path.isAbsolute(rel)) fail(`--dir must be inside this repository (${REPO_ROOT}).`);
-if (rel === '' || ['scaffold', 'scripts', 'docs', '.claude', 'node_modules', '.cache'].includes(rel.split('/')[0])) {
+if (rel === '' || ['scaffold', 'scripts', 'docs', '.claude', '.clinerules', '.git', '.github', 'node_modules', '.cache',
+  '.logs', 'runs', 'milestones'].includes(rel.split('/')[0])) {
   fail(`--dir "${rel || '.'}" would mix the app with the toolkit's own folders; choose a new folder such as app/.`);
 }
-if (!/^[\w .'&-]{1,60}$/.test(name)) fail('--name may use letters, digits, spaces and . \' & - (up to 60 characters).');
+// Letters of any language (Café, Łódź) are fine; double quotes and backslashes are not, because the name is
+// inserted into "..." strings in the source code.
+if (!/^[\p{L}\p{N}_ .'&-]{1,60}$/u.test(name)) fail('--name may use letters, digits, spaces and . \' & - _ (up to 60 characters).');
 if (fs.existsSync(target)) fail(`${rel}/ already exists. create-app never overwrites; choose another --dir or remove it yourself.`);
 
 const { raw } = loadConfig();

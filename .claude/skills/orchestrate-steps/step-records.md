@@ -60,9 +60,11 @@ shasum -a 256 milestones/02-<name>/PROMPT.md | cut -c1-16      # Linux: sha256su
 
 ## Dispatcher flags
 
-`node scripts/dispatch-step.mjs` (run from the repository root, because it writes `runs/INDEX.md` relative to the
-current folder). Every flag takes a value; there are no on/off flags and no `--help` (running it without
-`--step`/`--agent` prints the usage line and exits 2).
+`node scripts/dispatch-step.mjs` resolves `--step` against the repository root, so it works from any folder; the
+index it appends to is `INDEX.md` two levels above the step (`runs/INDEX.md` for `runs/<milestone>/<step-id>`).
+Every flag takes a value; there are no on/off flags and no `--help` (running it without `--step`/`--agent` prints
+the usage line and exits 2). An unknown flag, a flag without a value, a `--timeout-min` that is not a number above
+0, or an `--agent`/`--mode`/`--resume`/`--model` value with spaces or shell characters also exits 2.
 
 | Flag | Required | Default | Effect |
 |---|---|---|---|
@@ -73,7 +75,7 @@ current folder). Every flag takes a value; there are no on/off flags and no `--h
 | `--model <id>` | no | CLI default | passed as `--model` |
 | `--milestone <name>` | no | name of the step's parent folder | recorded in RESULT.json and INDEX.md |
 | `--role-from <sender>` | no | `owner (top-level Claude Code session)` | recorded as the sender |
-| `--timeout-min <minutes>` | no | `120` | stops the child process (SIGTERM) after this many minutes |
+| `--timeout-min <minutes>` | no | `120` | after this many minutes stops the child and everything it started (POSIX: its process group, SIGTERM then SIGKILL after 10 s; Windows: `taskkill /T /F`); Ctrl+C does the same; the step is recorded as `failed` |
 
 Refusals (exit 2, nothing dispatched), observed on 2026-11-03:
 
@@ -85,7 +87,11 @@ Refusing to dispatch: runs/bootstrap/__nonexistent/PROMPT.md must be written bef
 $ node scripts/dispatch-step.mjs --step runs/bootstrap/B07c-skills-process --agent default
 Refusing to overwrite runs/bootstrap/B07c-skills-process/RESPONSE.md (records are append-only). Use a new step id.
 ```
-A PROMPT.md without the DISPATCH block is also refused with exit 2 (from the code; not run).
+A PROMPT.md without the DISPATCH block is also refused with exit 2 (from the code; not run). So is a DISPATCH text
+that contains something that looks like a credential (any credential pattern below; the message names only the
+kind and count, never the value); nothing is sent or recorded, so refer to settings by name instead. If `claude`
+cannot be started (not installed or not on PATH), the step is recorded as `failed` with a `failureReason`
+(checked on 2026-11-03 against a temporary step folder under `.cache/`).
 
 What it writes:
 
@@ -93,14 +99,23 @@ What it writes:
   `sender`, `receiver`, `dispatcher`, `permissionMode`, `resumeOf`, `model`, `startedAt`, `finishedAt`,
   `startCommit`, `endCommit`, `promptSha256` (of the DISPATCH text), `promptFileSha256`, `status`
   (`completed`/`failed`), `exitCode`, `sessionId`, `numTurns`, `durationMs`, `totalCostUsd`, `modelsUsed`,
-  `workingTreeChanged` (count of changed paths), `responseSha256`, `missingRecord`.
+  `workingTreeChanged` (count of changed paths), `responseSha256` (of the final message before redaction),
+  `missingRecord`. Records written since B16 also have `signal`, `failureReason` (timeout, interruption or start
+  failure, else `null`), `responseRedactedSha256` (of the text between the VERBATIM markers, so RESPONSE.md can be
+  checked against it), `redactions` and `stderrRedactions` (`{ "<kind>": count }`). Older records without these
+  fields stay valid.
   A RESULT.json still saying `dispatched` means the run never finished (crash or still running).
 - `RESPONSE.md`: a header (from/to, capture method, session id, finish time, exit code, redaction note), then the
   final message between `<!-- VERBATIM:BEGIN -->` and `<!-- VERBATIM:END -->`. If there was no parseable result:
   `[MISSING FINAL MESSAGE] ... See stderr.log.`
-- Redaction markers it inserts: `[REDACTED:openrouter-key]`, `[REDACTED:anthropic-key]`, `[REDACTED:github-token]`,
-  `[REDACTED:bearer-token]`, `[REDACTED:email]` (addresses at `example.com`/`example.org` are kept).
-- `runs/INDEX.md`: one appended line with time, step, agent, status and links.
+- Redaction markers it inserts (in RESPONSE.md and stderr.log). Credentials: `[REDACTED:openrouter-key]`,
+  `[REDACTED:anthropic-key]`, `[REDACTED:api-key]` (`sk-…`, `sk-proj-…`), `[REDACTED:github-token]` (`gh?_…`,
+  `github_pat_…`), `[REDACTED:aws-key]`, `[REDACTED:google-key]`, `[REDACTED:slack-token]`, `[REDACTED:private-key]`
+  (PEM blocks), `[REDACTED:bearer-token]`, `[REDACTED:secret-value]` (`…API_KEY=`, `…SECRET=`, `…TOKEN=`,
+  `…PASSWORD=` with a real-looking value; placeholders are kept). Personal data: `[REDACTED:email]` (addresses at
+  `example.com`/`example.org`/`anthropic.com` are kept) and `[REDACTED:user]` for the user name in a home folder
+  (`/Users/<name>`, `/home/<name>`, `C:\Users\<name>`).
+- `runs/INDEX.md`: one appended line with time, step, agent, status and links (also for failed attempts).
 
 Note: in `claude -p` runs, tool calls that need approval are denied unless the permission mode or the project's
 `.claude/settings.json` allows them. A step that "did nothing" may have been blocked; read its RESPONSE.md.

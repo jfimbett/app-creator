@@ -2,7 +2,8 @@
 
 Practical companion to [SKILL.md](SKILL.md). The code below is a complete, small example: a reusable client,
 a FastAPI route that uses it, and pytest tests with `respx` (HTTP mocking). It was run with the scaffold's pinned
-versions (FastAPI 0.150, httpx 0.28, respx 0.23, pytest 9.1): 8 tests passed and `ruff check` was clean with the
+versions (FastAPI 0.150, httpx 0.28, respx 0.23, pytest 9.1; last re-run on 2026-11-03 with Python 3.10 after
+adding the size cap, the overall timeout and the port check): 11 tests passed and `ruff check` was clean with the
 scaffold's `pyproject.toml`. Copy the parts you need into `<backend>/app/clients/` and `<backend>/tests/`, then
 adapt the base URL, allowlist and limits to the provider's documentation.
 
@@ -11,10 +12,11 @@ adapt the base URL, allowlist and limits to the provider's documentation.
 | Concern | Rule | Where in the code |
 |---|---|---|
 | Who calls | the backend only; the browser calls `/api/*` | route in `main.py` |
-| Where to | fixed base URL + path allowlist (regular expressions matched in full) | `_check` |
+| Where to | fixed base URL (scheme, host and port) + path allowlist (regular expressions matched in full) | `_check` |
 | Redirects | followed only if the target passes the same allowlist; at most 3 | `_fetch` |
 | Identification | `User-Agent` with app name and a project URL (from settings) when the provider asks | `ApiClient(user_agent=...)` |
-| Timeouts | 5 s connect, 10 s overall per request | `httpx.Timeout(10.0, connect=5.0)` |
+| Timeouts | 5 s connect and 10 s for each read or write (httpx's limits are per operation, so a slow trickle of data never trips them), plus 15 s overall per attempt | `httpx.Timeout(10.0, connect=5.0)`, `asyncio.wait_for` in `_fetch` |
+| Response size | stop reading at `max_bytes` (default 5 MB): a too-large `Content-Length` is refused before reading, and the body is streamed and cut off at the cap, so a huge or endless answer cannot fill memory; raises `BadData` | `_get_capped` |
 | Throttling | stay under the documented limit, shared by all requests of the process | `_throttle` |
 | Retries | GET only; timeouts, 429, 5xx; max 3 attempts; backoff 1 s, 2 s, 4 s + jitter; `Retry-After` wins (capped 60 s) | `_fetch`, `_delay` |
 | No retries | 400, 401, 403, 404, bad JSON | `_fetch` |
@@ -95,6 +97,8 @@ class ApiClient:
         cache_dir: Path | None = None,
         ttl_seconds: float = 24 * 3600,
         max_attempts: int = 3,
+        max_bytes: int = 5_000_000,
+        overall_timeout: float = 15.0,
         transport: httpx.AsyncBaseTransport | None = None,
         sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
     ) -> None:
@@ -113,6 +117,7 @@ class ApiClient:
         self._inflight: dict[str, asyncio.Task[Fetched]] = {}
         self._cache_dir, self._ttl, self._max_attempts, self._sleep = (
             cache_dir, ttl_seconds, max_attempts, sleep)
+        self._max_bytes, self._overall_timeout = max_bytes, overall_timeout
 
     async def aclose(self) -> None:
         await self._client.aclose()
@@ -134,7 +139,8 @@ class ApiClient:
 
     # -- internals --------------------------------------------------------------------------
     def _check(self, url: httpx.URL) -> None:
-        if url.scheme != self._base.scheme or url.host != self._base.host:
+        base = self._base  # httpx gives a default port (443 for https) as None on both sides
+        if (url.scheme, url.host, url.port) != (base.scheme, base.host, base.port):
             raise NotAllowed(f"host not allowed: {url.host}")
         if not any(p.fullmatch(url.path) for p in self._allowed):
             raise NotAllowed(f"path not allowed: {url.path}")
@@ -162,6 +168,21 @@ class ApiClient:
                     pass
         return min(2 ** (attempt - 1), 30) + random.uniform(0, 0.5)  # 1 s, 2 s, 4 s ... plus jitter
 
+    async def _get_capped(
+        self, url: httpx.URL, params: dict[str, str] | None
+    ) -> tuple[httpx.Response, bytes]:
+        """GET that stops reading after max_bytes, so a huge or endless body cannot fill memory."""
+        async with self._client.stream("GET", url, params=params) as r:
+            declared = r.headers.get("Content-Length", "")
+            if declared.isdigit() and int(declared) > self._max_bytes:
+                raise BadData("response too large")
+            body = bytearray()
+            async for chunk in r.aiter_bytes():
+                body += chunk
+                if len(body) > self._max_bytes:
+                    raise BadData("response too large")
+            return r, bytes(body)
+
     async def _fetch(self, path: str, params: dict[str, str] | None, key: str) -> Fetched:
         url: httpx.URL = self._base.join(path)
         redirects = 0
@@ -169,9 +190,12 @@ class ApiClient:
         while True:
             attempt += 1
             await self._throttle()
+            # wait_for gives each attempt a real overall limit (asyncio.timeout needs Python 3.11).
+            # TransportError covers httpx's own timeouts and refused connections.
+            capped = self._get_capped(url, params)
             try:
-                r = await self._client.get(url, params=params)
-            except httpx.TransportError as error:  # includes timeouts and refused connections
+                r, body = await asyncio.wait_for(capped, self._overall_timeout)
+            except (httpx.TransportError, asyncio.TimeoutError) as error:
                 if attempt >= self._max_attempts:
                     raise Unavailable(type(error).__name__) from None
                 await self._sleep(self._delay(attempt, None))
@@ -197,8 +221,8 @@ class ApiClient:
             if r.status_code >= 400:
                 raise UpstreamError(f"HTTP {r.status_code}")
             try:
-                data = r.json()
-            except ValueError:
+                data = json.loads(body)
+            except ValueError:  # includes bad UTF-8
                 raise BadData("response is not JSON") from None
             fetched = Fetched(
                 data=data,
@@ -302,17 +326,17 @@ import httpx
 import pytest
 import respx
 
-from app.clients.http import ApiClient, NotAllowed, NotFound
+from app.clients.http import ApiClient, BadData, NotAllowed, NotFound, Unavailable
 
 BASE = "https://api.example.org"
 
 
-def make_client(tmp_path, sleeps):
+def make_client(tmp_path, sleeps, **options):
     async def fake_sleep(seconds: float) -> None:  # records waits instead of waiting
         sleeps.append(seconds)
 
     return ApiClient(BASE, [r"/v1/series/[A-Z0-9_]{1,32}"], user_agent="ExampleApp/0.1 (test)",
-                     per_second=None, cache_dir=tmp_path, sleep=fake_sleep)
+                     per_second=None, cache_dir=tmp_path, sleep=fake_sleep, **options)
 
 
 @respx.mock
@@ -348,6 +372,33 @@ def test_redirect_to_another_host_is_refused(tmp_path):
         return_value=httpx.Response(302, headers={"Location": "https://evil.example.net/x"}))
     with pytest.raises(NotAllowed):
         asyncio.run(make_client(tmp_path, []).get_json("/v1/series/POP"))
+
+
+def test_same_host_on_another_port_is_refused(tmp_path):
+    with respx.mock(assert_all_called=False) as mock:
+        with pytest.raises(NotAllowed):
+            asyncio.run(make_client(tmp_path, []).get_json("https://api.example.org:8443/v1/series/POP"))
+        assert not mock.calls
+
+
+@respx.mock
+def test_response_larger_than_the_cap_is_refused(tmp_path):
+    respx.get(f"{BASE}/v1/series/POP").mock(return_value=httpx.Response(200, json=list(range(100))))
+    with pytest.raises(BadData):
+        asyncio.run(make_client(tmp_path, [], max_bytes=50).get_json("/v1/series/POP"))
+
+
+@respx.mock
+def test_attempt_slower_than_the_overall_limit_is_cut_off(tmp_path):
+    async def slow(request):
+        await asyncio.sleep(1)
+        return httpx.Response(200, json=[1])
+
+    respx.get(f"{BASE}/v1/series/POP").mock(side_effect=slow)
+    sleeps: list[float] = []
+    with pytest.raises(Unavailable):
+        asyncio.run(make_client(tmp_path, sleeps, overall_timeout=0.05).get_json("/v1/series/POP"))
+    assert len(sleeps) == 2  # three attempts, each cut off, with two backoff waits between them
 
 
 @respx.mock

@@ -47,6 +47,7 @@ but `npm ci` still installs the lockfile.
 Environment: `.env.example` at the root lists every setting. The real `.env` is created by the person, git-ignored,
 and never read or printed by an assistant. Ports default to backend 8000 and frontend 3000, and can be changed with
 `BACKEND_PORT` / `FRONTEND_PORT`.
+Only `npm run dev` (and `setup`) pass the root `.env` to the processes they start; `npm run verify` (every step) and `npm run demo` pass only the shell's environment (plus `demoEnv` where they run the app), and read just `APP_PYTHON`, `BACKEND_PORT` and `FRONTEND_PORT` from `.env` for the launcher itself.
 
 ## 4. Working modes and approval rules
 

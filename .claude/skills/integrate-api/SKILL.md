@@ -35,14 +35,18 @@ names go in the root `.env.example`; the launchers pass the person's root `.env`
    features then explain that a key is needed, and fixture mode works.
 3. **Server side only.** The browser calls the app's own `/api/*` routes; only the backend talks to the provider.
    Keys never reach the frontend bundle (no `NEXT_PUBLIC_` key), and no route forwards an arbitrary URL ("proxy"):
-   - build every outgoing URL from a fixed base URL plus a path from an **allowlist** of hosts and path patterns;
+   - build every outgoing URL from a fixed base URL plus a path from an **allowlist** of hosts (scheme, host and
+     port) and path patterns;
      validate user input that goes into a path or query (pattern, length) before using it;
    - follow redirects only when the target is still on the allowlist (or turn redirects off);
    - send the identification header the provider requires (an app name and a project contact URL or role
      address taken from settings; never a personal address hard-coded in the code).
 4. **Client module** (for example `<backend>/app/clients/<service>.py`): one function per operation, returning
    plain data the app understands (typed models, not raw responses). Inside it:
-   - a **timeout** on every request (connect and read);
+   - a **timeout** on every request (connect and read) **and an overall limit per attempt** (`asyncio.wait_for`):
+     httpx's timeouts are per operation, so a slow trickle of data never trips them;
+   - a **response size cap** (for example 5 MB): refuse a larger `Content-Length` and stream the body, stopping
+     at the cap, so one huge or endless answer cannot fill memory;
    - a clear error type per failure: unavailable, not found, bad credentials, rate limited, bad data;
    - **throttling** below the provider's limit (requests per second), shared by the whole process;
    - **retries** only for safe requests (GET) and only for timeouts, 429 and 5xx: at most 3 attempts with

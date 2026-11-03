@@ -36,3 +36,8 @@ light theme follows the system setting.
 Exact versions are pinned: `frontend/package.json` plus `package-lock.json` (`.npmrc` keeps new installs exact)
 and `backend/requirements.lock` (generated from `backend/requirements.in`; its header says how). Supported:
 Node 22.13 or newer, Python 3.10–3.13.
+
+Known, accepted issue: `npm ci` in `frontend/` prints an `ERESOLVE overriding peer dependency` warning, because
+`eslint-plugin-import` (pulled in by `eslint-config-next`) does not yet declare support for ESLint 10. It is a
+warning, not an error: lint passes in `npm run verify`. Remove this note once an upgrade of `eslint-config-next`
+makes the warning disappear.

@@ -6,12 +6,13 @@
 // unit tests, production build (NEXT_DIST_DIR=.next-verify); then backend + `next start` on spare ports and
 // the Playwright smoke test. --quick skips the build and the browser test.
 // Output is shown live and saved to .logs/verify-<timestamp>.log. Exit code is nonzero if anything failed.
+// No step receives the root .env: checks run with the shell's environment (plus demoEnv where stated) only.
 import fs from 'node:fs';
 import path from 'node:path';
 import { setupApp, setupProblems, startApp } from './app-tasks.mjs';
 import {
-  BROWSERS_PATH, CACHE_DIR, REPO_ROOT, c, checkNode, cmdSpec, copyTree, findFreePort, heading, loadConfig,
-  localBin, mergedEnv, npmCommand, resolveApp, run, secs, stopServices, venvPython,
+  BROWSERS_PATH, CACHE_DIR, REPO_ROOT, c, checkNode, cmdSpec, copyTree, findFreePort, heading,
+  keepDotEnvFromChildren, loadConfig, localBin, mergedEnv, npmCommand, resolveApp, run, secs, stopServices, venvPython,
 } from './lib.mjs';
 
 const argv = process.argv.slice(2);
@@ -20,6 +21,7 @@ const skipScaffold = argv.includes('--skip-scaffold');
 const DIST = '.next-verify';
 
 checkNode();
+keepDotEnvFromChildren();
 fs.mkdirSync(path.join(REPO_ROOT, '.logs'), { recursive: true });
 const stamp = new Date().toISOString().replace(/[:.]/g, '-');
 const logPath = path.join(REPO_ROOT, '.logs', `verify-${stamp}.log`);

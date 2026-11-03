@@ -2,7 +2,7 @@
 // Node built-ins only (no npm dependencies), so `npm ci` at the root installs nothing and the scripts run
 // on macOS, Linux and Windows. Rules kept here:
 //   - never kill a process we did not start (ports in use are refused, not freed);
-//   - never print values from the optional root .env file;
+//   - never print values from the optional root .env file, and never pass it to children of verify or demo;
 //   - long-running children get their own process group so Ctrl+C cleans up the whole tree.
 
 import { spawn, spawnSync, execFileSync } from 'node:child_process';
@@ -53,7 +53,7 @@ export const APP_DEFAULTS = {
 /**
  * Reads app-creator.config.json. Returns { raw, app } where `app` is null (template mode) or an object with
  * absolute paths (frontendDir, backendDir, docsDir) and every default filled in. Ports honour the
- * BACKEND_PORT / FRONTEND_PORT environment variables (process env or root .env).
+ * BACKEND_PORT / FRONTEND_PORT launcher settings (process env or root .env).
  */
 export function loadConfig() {
   if (!fs.existsSync(CONFIG_PATH)) fail(`missing ${CONFIG_PATH}. Restore it from git (git checkout app-creator.config.json).`);
@@ -71,13 +71,12 @@ export function resolveApp(entry, base = REPO_ROOT) {
   for (const key of ['name', 'frontendDir', 'backendDir']) {
     if (!entry[key]) fail(`app-creator.config.json: "app.${key}" is required when "app" is set.`);
   }
-  const env = mergedEnv();
   const app = { ...APP_DEFAULTS, ...entry, ports: { ...APP_DEFAULTS.ports, ...(entry.ports || {}) } };
   app.frontendDir = path.resolve(base, entry.frontendDir);
   app.backendDir = path.resolve(base, entry.backendDir);
   app.docsDir = path.resolve(base, entry.docsDir || 'docs');
-  app.ports.backend = portFrom(env.BACKEND_PORT, 'BACKEND_PORT') ?? app.ports.backend;
-  app.ports.frontend = portFrom(env.FRONTEND_PORT, 'FRONTEND_PORT') ?? app.ports.frontend;
+  app.ports.backend = portFrom(launcherSetting('BACKEND_PORT'), 'BACKEND_PORT') ?? app.ports.backend;
+  app.ports.frontend = portFrom(launcherSetting('FRONTEND_PORT'), 'FRONTEND_PORT') ?? app.ports.frontend;
   return app;
 }
 
@@ -113,7 +112,7 @@ export function loadDotEnv() {
   for (const line of fs.readFileSync(file, 'utf8').split(/\r?\n/)) {
     const m = line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/);
     if (!m) continue;
-    let value = m[2];
+    let value = m[2].trim();
     if (/^(['"]).*\1$/.test(value)) value = value.slice(1, -1);
     else value = value.replace(/\s+#.*$/, '');
     dotEnvCache[m[1]] = value;
@@ -121,9 +120,28 @@ export function loadDotEnv() {
   return dotEnvCache;
 }
 
-/** process.env wins over .env (so `BACKEND_PORT=8001 npm run dev` works), then `extra` wins over both. */
+let dotEnvForChildren = true;
+
+/**
+ * verify and demo call this first: from then on every child process gets only process.env plus `extra`, never
+ * the root .env (tests and the offline demo must not depend on, or spend, the owner's real settings and keys).
+ */
+export function keepDotEnvFromChildren() {
+  dotEnvForChildren = false;
+}
+
+/**
+ * Environment for a child process. process.env wins over .env (so `BACKEND_PORT=8001 npm run dev` works), then
+ * `extra` wins over both. The root .env is left out after keepDotEnvFromChildren().
+ */
 export function mergedEnv(extra = {}) {
-  return { ...loadDotEnv(), ...process.env, NEXT_TELEMETRY_DISABLED: '1', ...extra };
+  return { ...(dotEnvForChildren ? loadDotEnv() : {}), ...process.env, NEXT_TELEMETRY_DISABLED: '1', ...extra };
+}
+
+/** One of the launcher's own settings (APP_PYTHON, BACKEND_PORT, FRONTEND_PORT): process env, then root .env. */
+export function launcherSetting(name) {
+  const value = process.env[name] ?? loadDotEnv()[name];
+  return value === undefined ? undefined : value.trim();
 }
 
 // ---------------------------------------------------------------- versions
@@ -178,11 +196,11 @@ const SUPPORTED_RANGE = `${PYTHON_MIN.join('.')}–${PYTHON_MAX.join('.')}`;
  * Returns { version, parsed, executable, source } or exits with instructions.
  */
 export function findPython({ quiet = false } = {}) {
-  const env = mergedEnv();
+  const appPython = launcherSetting('APP_PYTHON');
   const tried = [];
-  if (env.APP_PYTHON) {
-    const found = probePython(env.APP_PYTHON);
-    if (!found) fail(`APP_PYTHON is set to "${env.APP_PYTHON}", but that command does not run Python.\n  Fix the path, or unset APP_PYTHON to let App Creator search.`);
+  if (appPython) {
+    const found = probePython(appPython);
+    if (!found) fail(`APP_PYTHON is set to "${appPython}", but that command does not run Python.\n  Fix the path, or unset APP_PYTHON to let App Creator search.`);
     if (!isSupportedPython(found.parsed)) fail(`APP_PYTHON points to Python ${found.version}; App Creator needs Python ${SUPPORTED_RANGE}.`);
     return { ...found, source: 'APP_PYTHON' };
   }
@@ -190,7 +208,7 @@ export function findPython({ quiet = false } = {}) {
   for (let m = PYTHON_MAX[1]; m >= PYTHON_MIN[1]; m--) minors.push(`3.${m}`);
   const candidates = [];
   if (IS_WIN) for (const v of minors) candidates.push(['py', [`-${v}`]]);
-  for (const v of minors) candidates.push([IS_WIN ? `python${v}` : `python${v}`, []]);
+  for (const v of minors) candidates.push([`python${v}`, []]);
   candidates.push(['python3', []], ['python', []]);
   const home = os.homedir();
   const condaRoots = [
@@ -222,9 +240,10 @@ export function findPython({ quiet = false } = {}) {
     (tried.length ? `  Found only: ${tried.join('; ')}.\n` : '') +
     '  Install one (python.org, Homebrew `brew install python@3.12`, or `conda create -n app python=3.12`),\n' +
     '  then either open a new terminal, or tell App Creator exactly which one to use:\n' +
-    '    macOS/Linux:  APP_PYTHON=/path/to/python3.12 npm run setup\n' +
-    '    Windows:      set APP_PYTHON=C:\\path\\to\\python.exe   then   npm run setup\n' +
-    '  (or put APP_PYTHON=... in the root .env file).');
+    '    any system:          put the line APP_PYTHON=/path/to/python3.12 in the root .env file, then npm run setup\n' +
+    '    macOS/Linux:         APP_PYTHON=/path/to/python3.12 npm run setup\n' +
+    '    Windows PowerShell:  $env:APP_PYTHON="C:\\path\\to\\python.exe"; npm run setup\n' +
+    '    Windows cmd:         set "APP_PYTHON=C:\\path\\to\\python.exe" && npm run setup');
 }
 
 /** Path of the Python inside a virtual environment. */
@@ -406,18 +425,22 @@ export async function stopServices(graceMs = 4000) {
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/** A 2xx status: what a health check must return (a 404 from a wrong healthPath is not "up"). */
+export const isSuccess = (status) => status >= 200 && status < 300;
+
 /**
- * Waits until `url` answers with a status below 500. Gives up early if `service` exits.
- * Returns true on success, false on timeout or early exit.
+ * Waits until `url` answers with a status that `accept` approves (default: below 500, fine for a page; health
+ * checks pass `isSuccess`). Gives up early if `service` exits. Returns true on success, false on timeout or
+ * early exit.
  */
-export async function waitForUrl(url, { timeoutMs = 90000, service } = {}) {
+export async function waitForUrl(url, { timeoutMs = 90000, service, accept = (status) => status < 500 } = {}) {
   let exited = false;
   service?.exited.then(() => { exited = true; });
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline && !exited) {
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
-      if (res.status < 500) return true;
+      if (accept(res.status)) return true;
     } catch { /* not up yet */ }
     await sleep(500);
   }
@@ -436,15 +459,20 @@ export function isPortFree(port) {
   });
 }
 
-/** Exits with a clear message if the port is taken. Never touches the process that holds it. */
-export async function requireFreePort(port, envName, what) {
+/**
+ * Exits with a clear message if the port is taken. Never touches the process that holds it.
+ * `command` is the npm script to suggest re-running (dev or demo).
+ */
+export async function requireFreePort(port, envName, what, command = 'dev') {
   if (await isPortFree(port)) return;
+  const next = port + 1;
   fail(`port ${port} (${what}) is already in use on 127.0.0.1.\n` +
     '  App Creator does not stop other programs. Either close the program using it (maybe an earlier\n' +
-    '  `npm run dev` in another terminal), or pick another port, for example:\n' +
-    `    macOS/Linux:  ${envName}=${port + 1} npm run dev\n` +
-    `    Windows:      set ${envName}=${port + 1}   then   npm run dev\n` +
-    `  (or set ${envName} in the root .env file).`);
+    '  `npm run dev` or `npm run demo` in another terminal), or pick another port, for example:\n' +
+    `    any system:          put the line ${envName}=${next} in the root .env file, then npm run ${command}\n` +
+    `    macOS/Linux:         ${envName}=${next} npm run ${command}\n` +
+    `    Windows PowerShell:  $env:${envName}="${next}"; npm run ${command}\n` +
+    `    Windows cmd:         set "${envName}=${next}" && npm run ${command}`);
 }
 
 /** First free port at or after `start`, skipping any in `exclude`. */
@@ -460,11 +488,19 @@ export async function findFreePort(start, exclude = []) {
 const COPY_SKIP = new Set(['node_modules', '.venv', '.next', '.next-verify', 'test-results', 'playwright-report',
   '__pycache__', '.pytest_cache', '.ruff_cache', '.DS_Store', 'next-env.d.ts']);
 
-/** Copies a source tree without build output, caches or installed dependencies. */
+/** Local settings and key files are never copied (a stray scaffold/.env must not travel into app/). */
+function isPrivateFile(name) {
+  return name === '.env' || (name.startsWith('.env.') && name !== '.env.example') || /\.(pem|key)$/.test(name);
+}
+
+/** Copies a source tree without build output, caches, installed dependencies, local settings or key files. */
 export function copyTree(src, dest) {
   fs.cpSync(src, dest, {
     recursive: true,
-    filter: (p) => !COPY_SKIP.has(path.basename(p)) && !p.endsWith('.tsbuildinfo'),
+    filter: (p) => {
+      const name = path.basename(p);
+      return !COPY_SKIP.has(name) && !p.endsWith('.tsbuildinfo') && !isPrivateFile(name);
+    },
   });
 }
 
