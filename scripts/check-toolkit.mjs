@@ -140,6 +140,19 @@ if (tracked !== null) {
   else passes.push('no .env files tracked');
 }
 
+// The project permissions must keep blocking .env reads/edits and destructive git commands.
+// (Guard added after an unexplained rewrite emptied these lists during the bootstrap; see PROGRESS.md.)
+try {
+  const settings = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, '.claude', 'settings.json'), 'utf8'));
+  const deny = settings?.permissions?.deny ?? [];
+  const required = ['Read(./.env)', 'Read(./**/.env)', 'Edit(/**/.env)', 'Bash(git push --force *)'];
+  const absent = required.filter((r) => !deny.includes(r));
+  if (absent.length) failures.push(`.claude/settings.json: required deny rules missing: ${absent.join(', ')}`);
+  else passes.push('.claude/settings.json keeps .env and force-push deny rules');
+} catch (err) {
+  failures.push(`.claude/settings.json: ${err.code === 'ENOENT' ? 'missing' : `invalid JSON (${err.message})`}`);
+}
+
 // ---------------------------------------------------------------- config
 
 try {
