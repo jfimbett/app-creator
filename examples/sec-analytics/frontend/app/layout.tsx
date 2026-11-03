@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import { AppHeader } from "@/components/AppHeader";
+import { BackendStatus } from "@/components/BackendStatus";
+import { CompanySearch } from "@/components/CompanySearch";
 import { APP_NAME } from "@/lib/site";
 
 import "./globals.css";
@@ -13,7 +15,6 @@ export const metadata: Metadata = {
 /**
  * The shell: skip link, compact header, and one <main> for the page content.
  * Pages render sections inside this <main>; they do not add their own <main>.
- * The search and backend status slots are filled by the screens step (CompanySearch, BackendStatus).
  */
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -25,7 +26,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         >
           Skip to content
         </a>
-        <AppHeader />
+        <AppHeader search={<CompanySearch />} status={<BackendStatus />} />
         <main id="main" className="mx-auto w-full max-w-[1440px] px-4 py-4">
           {children}
         </main>
