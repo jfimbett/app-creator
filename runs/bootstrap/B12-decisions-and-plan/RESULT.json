@@ -1,0 +1,28 @@
+{
+  "stepId": "B12-decisions-and-plan",
+  "milestone": "bootstrap",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "product-architect",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "bypassPermissions",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T17:41:25.960Z",
+  "startCommit": "14c2d3912f5e4a25e6b7632e24772e1488a6e699",
+  "promptSha256": "65ca032ceef491fd888baf996b68664491efe211daf1ffc2981e605eca918ce3",
+  "promptFileSha256": "11df011b2363566403c250d2b253a5efe25865530eb8569042e3c7b344173645",
+  "status": "completed",
+  "finishedAt": "2026-11-03T17:49:25.264Z",
+  "exitCode": 0,
+  "sessionId": "ca88387e-1f0d-427c-b7b1-98f2c56f921b",
+  "numTurns": 27,
+  "durationMs": 478573,
+  "totalCostUsd": 2.5379704,
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "endCommit": "de1627fdf44497a87755bff70444706e8ffb2122",
+  "workingTreeChanged": 3,
+  "responseSha256": "f8589639939a9f1619b05d131d2ef4b334290d59b22b56cd8969807cb271da95",
+  "missingRecord": null
+}
