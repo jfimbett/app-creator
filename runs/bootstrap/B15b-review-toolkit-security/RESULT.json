@@ -1,0 +1,28 @@
+{
+  "stepId": "B15b-review-toolkit-security",
+  "milestone": "bootstrap",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "security-reviewer",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "bypassPermissions",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T17:50:01.177Z",
+  "startCommit": "49dd630446da7bbab4a1420f8eb1e5e10611a3e7",
+  "promptSha256": "a145b611ecb881e4a9c1af4de2f7bef718df03764689d4bf9d1dfba0bcf5464d",
+  "promptFileSha256": "efc41f51508ffed72ba95f6fe81916e89d94cd7905c8221ef874ab75ab206d49",
+  "status": "completed",
+  "finishedAt": "2026-11-03T17:52:49.492Z",
+  "exitCode": 0,
+  "sessionId": "bfc20769-5511-418d-a4bd-d3c1b43c1e84",
+  "numTurns": 26,
+  "durationMs": 167599,
+  "totalCostUsd": 0.8861032000000001,
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "endCommit": "49dd630446da7bbab4a1420f8eb1e5e10611a3e7",
+  "workingTreeChanged": 3,
+  "responseSha256": "ae22bcba460d54440b72dc0861ea1b7eb64ecf2de7215271c846dc9907bdb8b9",
+  "missingRecord": null
+}
