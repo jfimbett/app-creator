@@ -27,3 +27,7 @@ Append-only. One line per dispatched step.
 - 2026-11-03T18:25Z · **bootstrap/B19-template-gate** · project-orchestrator · completed · [prompt](bootstrap/B19-template-gate/PROMPT.md) · [response](bootstrap/B19-template-gate/RESPONSE.md) · [result](bootstrap/B19-template-gate/RESULT.json)
 - 2026-11-03T18:27Z · **m1/m1-01-plan** · project-orchestrator · completed · [prompt](m1/m1-01-plan/PROMPT.md) · [response](m1/m1-01-plan/RESPONSE.md) · [result](m1/m1-01-plan/RESULT.json)
 - 2026-11-03T18:28Z · **m1/m1-02-skeleton** · backend-engineer · completed · [prompt](m1/m1-02-skeleton/PROMPT.md) · [response](m1/m1-02-skeleton/RESPONSE.md) · [result](m1/m1-02-skeleton/RESULT.json)
+- 2026-11-03T18:30Z · **m1/m1-03-assistant-files** · docs-writer · completed · [prompt](m1/m1-03-assistant-files/PROMPT.md) · [response](m1/m1-03-assistant-files/RESPONSE.md) · [result](m1/m1-03-assistant-files/RESULT.json)
+- 2026-11-03T18:32Z · **m1/m1-04-sec-client** · backend-engineer · completed · [prompt](m1/m1-04-sec-client/PROMPT.md) · [response](m1/m1-04-sec-client/RESPONSE.md) · [result](m1/m1-04-sec-client/RESULT.json)
+- 2026-11-03T18:32Z · **m1/m1-08-design-shell** · design-lead · completed · [prompt](m1/m1-08-design-shell/PROMPT.md) · [response](m1/m1-08-design-shell/RESPONSE.md) · [result](m1/m1-08-design-shell/RESULT.json)
+- 2026-11-03T18:33Z · **m1/m1-09-frontend-lib** · frontend-engineer · completed · [prompt](m1/m1-09-frontend-lib/PROMPT.md) · [response](m1/m1-09-frontend-lib/RESPONSE.md) · [result](m1/m1-09-frontend-lib/RESULT.json)
