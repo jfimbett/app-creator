@@ -112,3 +112,4 @@ Not started.
 - Deviations: synchronous SEC client (brief's table says async), capex alternate outside `CAPTURE_CONCEPTS`, stricter debt rule. Recorded in the architecture decision log.
 - Classroom app: `FRONTEND_PORT=3200 BACKEND_PORT=8200 npm run dev` → http://127.0.0.1:3200 (starts on Demo, Live selector available). Plain offline demo: `npm run demo`.
 - **Deferred:** M3–M5, independent reviews, GitHub publication, commit-email decision, permission hardening, remaining final documents. Next, only on instruction: M3 from `m2`.
+- Classroom switch done 2026-11-04: main fast-forwarded to the m2 records commit, `npm run dev` on 3200/8200, live journey passed against it, and 23 of the 24 offline journeys passed (the 24th asserts that a demo run has no selector, so it cannot apply in a dev run; it passed under `npm run demo` and in the gate). Temporary worktree `.worktrees/m2` and branch `work/m2` removed.
