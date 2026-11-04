@@ -32,12 +32,12 @@ Paths are relative to `examples/sec-analytics/` (written `fe/` for the frontend 
 
 | # | Slice | Criteria | Owner | May touch | Must not touch | Skills | Status |
 |---|---|---|---|---|---|---|---|
-| 2.1 | SEC client and cache: `clients/sec.py` (allowlist, redirects, User-Agent, 1 req/s, dedupe, Retry-After, 403 stop), `data/cache.py`, `data/source.py`, `source=demo\|live` | M2-AC2, M2-AC3, M2-AC9, M2-E12, M2-E13 | backend-engineer | `be/app/clients/`, `be/app/data/`, `be/tests/`, `.env.example` | `fe/` | integrate-api, manage-data, test-and-check | todo |
-| 2.2 | Concept mapping verified against the fixtures, full `logic/periods.py` (350–380 days, instants, restatement policy) | M2-AC4, M2-E1–M2-E7, M2-E11 | backend-engineer | `be/app/logic/`, `be/tests/`, `examples/sec-analytics/CLAUDE.md` | `fe/` | test-and-check | todo |
-| 2.3 | Ratios and derived metrics, `logic/metrics.py`; fixture-based known answers added to acceptance.md **before** their tests | M2-AC7, CALC1–CALC10, M2-E8–M2-E10 | backend-engineer (expected values: product-architect) | `be/app/logic/`, `be/tests/`, `milestones/acceptance.md` (calculation rows) | `fe/` | test-and-check | todo |
-| 2.4 | `/api/metrics`, `/api/companies/{cik}/financials`, `/metrics`; live search via the ticker map | M2-AC1, M2-AC4, M2-AC6, M2-AC8 | backend-engineer | `be/app/api/`, `be/app/models/`, `be/tests/` | `fe/` | build-feature | todo |
-| 2.5 | Mode selector, statement tables, key-figure strip, metric explorer chart, provenance tooltips, missing/unavailable display | M2-AC1–M2-AC6, M2-AC8, V1–V3 | frontend-engineer (with design-lead) | `fe/` | `be/` | design-interface, build-feature | todo |
-| 2.6 | E2E, reviews (code, security for the SEC client, test), live SEC smoke (manual, reported separately), README, checkpoint | all M2 | test-engineer, reviewers | `fe/e2e/`, `milestones/02-financial-intelligence/README.md` | – | review-changes, orchestrate-steps | todo |
+| 2.1 | SEC client and cache: `clients/sec.py` (allowlist, redirects, User-Agent, 1 req/s, dedupe, Retry-After, 403 stop), `data/cache.py`, `data/source.py`, `source=demo\|live` | M2-AC2, M2-AC3, M2-AC9, M2-E12, M2-E13 | backend-engineer | `be/app/clients/`, `be/app/data/`, `be/tests/`, `.env.example` | `fe/` | integrate-api, manage-data, test-and-check | done (2026-11-04) |
+| 2.2 | Concept mapping verified against the fixtures, full `logic/periods.py` (350–380 days, instants, restatement policy) | M2-AC4, M2-E1–M2-E7, M2-E11 | backend-engineer | `be/app/logic/`, `be/tests/`, `examples/sec-analytics/CLAUDE.md` | `fe/` | test-and-check | done (2026-11-04) |
+| 2.3 | Ratios and derived metrics, `logic/metrics.py`; fixture-based known answers added to acceptance.md **before** their tests | M2-AC7, CALC1–CALC10, M2-E8–M2-E10 | backend-engineer (expected values: product-architect) | `be/app/logic/`, `be/tests/`, `milestones/acceptance.md` (calculation rows) | `fe/` | test-and-check | done (2026-11-04) |
+| 2.4 | `/api/metrics`, `/api/companies/{cik}/financials`, `/metrics`; live search via the ticker map | M2-AC1, M2-AC4, M2-AC6, M2-AC8 | backend-engineer | `be/app/api/`, `be/app/models/`, `be/tests/` | `fe/` | build-feature | done (2026-11-04) |
+| 2.5 | Mode selector, statement tables, key-figure strip, metric explorer chart, provenance tooltips, missing/unavailable display | M2-AC1–M2-AC6, M2-AC8, V1–V3 | frontend-engineer (with design-lead) | `fe/` | `be/` | design-interface, build-feature | done (2026-11-04) |
+| 2.6 | E2E, reviews (code, security for the SEC client, test), live SEC smoke (manual, reported separately), README, checkpoint | all M2 | test-engineer, reviewers | `fe/e2e/`, `milestones/02-financial-intelligence/README.md` | – | review-changes, orchestrate-steps | done (2026-11-04) |
 
 ## M3 — Filing intelligence (from `m2` → `m3`)
 
@@ -73,13 +73,19 @@ Status values: `todo`, `in progress`, `done (<date>, commit <short hash>)`, `blo
 |---|---|---|---|---|
 | 2026-11-03 | planning | product, architecture, acceptance and plan written from the delegated decisions (step B12) | `npm run check-toolkit` (see the B12 record) | N1, N2 |
 | 2026-11-03 | 1.1–1.5 | skeleton, authentic fixtures, backend API, overview, shell and screens (runs/m1, m1-02 to m1-10) | `npm run verify` exit 0 after each group; live SEC: fixtures captured on 2026-11-03, 7 requests | m1-11 timed out with no output |
+| 2026-11-04 | 2.1–2.6 | SEC adapters, cache, normalized statements, ratios, explorer, Demo/Live selector (runs/m2) | see the m2-01 record | independent reviews not run |
 | 2026-11-04 | 1.5–1.6 | classroom recovery; M1 journeys, visible backend-down message, documents (runs/recovery/R01, runs/m1/m1-16) | see the m1-16 record | independent reviews not run |
 
 ## Known problems and open questions
 
 - **N1** Paid live AI validation is blocked: there is no test key. Mocked integration only (owner decides).
-- **N2** Resolved for the fixture capture (2026-11-03, owner's contact passed through the process environment only). Live checks in later
-  milestones still need the owner's `SEC_USER_AGENT`.
-- The M1 concept mapping and fiscal-year labels are checked against the fixtures (FX1–FX4). Concepts added in slice 2.2 are not yet.
-- M1 was reviewed only in the same session as it was finished; the planned independent reviews were replaced at the owner's request (2026-11-04).
+- **N2** Resolved: on 2026-11-04 the owner asked for a root `.env` with their contact (git-ignored). Students use their own.
+- The concept mapping is checked against the fixtures (FX1–FX15) and, for capex, live NVIDIA data.
+- **Found by testing real companies on live data, fixed with tests (2026-11-04):** debt-to-equity of 0.00× from a reported zero short-term
+  line (NVIDIA FY2019); a key figure taken from 14 years earlier (NVIDIA FCF from FY2012); capex under an unmapped concept; a 500 error
+  for a filer with no annual 10-K (TSMC, form 20-F). The fixtures could not have shown these.
+- **Known mapping gaps, shown as missing or unavailable:** Microsoft and Alphabet D&A and EBITDA; Apple interest expense and EBIT after
+  FY2023; a filer whose long-term debt uses other concepts, such as NVIDIA before FY2020; banks' working capital, capex and FCF.
+- Companies with no annual 10-K revenue (foreign 20-F filers) get an explanation, not statements.
+- M1 and M2 were reviewed only in the same session as it was finished; the planned independent reviews were replaced at the owner's request (2026-11-04); M2 used adversarial live checks and read-only checks instead.
 - With three demo companies, the four-company comparison is shown only in tests and live mode (Q19).

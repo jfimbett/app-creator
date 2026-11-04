@@ -23,8 +23,9 @@ known answers `FX…`), [plan.md](../../milestones/plan.md) (slices, progress, k
 1. Only SEC EDGAR, through two hosts: `https://data.sec.gov` (submissions, company facts) and `https://www.sec.gov`
    (`/files/company_tickers.json`, `/Archives/edgar/data/...` filing documents). No other data provider.
 2. **Never call SEC from the browser.** data.sec.gov has no CORS support, and the frontend only calls same-origin
-   `/api/*`. All SEC traffic goes through `backend/app/clients/sec.py`. At M1 only the capture script uses it; the
-   running app makes no SEC request.
+   `/api/*`. All SEC traffic goes through `backend/app/clients/sec.py`. The running app uses it only when a request
+   says `source=live`, through `backend/app/data/source.py`, which also holds the disk cache (24 h) and single flight.
+   A live failure is an error shown to the person, never replaced by fixtures.
 3. **Allowlist.** HTTPS only, the two hosts above, the path patterns in `clients/sec.py` (milestone brief §7), no
    query string, no userinfo, no non-default port. URLs are built from validated parts (a normalized CIK), never
    taken from a caller. Redirects are followed by hand, at most 3, each target checked against the allowlist first.
@@ -61,10 +62,16 @@ known answers `FX…`), [plan.md](../../milestones/plan.md) (slices, progress, k
 3. **Forms:** only `10-K` and `10-K/A` facts feed annual series.
 4. **Duplicates:** group by (concept, unit, start, end); keep the latest `filed`, on a tie the higher accession
    number. Never sum duplicates or alternative concepts. Keep the chosen fact as provenance.
-5. **Concepts:** revenue uses, per period, the first present of `Revenues`,
-   `RevenueFromContractWithCustomerExcludingAssessedTax`, `SalesRevenueNet`,
-   `RevenueFromContractWithCustomerIncludingAssessedTax`; net income is `NetIncomeLoss`. The list lives in
-   `backend/app/logic/concepts.py`; a new mapping is verified against the fixtures before use.
+5. **Concepts:** every list in `backend/app/logic/concepts.py` is a priority order for one period: the first present
+   wins, and alternates are never summed. Revenue: `Revenues`, `RevenueFromContractWithCustomerExcludingAssessedTax`,
+   `SalesRevenueNet`, `RevenueFromContractWithCustomerIncludingAssessedTax`. Interest: `InterestExpense`,
+   `InterestExpenseNonoperating`, `InterestExpenseDebt`. D&A: `DepreciationDepletionAndAmortization`,
+   `DepreciationAndAmortization`, `DepreciationAmortizationAndAccretionNet`. Capex:
+   `PaymentsToAcquirePropertyPlantAndEquipment`, `PaymentsToAcquireProductiveAssets`. Short-term debt: `CommercialPaper`,
+   else `ShortTermBorrowings`. A new mapping is verified against the fixtures or a named live filing before use.
+   **Checked 2026-11-04:** Microsoft and Alphabet report none of the D&A concepts, and Apple has no interest concept after
+   FY2023, so those lines show as missing and EBITDA or EBIT as unavailable. `PaymentsToAcquireProductiveAssets` was checked on
+   live NVIDIA data and is outside `CAPTURE_CONCEPTS`, so the fixtures do not contain it.
 6. **Units:** the reporting currency only; facts in other units are ignored, never mixed or converted.
 7. **Missing is `null`** with `status: "missing"` and a reason, never 0 and never a blank without explanation.
 8. **Reported vs derived.** Every value says whether it is `reported` (one SEC fact) or `derived` (a formula over
@@ -72,7 +79,14 @@ known answers `FX…`), [plan.md](../../milestones/plan.md) (slices, progress, k
    filed, fy, fp and the companyfacts source URL. A derived value lists its formula and inputs; a missing input
    makes it `unavailable`, never 0.
 9. Labels: `FY<year of end date>`, always shown with the end date. Statement views carry "Values may reflect later
-   restatements; not point-in-time."
+   restatements; not point-in-time." and are titled as a normalized summary, not the complete filed statement.
+10. **Formulas** are in `backend/app/logic/metrics.py`, and a value that would mislead is not computed. A prior year counts
+    only if it ended about a year earlier. **Debt** sums the components reported at that date and is `unavailable` when no
+    long-term component is reported, because a short-term line alone would understate debt, possibly as zero. **Negative
+    equity:** ROE and debt-to-equity do not measure return or leverage in the usual way, so they show
+    `n/m (negative equity)` with the inputs in the tooltip. EBIT is never replaced by operating income.
+11. **Key figures** use the latest period, or say why not; only revenue and net income fall back to the latest reported
+    value, dated. An old value next to the latest figures would look current.
 
 ## Never
 

@@ -1,19 +1,25 @@
 # SEC Analytics (example app)
 
 SEC Analytics is the worked example of App Creator: a dark, terminal-style web app for reading public company data
-from the SEC (U.S. Securities and Exchange Commission). At milestone M1 it runs offline only, on recorded SEC data.
+from the SEC (U.S. Securities and Exchange Commission). It runs on recorded SEC data offline, and on live SEC data when you choose.
 
 - Code: `frontend/` (Next.js) and `backend/` (FastAPI).
 - Planning documents: `milestones/` at the repository root (product, architecture, acceptance, plan).
 - Rules for working in this folder: [CLAUDE.md](CLAUDE.md).
 
-## What M1 does
+## What it does
 
-Search by name, ticker or CIK, a company profile, key figures, and an annual revenue and net income chart with a
-data table. Hovering a value shows the SEC filing it came from.
+Search by name, ticker or CIK; a company profile; key figures; an annual revenue and net income chart; **normalized annual
+summaries** of the income statement, balance sheet and cash flow; ratios; and a metric explorer. Hovering or focusing a value
+shows the SEC fact it came from, or its formula and inputs. A value that is not available says so and why; it is never 0.
 
-**Demo universe.** Search covers Apple, Microsoft and Alphabet only, the companies in the recorded snapshot. Any other
-company gives "No match in the demo universe (3 companies)". There is no live SEC lookup at M1.
+These summaries are built from SEC Company Facts. They are not the complete filed statements. Metric ids, concepts and
+formulas are in `backend/app/logic/concepts.py` and `metrics.py`; the selection policy is in `logic/periods.py`.
+
+**Demo and Live.** `npm run demo` is offline, on Apple, Microsoft and Alphabet only: any other company gives "No match in the
+demo universe (3 companies)". `npm run dev` adds a Demo / Live selector that starts on Demo. Live search covers SEC filers
+listed in the SEC ticker file, and other filers can be opened by CIK. It does not cover non-SEC companies. Setup, your contact
+setting and the smoke check are in [docs/SETUP.md](../../docs/SETUP.md).
 
 ## Run it (from the repository root)
 
@@ -21,6 +27,7 @@ company gives "No match in the demo universe (3 companies)". There is no live SE
 npm ci           # once: the launcher's lockfile
 npm run setup    # once: backend and frontend packages, project-local browser
 npm run demo     # offline demo on recorded data: http://127.0.0.1:3000
+npm run dev      # the same, with the Demo / Live selector
 npm run verify   # every check, no network needed
 ```
 
@@ -41,5 +48,5 @@ cd examples/sec-analytics/backend
 .venv/bin/python scripts/capture_fixtures.py   # Windows: .venv\Scripts\python scripts\capture_fixtures.py
 ```
 
-**Classroom note.** SEC's fair-access limit applies across everyone sharing one public address, so a class uses the
-recorded data. Do not have every student recapture.
+**Classroom note.** SEC's fair-access limit applies across everyone sharing one public address, so a class uses Demo by
+default. Do not have every student recapture or use Live at once.

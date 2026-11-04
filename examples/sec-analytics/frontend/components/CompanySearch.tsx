@@ -7,23 +7,29 @@ import { api, ApiError } from "@/lib/api";
 import { activeDescendantId, CLOSED, comboboxKey, comboboxReducer, type ComboboxState, optionId } from "@/lib/combobox";
 import { companyLine } from "@/lib/display";
 import { isFocusSearchShortcut } from "@/lib/shortcuts";
+import { useDataSource } from "@/lib/source";
 import type { SearchResult } from "@/lib/types";
 
 export const UNIVERSE_NOTE = "Search covers the demo companies only: Apple, Microsoft, Alphabet";
 export const NO_MATCH = "No match in the demo universe (3 companies)";
+export const LIVE_UNIVERSE_NOTE = "Live search covers SEC filers listed in the SEC ticker file; other filers can be opened by CIK.";
+export const LIVE_NO_MATCH = "No match in the SEC ticker file";
 const QUERY_MAX = 100;
 const DEBOUNCE_MS = 120;
 
-type Answer = { query: string; results: SearchResult[]; error: ApiError | null };
+type Answer = { query: string; source: string; results: SearchResult[]; error: ApiError | null };
 
 /**
- * The header search: an accessible combobox over the demo universe (name, ticker or CIK).
+ * The header search: an accessible combobox over the demo universe or, in Live, SEC's ticker file.
  * "/" or Ctrl/Cmd-K focus it; ↑/↓ move, Enter opens the highlighted company, Esc closes the list.
  * On the home page the demo-universe note is always visible under the box.
  */
 export function CompanySearch() {
   const router = useRouter();
   const pathname = usePathname();
+  const { source, href } = useDataSource();
+  const universeNote = source === "live" ? LIVE_UNIVERSE_NOTE : UNIVERSE_NOTE;
+  const noMatch = source === "live" ? LIVE_NO_MATCH : NO_MATCH;
   const inputRef = useRef<HTMLInputElement>(null);
   const listboxId = useId();
   const noteId = useId();
@@ -32,7 +38,7 @@ export function CompanySearch() {
   const [combo, setCombo] = useState<ComboboxState>(CLOSED);
 
   const trimmed = query.trim();
-  const current = answer && answer.query === trimmed ? answer : null;
+  const current = answer && answer.query === trimmed && answer.source === source ? answer : null;
   const results = current?.results ?? [];
   const showPopup = combo.open && trimmed.length > 0;
 
@@ -53,15 +59,15 @@ export function CompanySearch() {
     if (!trimmed) return;
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
-      api.searchCompanies(trimmed, { signal: controller.signal }).then(
+      api.searchCompanies(trimmed, { signal: controller.signal, source }).then(
         (response) => {
-          setAnswer({ query: trimmed, results: response.results, error: null });
+          setAnswer({ query: trimmed, source, results: response.results, error: null });
           setCombo((state) => comboboxReducer(state, { type: "results", count: response.results.length }));
         },
         (error: unknown) => {
           if (controller.signal.aborted) return;
           const apiError = error instanceof ApiError ? error : null;
-          setAnswer({ query: trimmed, results: [], error: apiError });
+          setAnswer({ query: trimmed, source, results: [], error: apiError });
           setCombo((state) => comboboxReducer(state, { type: "results", count: 0 }));
         },
       );
@@ -70,14 +76,14 @@ export function CompanySearch() {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [trimmed]);
+  }, [trimmed, source]);
 
   const choose = (result: SearchResult) => {
     setCombo(CLOSED);
     setQuery("");
     setAnswer(null);
     inputRef.current?.blur();
-    router.push(`/companies/${result.cik}`);
+    router.push(href(`/companies/${result.cik}`));
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -93,7 +99,7 @@ export function CompanySearch() {
     : current.error
       ? current.error.message
       : results.length === 0
-        ? NO_MATCH
+        ? noMatch
         : `${results.length} ${results.length === 1 ? "company" : "companies"} found`;
 
   return (
@@ -158,14 +164,14 @@ export function CompanySearch() {
             ) : current.error ? (
               <p className="px-2 pb-1.5 text-negative">{current.error.message}</p>
             ) : results.length === 0 ? (
-              <p className="px-2 pb-1.5 text-fg">{NO_MATCH}</p>
+              <p className="px-2 pb-1.5 text-fg">{noMatch}</p>
             ) : null}
-            <p className="border-t border-line px-2 py-1 text-label text-muted">{UNIVERSE_NOTE}</p>
+            <p className="border-t border-line px-2 py-1 text-label text-muted">{universeNote}</p>
           </div>
         ) : null}
       </div>
       <p id={noteId} className={pathname === "/" ? "mt-1 text-table text-muted" : "sr-only"} data-testid="universe-note">
-        {UNIVERSE_NOTE}
+        {universeNote}
       </p>
       <p role="status" aria-live="polite" className="sr-only">
         {announcement}

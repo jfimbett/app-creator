@@ -374,3 +374,30 @@ def test_the_contact_never_appears_in_settings_output() -> None:
     assert settings.live_configured
     assert FAKE_UA not in repr(settings)
     assert FAKE_UA not in settings.model_dump_json()
+
+
+@respx.mock
+def test_a_filer_with_no_annual_10k_revenue_gets_an_explanation_not_an_error(
+    live: TestClient,
+) -> None:
+    """Found on live data: a foreign filer (20-F) caused a 500."""
+    no_10k = {"facts": {"us-gaap": {"Revenues": {"units": {"USD": [
+        {"start": "2024-01-01", "end": "2024-12-31", "val": 5, "accn": "0000000009-25-000001",
+         "fy": 2024, "fp": "FY", "form": "20-F", "filed": "2025-03-01"},
+    ]}}}}}  # fmt: skip
+    respx.get(companyfacts_url("9")).mock(return_value=httpx.Response(200, json=no_10k))
+    respx.get(submissions_url("9")).mock(
+        return_value=httpx.Response(200, json={"name": "SYNTHETIC FOREIGN FILER"})
+    )
+    response = live.get("/api/companies/9/financials", params={"source": "live"})
+    assert response.status_code == 200
+    body = response.json()
+    assert body["periods"] == []
+    assert body["currency"] is None
+    assert body["notes"] == ["No annual 10-K revenue in a currency unit was found."]
+    assert body["statements"]["income"][0]["values"] == []
+    series = live.get(
+        "/api/companies/9/metrics", params={"ids": "revenue,net_margin", "source": "live"}
+    )
+    assert series.status_code == 200
+    assert series.json()["series"][0]["points"] == []

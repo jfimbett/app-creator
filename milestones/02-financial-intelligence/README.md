@@ -37,4 +37,14 @@ replaying a prompt does not reproduce the same code. The tag is the reference ve
 
 ## Results
 
-Filled in after the checkpoint.
+**Added.** Backend SEC adapters with a disk cache, throttling and de-duplication; a Demo / Live selector under `npm run dev`; live
+lookup by name, ticker or CIK; normalized annual income, balance-sheet and cash-flow summaries for 5 to 10 years; growth, margin,
+leverage and return ratios; a selectable metric explorer; reported or derived labels; provenance and formula tooltips; explicit
+missing, unavailable and n/m states.
+
+**Checked.** `npm run verify` offline, plus a separate live smoke check, live browser journey and cross-check against raw SEC data
+on real companies. The commit and exact results are in `PROGRESS.md`.
+
+**Limitations.** Summaries are not the complete filed statements. Some concepts are unmapped and show as missing, such as Microsoft's
+and Alphabet's D&A. Foreign 20-F filers have no statements. Values may reflect later restatements. No independent review was run; Windows, Cline and CI
+are untested. On a phone, a tooltip's Source link needs a tap; by keyboard, use the SEC source links under the tables.

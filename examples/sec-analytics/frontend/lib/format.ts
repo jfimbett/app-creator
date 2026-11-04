@@ -1,11 +1,15 @@
 // Display formatting of finished values. No calculations here: values arrive computed from the backend.
 
+import type { MetricValue } from "./types";
+
 /** True minus sign (U+2212), used instead of the hyphen for negative numbers. */
 export const MINUS = "−";
 /** Shown in place of any missing number or date; never 0 and never blank. */
 export const DASH = "—";
 /** Shown for a profile field the SEC submissions file does not contain. */
 export const NOT_REPORTED = "Not reported by SEC";
+/** Shown for a calculated value whose inputs are missing or whose denominator is zero. */
+export const UNAVAILABLE = "unavailable";
 
 const WHOLE = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const ISO_DATE = /^(\d{4}-\d{2}-\d{2})(T.*)?$/;
@@ -56,4 +60,48 @@ export function formatFiscalYear(label: string, periodEnd: string | null): strin
 /** The text badge for a missing value: "MISSING · <reason>". */
 export function formatMissing(reason: string | null): string {
   return `MISSING · ${reason || "not reported"}`;
+}
+
+function withMinus(digits: string, negative: boolean): string {
+  return negative ? `${MINUS}${digits}` : digits;
+}
+
+/** A decimal ratio as a percentage with one decimal: 0.25 → "25.0%". */
+export function formatPercent(value: number | null): string {
+  if (!isNumber(value)) return DASH;
+  const text = (Math.abs(value) * 100).toFixed(1);
+  return `${withMinus(text, value < 0 && Number(text) !== 0)}%`;
+}
+
+/** A decimal ratio as a multiple with two decimals: 0.5 → "0.50×". */
+export function formatTimes(value: number | null): string {
+  if (!isNumber(value)) return DASH;
+  const text = Math.abs(value).toFixed(2);
+  return `${withMinus(text, value < 0 && Number(text) !== 0)}×`;
+}
+
+/** A finished value in its display form: percent, multiple, or money in millions. */
+export function formatMetric(metric: Pick<MetricValue, "value" | "unit">): string {
+  if (metric.unit === "percent") return formatPercent(metric.value);
+  if (metric.unit === "ratio") return formatTimes(metric.value);
+  return formatMillions(metric.value);
+}
+
+/** The exact value with its unit, for tooltips. */
+export function formatExactMetric(metric: Pick<MetricValue, "value" | "unit">): string {
+  if (metric.unit === "percent") return formatPercent(metric.value);
+  if (metric.unit === "ratio") return formatTimes(metric.value);
+  return formatExact(metric.value, metric.unit);
+}
+
+/** The unit as a caption: "USD millions", "%" or "×". */
+export function unitCaption(unit: string): string {
+  if (unit === "percent") return "%";
+  if (unit === "ratio") return "×";
+  return unit ? `${unit} millions` : "";
+}
+
+/** A number on a chart axis, in the same form as the values. */
+export function formatAxis(value: number, unit: string): string {
+  return formatMetric({ value, unit });
 }

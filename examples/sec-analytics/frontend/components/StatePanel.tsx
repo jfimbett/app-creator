@@ -21,6 +21,8 @@ export type StatePanelProps = {
   reference?: string | null;
   /** A retry or next-step action. Renders a button when given. */
   action?: { label: string; onClick: () => void };
+  /** A second next step, shown before `action` (for example "Use recorded demo data"). */
+  secondaryAction?: { label: string; onClick: () => void };
   /** Number of skeleton rows while loading (default 3). */
   rows?: number;
   className?: string;
@@ -52,7 +54,7 @@ const TONE: Record<StateKind, string> = {
   error: "border-l-negative text-negative",
 };
 
-export function StatePanel({ kind, title, message, reference, action, rows = 3, className }: StatePanelProps) {
+export function StatePanel({ kind, title, message, reference, action, secondaryAction, rows = 3, className }: StatePanelProps) {
   const isProblem = kind === "error" || kind === "offline";
   const heading = title ?? DEFAULT_TITLE[kind];
 
@@ -87,14 +89,19 @@ export function StatePanel({ kind, title, message, reference, action, rows = 3, 
           Reference: <span className="code-id">{reference}</span>
         </p>
       ) : null}
-      {action ? (
-        <button
-          type="button"
-          onClick={action.onClick}
-          className="mt-2 rounded-sm border border-line bg-panel px-2 py-1 text-fg hover:border-accent"
-        >
-          {action.label}
-        </button>
+      {action || secondaryAction ? (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {[secondaryAction, action].filter((item) => item !== undefined).map((item) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={item.onClick}
+              className="rounded-sm border border-line bg-panel px-2 py-1 text-fg hover:border-accent"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
       ) : null}
     </div>
   );

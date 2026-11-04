@@ -7,8 +7,12 @@
  *  - "synthetic": SYNTHETIC TEST DATA                    (a manifest marked synthetic)
  *  - "missing":   MISSING · <reason>                     (a value SEC did not report for that period)
  */
+import type { MetricKind, SourceInfo } from "@/lib/types";
+
 export type SourceBadgeProps =
   | { kind: "demo"; snapshotDate?: string | null; label?: string; className?: string }
+  | { kind: "live"; label: string; className?: string }
+  | { kind: "cached"; label: string; className?: string }
   | { kind: "synthetic"; label?: string; className?: string }
   | { kind: "missing"; reason?: string | null; className?: string };
 
@@ -22,6 +26,9 @@ export function sourceBadgeText(props: SourceBadgeProps): string {
     case "demo":
       if (props.label) return props.label;
       return props.snapshotDate ? `${DEMO_LABEL} · snapshot ${props.snapshotDate}` : DEMO_LABEL;
+    case "live":
+    case "cached":
+      return props.label;
     case "synthetic":
       return props.label || SYNTHETIC_LABEL;
     case "missing":
@@ -31,9 +38,27 @@ export function sourceBadgeText(props: SourceBadgeProps): string {
 
 const TONE: Record<SourceBadgeProps["kind"], string> = {
   demo: "border-warning text-warning",
+  live: "border-positive text-positive",
+  cached: "border-link text-link",
   synthetic: "border-negative text-negative",
   missing: "border-dashed border-line text-muted",
 };
+
+/** A panel's badge from the API's SourceInfo: the label says it all, and the colour only repeats it. */
+export function InfoBadge({ source }: { source: SourceInfo }) {
+  if (source.mode === "live") return <SourceBadge kind="live" label={source.label} />;
+  if (source.mode === "cached") return <SourceBadge kind="cached" label={source.label} />;
+  return source.label.startsWith(DEMO_LABEL) ? <SourceBadge kind="demo" label={source.label} /> : <SourceBadge kind="synthetic" label={source.label} />;
+}
+
+/** Whether a value is taken from a filing or calculated by the app. */
+export function KindBadge({ kind }: { kind: MetricKind }) {
+  return (
+    <span data-testid="kind-badge" className="label-caps rounded-sm border border-line px-1 text-[0.625rem] leading-4 text-muted">
+      {kind === "derived" ? "DERIVED" : "REPORTED"}
+    </span>
+  );
+}
 
 export function SourceBadge(props: SourceBadgeProps) {
   return (

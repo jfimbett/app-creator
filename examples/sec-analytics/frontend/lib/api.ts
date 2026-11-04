@@ -2,9 +2,13 @@
 
 import type {
   CompanyProfile,
+  DataSourceChoice,
   ErrorEnvelope,
+  FinancialsResponse,
   HealthResponse,
   MetaResponse,
+  MetricSeriesResponse,
+  MetricsCatalog,
   OverviewResponse,
   SearchResponse,
 } from "./types";
@@ -61,6 +65,15 @@ export interface RequestOptions {
   signal?: AbortSignal;
 }
 
+/** Calls that can use live data say which source they want; demo is left off the URL. */
+export interface SourceOptions extends RequestOptions {
+  source?: DataSourceChoice;
+}
+
+function sourceParam(source: DataSourceChoice | undefined): DataSourceChoice | undefined {
+  return source === "live" ? "live" : undefined;
+}
+
 /** Builds the client around a fetch function (the browser's by default; a fake one in tests). */
 export function createApi(fetcher: Fetcher = (input, init) => fetch(input, init)) {
   async function get<T>(path: string, params: Record<string, string | number | undefined> = {}, options: RequestOptions = {}): Promise<T> {
@@ -92,12 +105,17 @@ export function createApi(fetcher: Fetcher = (input, init) => fetch(input, init)
   return {
     getHealth: (options?: RequestOptions) => get<HealthResponse>("/health", {}, options),
     getMeta: (options?: RequestOptions) => get<MetaResponse>("/meta", {}, options),
-    searchCompanies: (q: string, options: RequestOptions & { limit?: number } = {}) =>
-      get<SearchResponse>("/companies/search", { q, limit: options.limit }, options),
-    getCompany: (cik: string, options?: RequestOptions) =>
-      get<CompanyProfile>(`/companies/${encodeURIComponent(cik)}`, {}, options),
-    getOverview: (cik: string, options: RequestOptions & { years?: number } = {}) =>
-      get<OverviewResponse>(`/companies/${encodeURIComponent(cik)}/overview`, { years: options.years }, options),
+    searchCompanies: (q: string, options: SourceOptions & { limit?: number } = {}) =>
+      get<SearchResponse>("/companies/search", { q, limit: options.limit, source: sourceParam(options.source) }, options),
+    getCompany: (cik: string, options: SourceOptions = {}) =>
+      get<CompanyProfile>(`/companies/${encodeURIComponent(cik)}`, { source: sourceParam(options.source) }, options),
+    getOverview: (cik: string, options: SourceOptions & { years?: number } = {}) =>
+      get<OverviewResponse>(`/companies/${encodeURIComponent(cik)}/overview`, { years: options.years, source: sourceParam(options.source) }, options),
+    getFinancials: (cik: string, options: SourceOptions & { years?: number } = {}) =>
+      get<FinancialsResponse>(`/companies/${encodeURIComponent(cik)}/financials`, { years: options.years, source: sourceParam(options.source) }, options),
+    getMetricCatalog: (options?: RequestOptions) => get<MetricsCatalog>("/metrics", {}, options),
+    getMetricSeries: (cik: string, ids: readonly string[], options: SourceOptions & { years?: number } = {}) =>
+      get<MetricSeriesResponse>(`/companies/${encodeURIComponent(cik)}/metrics`, { ids: ids.join(","), years: options.years, source: sourceParam(options.source) }, options),
   };
 }
 

@@ -44,10 +44,11 @@ def _text(value: Any) -> str | None:
 def _kind_and_unit(metric_id: str, financials: Financials) -> tuple[str, str]:
     """A line's kind and unit, also when the company has no periods."""
     values = financials.series.get(metric_id) or []
-    kind = values[0].kind if values else CATALOG_BY_ID[metric_id]["kind"]
-    if metric_id in {"debt_to_equity"}:
+    entry = CATALOG_BY_ID.get(metric_id, {})
+    kind = values[0].kind if values else entry.get("kind", "reported")
+    if metric_id == "debt_to_equity":
         return kind, RATIO
-    if CATALOG_BY_ID.get(metric_id, {}).get("unit_kind") == "percent":
+    if entry.get("unit_kind") == "percent":
         return kind, PERCENT
     return kind, financials.currency or ""
 

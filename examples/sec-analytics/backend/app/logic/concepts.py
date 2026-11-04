@@ -64,7 +64,14 @@ D_AND_A_CONCEPTS: tuple[str, ...] = (
     "DepreciationAmortizationAndAccretionNet",
 )
 SHORT_TERM_DEBT_CONCEPTS: tuple[str, ...] = ("CommercialPaper", "ShortTermBorrowings")
-ALL_CONCEPTS = CAPTURE_CONCEPTS
+# PaymentsToAcquireProductiveAssets is outside CAPTURE_CONCEPTS, so it never appears in the
+# recorded fixtures. Checked on live data 2026-11-04: NVIDIA tags its capex this way. It can include
+# intangible assets, which is why it comes second; the concept used is always shown.
+CAPEX_CONCEPTS: tuple[str, ...] = (
+    "PaymentsToAcquirePropertyPlantAndEquipment",
+    "PaymentsToAcquireProductiveAssets",
+)
+ALL_CONCEPTS: tuple[str, ...] = (*CAPTURE_CONCEPTS, "PaymentsToAcquireProductiveAssets")
 
 
 @dataclass(frozen=True)
@@ -99,7 +106,9 @@ REPORTED_METRICS: tuple[ReportedMetric, ...] = (
     _one(
         "operating_cash_flow", "Operating cash flow", "NetCashProvidedByUsedInOperatingActivities"
     ),
-    _one("capex", "Capital expenditure (capex)", "PaymentsToAcquirePropertyPlantAndEquipment"),
+    ReportedMetric(
+        "capex", "Capital expenditure (capex)", CAPEX_CONCEPTS, "no mapped capex concept"
+    ),
     _one("assets", "Total assets", "Assets", instant=True),
     _one("assets_current", "Current assets", "AssetsCurrent", instant=True),
     _one("liabilities", "Total liabilities", "Liabilities", instant=True),

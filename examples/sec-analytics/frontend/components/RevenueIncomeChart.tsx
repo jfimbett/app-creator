@@ -20,7 +20,7 @@ type SeriesKey = (typeof SERIES)[number]["key"];
 
 const RANGES: { value: YearRange; label: string }[] = [
   { value: "last5", label: "Last 5 years" },
-  { value: "all", label: "All in snapshot" },
+  { value: "all", label: "All available" },
 ];
 
 /** Chart tooltip: fiscal year with its end date, then each visible series with value and unit. */

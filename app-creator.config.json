@@ -27,7 +27,7 @@
       "frontend": 3000
     },
     "devEnv": {
-      "DATA_MODE": "fixtures"
+      "DATA_MODE": "live"
     },
     "demoEnv": {
       "DATA_MODE": "fixtures"

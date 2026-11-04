@@ -2,7 +2,10 @@
 // Dates are ISO strings "YYYY-MM-DD"; timestamps are ISO 8601 in UTC with a "Z".
 // Money values are whole currency units (USD, not millions); the UI scales them for display.
 
-/** Where the data on a panel comes from. At M1 `mode` is always "demo". */
+/** The person's choice of data: recorded demo data or live SEC. */
+export type DataSourceChoice = "demo" | "live";
+
+/** Where the data on a panel comes from. */
 export interface SourceInfo {
   mode: "demo" | "live" | "cached";
   label: string;
@@ -130,5 +133,63 @@ export interface OverviewResponse {
   key_figures: MetricValue[];
   chart: OverviewChartRow[];
   notes: string[];
+  source: SourceInfo;
+}
+
+/** One metric the explorer can show. GET /api/metrics */
+export interface MetricInfo {
+  id: string;
+  label: string;
+  unit_kind: "currency" | "ratio" | "percent";
+  kind: MetricKind;
+  formula: string | null;
+  concepts: string[];
+}
+
+export interface MetricsCatalog {
+  metrics: MetricInfo[];
+}
+
+/** An annual period, identified by its dates. */
+export interface PeriodInfo {
+  fiscal_year_label: string;
+  start: string;
+  end: string;
+}
+
+/** One row of a statement summary: one value per period, in the order of `periods`. */
+export interface Line {
+  metric_id: string;
+  label: string;
+  kind: MetricKind;
+  unit: string;
+  values: MetricValue[];
+}
+
+/** GET /api/companies/{cik}/financials */
+export interface FinancialsResponse {
+  cik: string;
+  currency: string | null;
+  fiscal_year_end: string | null;
+  periods: PeriodInfo[];
+  statements: { income: Line[]; balance: Line[]; cash_flow: Line[] };
+  ratios: Line[];
+  notes: string[];
+  source: SourceInfo;
+}
+
+export interface MetricSeries {
+  metric_id: string;
+  label: string;
+  unit: string;
+  kind: MetricKind;
+  formula: string | null;
+  points: MetricValue[];
+}
+
+/** GET /api/companies/{cik}/metrics */
+export interface MetricSeriesResponse {
+  cik: string;
+  series: MetricSeries[];
   source: SourceInfo;
 }

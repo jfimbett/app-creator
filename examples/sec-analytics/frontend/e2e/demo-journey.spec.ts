@@ -54,7 +54,7 @@ test("classroom journey: search by name, ticker and CIK; figures, chart and sour
   await expect(chart.locator("tbody tr")).toHaveCount(20);
   await page.getByText("Last 5 years").click();
   await expect(chart.locator("tbody tr")).toHaveCount(5);
-  const netIncome = page.getByRole("button", { name: "Net income" });
+  const netIncome = chart.getByRole("button", { name: "Net income" });
   await netIncome.click();
   await expect(netIncome).toHaveAttribute("aria-pressed", "false");
   await netIncome.click();

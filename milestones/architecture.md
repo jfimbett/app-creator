@@ -104,7 +104,7 @@ the value ([research](../docs/research/sec-edgar.md) §2).
 - Instant facts (balance sheet) are matched to the annual period's `end` date exactly.
 - Only facts whose `form` is `10-K` or `10-K/A` feed annual series (Q24).
 - Fiscal year label: `FY<year of end date>`, shown with the exact end date (routine technical choice
-  `[verify against fixtures]`).
+  verified 2026-11-04).
 
 **Duplicates and restatements** (Q24):
 - Group facts by (concept, unit, start, end).
@@ -117,7 +117,7 @@ the value ([research](../docs/research/sec-edgar.md) §2).
 - A ratio whose inputs have different units is `unavailable` ("units differ").
 - No currency conversion (GOAL.md §6).
 
-**Concept mapping** (proposed; `[verify against fixtures]`):
+**Concept mapping** (verified 2026-11-04, see the decision log; `examples/sec-analytics/CLAUDE.md` has the current lists):
 
 | Metric | US-GAAP concepts (priority order; the first present per period wins; alternates never summed) | Kind |
 |---|---|---|
@@ -281,3 +281,15 @@ Tests and `npm run demo` need no `.env`.
 | 2026-11-04 | Former-name dates arrive as raw SEC timestamps and are formatted by the frontend; `/` is ignored in text fields while Ctrl/Cmd-K works inside the search box | keep source data intact; `/` can still be typed | routine choice; m1-06, m1-09 |
 | 2026-11-04 | `npm run demo` keeps the dev server, with the Next.js dev badge off; `frontend/AGENTS.md`, which `next dev` writes, is git-ignored | classroom display; generated file | recovery R01 |
 | 2026-11-04 | The header's backend-down state shows the full message as visible text | M1-E1 requires the header to show it; it was screen-reader text only | m1-16 |
+| 2026-11-04 | `[verify against fixtures]` for concepts resolved. Interest alternates: `InterestExpenseNonoperating`, then `InterestExpenseDebt`. D&A: the listed concepts only | fixture check `runs/m2/m2-01-implement-main-session/fixture_concepts.py`: Microsoft and Alphabet report no listed D&A concept, Apple no interest concept after FY2023; shown as missing, never substituted | brief §6 |
+| 2026-11-04 | `sec_refused` (502) added to the API; `sec_rate_limited` (503) when SEC keeps answering 429, or 503 with `Retry-After`; a bare 503 stays `sec_unavailable` (502) | the brief's §7 and §9 treat 503 differently; this satisfies both and keeps an outage distinct from limiting | routine choice; brief §5, §7, §9 |
+| 2026-11-04 | The SEC client stays synchronous, not async as the brief's table says; FastAPI runs the endpoints in a thread pool, and one lock plus a per-URL `Future` give one request in flight and single flight | the behaviour is what the brief requires, and the tested M1 client is reused | deviation, recorded; brief §5 |
+| 2026-11-04 | Capex alternate `PaymentsToAcquireProductiveAssets`, after PP&E | real concept alternative: NVIDIA reports capex only this way. Verified on live data, not in the fixtures. May include intangibles, so the concept is always shown | owner's M2 instruction (concept alternatives); deviation from brief §6's fixtures-only check |
+| 2026-11-04 | Debt is `unavailable` ("no long-term debt concept reported") when only a short-term component is reported | stricter than the brief's sum: a reported zero commercial paper line produced total debt 0 and D/E 0.00× for NVIDIA FY2019 | found on live data |
+| 2026-11-04 | Derived key figures and cash flow use the latest period, or say why not; revenue and net income keep M1's latest reported value | NVIDIA's FCF from FY2012 appeared beside FY2026 figures | found on live data |
+| 2026-11-04 | Non-revenue lines match a period by end date among annual durations, not by exact start date | a filer can report one year with a slightly different start; `select_periods` already keeps one period per end date | routine choice; brief §7 |
+| 2026-11-04 | Growth, ROE and ROA use a prior period only if it ended 350 to 380 days earlier | with a year missing, a two-year change must not read as annual growth | routine choice |
+| 2026-11-04 | A missing prior year is `prior year missing` for the first period; the shown range does not limit the look-back | the first shown year still has its real prior year | routine choice |
+| 2026-11-04 | Years selector is radio buttons; the statement tables open scrolled to the newest year | a `<select>` is a second combobox on the page, and the newest year was off-screen | routine choice |
+| 2026-11-04 | A live-mode CIK not in the ticker file returns one result, "Not in the SEC ticker file: open by CIK" | brief §3: such filers can still be opened | routine choice |
+| 2026-11-04 | Root `.env` holds the owner's `SEC_USER_AGENT` on this machine | owner's instruction, 2026-11-04; git-ignored, permissions 600, value not recorded | owner |

@@ -27,7 +27,7 @@ Elsewhere: [README.md](../README.md) (overview), [START-HERE.md](../START-HERE.m
 
 These documents arrive with the SEC Analytics example on `main`; they are not on the `template` branch:
 
-- `SETUP.md`: tested install and run commands, offline and live modes, switching versions, troubleshooting.
+- [SETUP.md](SETUP.md): tested install and run commands, offline and live modes, the SEC contact, troubleshooting.
 - `ARCHITECTURE.md`: the example's frontend, backend and external-service boundaries, with a diagram.
 - `TEACHING-GUIDE.md`: instructor rehearsal, checkout commands, a short demo per milestone, exercises.
 - `CHANGELOG.md`: what each milestone added and what does not work.

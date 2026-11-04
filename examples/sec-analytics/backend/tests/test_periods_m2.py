@@ -6,7 +6,7 @@ All facts here are SYNTHETIC: invented for tests, not SEC data.
 import pytest
 
 from app.logic import metrics
-from app.logic.statements import build_financials
+from app.logic.statements import build_financials, overview
 from app.models.common import MetricValue
 
 URL = "https://data.sec.gov/api/xbrl/companyfacts/CIK0000000002.json"
@@ -218,3 +218,49 @@ def test_no_revenue_at_all_gives_no_periods_and_a_note() -> None:
     result = build_financials(doc(NetIncomeLoss=[fact(*FY25, 1)]), URL)
     assert (result.currency, result.periods) == (None, [])
     assert result.notes == ["No annual 10-K revenue in a currency unit was found."]
+
+
+def test_capex_uses_the_alternate_concept_when_the_first_is_absent() -> None:
+    """Found on live data: NVIDIA tags capex as PaymentsToAcquireProductiveAssets."""
+    result = build_financials(
+        doc(
+            Revenues=[fact(*FY25, 100)],
+            NetCashProvidedByUsedInOperatingActivities=[fact(*FY25, 40)],
+            PaymentsToAcquireProductiveAssets=[fact(*FY25, 15)],
+        ),
+        URL,
+    )
+    capex = result.series["capex"][0]
+    assert (capex.value, capex.provenance.concept) == (15, "PaymentsToAcquireProductiveAssets")
+    assert result.series["fcf"][0].value == 25
+
+
+def test_ppe_capex_wins_when_both_concepts_exist_and_they_are_never_summed() -> None:
+    result = build_financials(
+        doc(
+            Revenues=[fact(*FY25, 100)],
+            PaymentsToAcquirePropertyPlantAndEquipment=[fact(*FY25, 10)],
+            PaymentsToAcquireProductiveAssets=[fact(*FY25, 15)],
+        ),
+        URL,
+    )
+    assert result.series["capex"][0].value == 10
+
+
+def test_a_calculated_key_figure_is_never_taken_from_an_old_year() -> None:
+    """Found on live data: FCF from FY2012 was shown beside FY2026 figures."""
+    result = overview(
+        doc(
+            Revenues=[fact(*FY24, 100), fact(*FY25, 110)],
+            NetIncomeLoss=[fact(*FY24, 10), fact(*FY25, 11)],
+            NetCashProvidedByUsedInOperatingActivities=[fact(*FY24, 40)],
+            PaymentsToAcquirePropertyPlantAndEquipment=[fact(*FY24, 15)],
+        ),
+        URL,
+    )
+    figures = {f.metric_id: f for f in result.key_figures}
+    assert figures["fcf"].fiscal_year_label == "FY2025"
+    assert (figures["fcf"].status, figures["fcf"].value) == ("unavailable", None)
+    assert figures["operating_cash_flow"].fiscal_year_label == "FY2025"
+    assert figures["operating_cash_flow"].status == "missing"
+    assert figures["net_margin"].fiscal_year_label == "FY2025"

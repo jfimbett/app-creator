@@ -1,21 +1,21 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { SourceBadge } from "@/components/SourceBadge";
-
 type AppHeaderProps = {
   /** The header search (CompanySearch). The header only reserves the space; it has no search logic. */
   search?: ReactNode;
+  /** The data source: the mode badge and, under `npm run dev`, the Demo / Live selector. */
+  mode?: ReactNode;
   /** Backend status indicator (BackendStatus). */
   status?: ReactNode;
 };
 
 /**
- * Compact app header: wordmark, search slot, the app-wide mode badge and backend status.
+ * Compact app header: wordmark, search slot, the data source and backend status.
  * At 390 px the search drops to its own full-width row below the wordmark.
- * No menu items at M1: there are no other screens.
+ * No menu items: there are no other screens.
  */
-export function AppHeader({ search, status }: AppHeaderProps) {
+export function AppHeader({ search, mode, status }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-panel">
       <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2">
@@ -31,7 +31,7 @@ export function AppHeader({ search, status }: AppHeaderProps) {
           </div>
         ) : null}
         <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
-          <SourceBadge kind="demo" />
+          {mode}
           {status}
         </div>
       </div>

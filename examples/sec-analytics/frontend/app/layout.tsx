@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { BackendStatus } from "@/components/BackendStatus";
 import { CompanySearch } from "@/components/CompanySearch";
+import { ModeSelector } from "@/components/ModeSelector";
 import { APP_NAME } from "@/lib/site";
 
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: APP_NAME,
-  description: `${APP_NAME}: company profiles and figures from recorded SEC EDGAR data`,
+  description: `${APP_NAME}: company profiles and annual figures from SEC EDGAR data`,
 };
 
 /**
@@ -26,9 +28,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         >
           Skip to content
         </a>
-        <AppHeader search={<CompanySearch />} status={<BackendStatus />} />
+        {/* Suspense: these read the page URL (?source=), which is only known in the browser. */}
+        <Suspense fallback={<AppHeader status={<BackendStatus />} />}>
+          <AppHeader search={<CompanySearch />} mode={<ModeSelector />} status={<BackendStatus />} />
+        </Suspense>
         <main id="main" className="mx-auto w-full max-w-[1440px] px-4 py-4">
-          {children}
+          <Suspense fallback={null}>{children}</Suspense>
         </main>
       </body>
     </html>

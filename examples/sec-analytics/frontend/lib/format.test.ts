@@ -5,6 +5,11 @@ import {
   NOT_REPORTED,
   formatDate,
   formatExact,
+  formatExactMetric,
+  formatMetric,
+  formatPercent,
+  formatTimes,
+  unitCaption,
   formatFiscalYear,
   formatFiscalYearEnd,
   formatMillions,
@@ -87,5 +92,39 @@ describe("formatMissing", () => {
   it("builds the text badge for a missing value", () => {
     expect(formatMissing("no mapped revenue concept")).toBe("MISSING · no mapped revenue concept");
     expect(formatMissing(null)).toBe("MISSING · not reported");
+  });
+});
+
+describe("ratios and units (M2)", () => {
+  it("shows percentages with one decimal and a true minus sign", () => {
+    expect(formatPercent(0.25)).toBe("25.0%");
+    expect(formatPercent(-0.126)).toBe(`${MINUS}12.6%`);
+    expect(formatPercent(-0.0001)).toBe("0.0%");
+    expect(formatPercent(null)).toBe("—");
+  });
+
+  it("shows multiples with two decimals", () => {
+    expect(formatTimes(0.5)).toBe("0.50×");
+    expect(formatTimes(1.234)).toBe("1.23×");
+    expect(formatTimes(null)).toBe("—");
+  });
+
+  it("formats a value by its unit", () => {
+    expect(formatMetric({ value: 0.15, unit: "percent" })).toBe("15.0%");
+    expect(formatMetric({ value: 0.71, unit: "ratio" })).toBe("0.71×");
+    expect(formatMetric({ value: 136_056_000_000, unit: "USD" })).toBe("136,056");
+    expect(formatMetric({ value: 0, unit: "USD" })).toBe("0");
+  });
+
+  it("captions the unit", () => {
+    expect(unitCaption("USD")).toBe("USD millions");
+    expect(unitCaption("percent")).toBe("%");
+    expect(unitCaption("ratio")).toBe("×");
+    expect(unitCaption("")).toBe("");
+  });
+
+  it("gives exact values in tooltips", () => {
+    expect(formatExactMetric({ value: 136_056_000_000, unit: "USD" })).toBe("136,056,000,000 USD");
+    expect(formatExactMetric({ value: 0.25, unit: "percent" })).toBe("25.0%");
   });
 });

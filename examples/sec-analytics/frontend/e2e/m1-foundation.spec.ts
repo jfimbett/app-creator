@@ -80,7 +80,7 @@ test("journey 3: the company page shows profile, figures, chart, label and sourc
 
   await expect(page.getByTestId("overview-chart").locator("svg").first()).toBeVisible();
   await expect(page.getByText(SNAPSHOT_LABEL).first()).toBeVisible();
-  await expect(page.getByText("Values may reflect later restatements; not point-in-time.")).toBeVisible();
+  await expect(page.getByText("Values may reflect later restatements; not point-in-time.").first()).toBeVisible();
 
   await figures.getByRole("button").first().hover();
   const tip = page.getByTestId("provenance-tip");

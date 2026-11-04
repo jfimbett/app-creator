@@ -72,6 +72,9 @@ RATIO_LINES = (
     "roe",
     "roa",
 )
+# The latest usable value, so a company that stopped reporting one still shows its last figure,
+# dated.
+LATEST_USABLE_FIGURES = ("revenue", "net_income")
 KEY_FIGURES = (
     "revenue",
     "revenue_growth",
@@ -252,12 +255,19 @@ def overview(companyfacts: Mapping, source_url: str, years: int | None = None) -
 
     `source_url` is the SEC URL of that document (recorded in every value's provenance).
     `years` keeps only the latest N annual periods in the chart (None = all available);
-    key figures always use the latest usable value.
+    key figures use the latest period (revenue and net income: the latest usable value).
     """
     result = build_financials(companyfacts, source_url)
     if result.currency is None:
         return Overview(notes=result.notes)
-    figures = [_latest_reported(result.series[metric_id]) for metric_id in KEY_FIGURES]
+    # Everything else belongs to the latest period, or says why not: an old value next to the latest
+    # figures would look current.
+    figures = [
+        _latest_reported(result.series[metric_id])
+        if metric_id in LATEST_USABLE_FIGURES
+        else result.series[metric_id][-1]
+        for metric_id in KEY_FIGURES
+    ]
     chart = [
         OverviewChartRow(fiscal_year_label=p.label, period_end=p.end, revenue=r, net_income=n)
         for p, r, n in zip(

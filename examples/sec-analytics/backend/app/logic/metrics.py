@@ -27,6 +27,8 @@ REVENUE_NOT_POSITIVE = "revenue ≤ 0"
 UNITS_DIFFER = "units differ"
 NEGATIVE_EQUITY = "n/m (negative equity)"
 NO_DEBT_CONCEPT = "no debt concept reported"
+NO_LONG_TERM_DEBT = "no long-term debt concept reported"
+LONG_TERM_DEBT_IDS = {"debt_long_term_noncurrent", "debt_long_term_current"}
 ENDING_BALANCE_NOTE = "ending balance (prior year unavailable)"
 
 FORMULAS = {
@@ -188,6 +190,10 @@ def debt(components: list[MetricValue]) -> MetricValue:
     reported = [c for c in components if _ok(c)]
     if not reported:
         return _unavailable("debt", base, base.unit, components, NO_DEBT_CONCEPT)
+    # A short-term line alone says nothing about long-term debt, so a total would understate it,
+    # possibly as zero. (Seen on live data: NVIDIA FY2019.)
+    if not any(c.metric_id in LONG_TERM_DEBT_IDS for c in reported):
+        return _unavailable("debt", base, base.unit, components, NO_LONG_TERM_DEBT)
     if len({c.unit for c in reported}) > 1:
         return _unavailable("debt", base, base.unit, components, UNITS_DIFFER)
     absent = [c.metric_id for c in components if not _ok(c)]

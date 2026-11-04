@@ -72,12 +72,24 @@ def test_growth_with_no_prior_period() -> None:
 
 
 def test_debt_with_no_component_is_unavailable_never_zero() -> None:
-    result = metrics.debt([mv("a", None), mv("b", None), mv("c", None)])
+    result = metrics.debt(
+        [
+            mv("debt_long_term_noncurrent", None),
+            mv("debt_long_term_current", None),
+            mv("debt_short_term", None),
+        ]
+    )
     assert_unavailable(result, "no debt concept reported")
 
 
 def test_a_reported_zero_debt_component_counts_as_reported() -> None:
-    result = metrics.debt([mv("a", 0), mv("b", None), mv("c", None)])
+    result = metrics.debt(
+        [
+            mv("debt_long_term_noncurrent", 0),
+            mv("debt_long_term_current", None),
+            mv("debt_short_term", None),
+        ]
+    )
     assert (result.status, result.value) == ("ok", 0)
 
 
@@ -104,4 +116,19 @@ def test_fcf_and_working_capital_need_both_inputs_and_keep_negatives() -> None:
     assert capital.value == -4
     assert_unavailable(
         metrics.working_capital(mv("ca", None), mv("cl", 5)), "current assets missing"
+    )
+
+
+def test_debt_without_any_long_term_component_is_unavailable_not_zero() -> None:
+    """Found on live data: a reported short-term 0 must not read as "this company has no debt"."""
+    result = metrics.debt(
+        [
+            mv("debt_long_term_noncurrent", None),
+            mv("debt_long_term_current", None),
+            mv("debt_short_term", 0),
+        ]
+    )
+    assert_unavailable(result, "no long-term debt concept reported")
+    assert_unavailable(
+        metrics.debt_to_equity(result, mv("equity", 100)), "no long-term debt concept reported"
     )

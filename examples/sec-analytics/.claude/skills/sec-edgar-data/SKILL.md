@@ -78,6 +78,12 @@ Code and tests in `backend/`, updated `milestones/architecture.md` (decision row
   - 429/503 persists after the allowed retries, or there is no network;
   - a mapping cannot be verified against the fixtures (concept absent, units or periods unclear).
 
+## Live checks (from M2)
+
+The verified concept lists, formulas, restatement policy, cache and throttle are in the example's `CLAUDE.md` ("Financial data
+rules") and `backend/app/logic/`. Fixtures cannot show every filer's tagging, so check a mapping change on real companies too:
+`backend/scripts/live_sec_smoke.py` by hand, and awkward filers (a bank, negative equity, a 20-F filer). Never in `npm run verify`.
+
 ## Common mistakes
 
 - Grouping facts by `fy`/`fp`: a FY2025 10-K reports FY2023 comparatives with `fy: 2025`.
