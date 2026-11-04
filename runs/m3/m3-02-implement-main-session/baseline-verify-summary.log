@@ -1,0 +1,20 @@
+[backend] INFO:     Shutting down
+[backend] INFO:     Waiting for application shutdown.
+[backend] INFO:     Application shutdown complete.
+[backend] INFO:     Finished server process [44745]
+
+Step                             Result  Seconds
+-------------------------------  ------  -------
+toolkit checks                   pass        0.1
+backend lint (ruff)              pass        0.6
+backend tests (pytest)           pass        3.1
+frontend lint                    pass        3.1
+frontend typecheck               pass        2.2
+frontend unit tests              pass        2.8
+frontend build                   pass        7.1
+browser smoke test (Playwright)  pass       14.9
+
+All checks passed.
+Full log: .logs/verify-2026-11-04T07-24-48-887Z.log
+
+[exited with code 0]

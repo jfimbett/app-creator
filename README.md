@@ -1,5 +1,7 @@
 # App Creator
 
+> **In class?** Start with [CLASSROOM.md](CLASSROOM.md). `main` currently contains the verified M2 version of the SEC Analytics example.
+
 App Creator is a starter for building a web application with an AI coding assistant. It gives the assistant
 working rules, 15 skills (step-by-step instructions for planning, building, testing, reviewing and shipping) and
 13 specialist agents, plus four root commands that install, run and check the app the same way on macOS and

@@ -1,0 +1,11 @@
+SEC_USER_AGENT: set (value hidden)
+Added 8 files in 8 requests.
+Amendment rows in the snapshot, per CIK: {'0000320193': {'10-K/A': 0, '10-Q/A': 0}, '0000789019': {'10-K/A': 0, '10-Q/A': 0}, '0001652044': {'10-K/A': 1, '10-Q/A': 0}}
+  filings/0000320193/0000320193-26-000020/aapl-20260627.htm.gz  57924 bytes
+  filings/0000320193/0000320193-26-000026/aapl-20260926.htm.gz  119638 bytes
+  filings/0000789019/0001193125-26-323660/msft-20260630.htm.gz  342873 bytes
+  filings/0000789019/0001193125-26-436133/msft-20260930.htm.gz  220361 bytes
+  filings/0001652044/0001652044-26-000018/goog-20251231.htm.gz  185652 bytes
+  filings/0001652044/0001652044-26-000084/goog-20260930.htm.gz  147070 bytes
+  submissions/CIK0000789019-submissions-001.json  11019 bytes
+  submissions/CIK0001652044-submissions-001.json  7732 bytes
