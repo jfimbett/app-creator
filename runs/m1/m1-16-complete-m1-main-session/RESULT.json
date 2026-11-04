@@ -1,0 +1,43 @@
+{
+  "stepId": "m1-16-complete-m1-main-session",
+  "milestone": "m1",
+  "role": "top-level session (owner role)",
+  "status": "completed",
+  "startingCommit": "2133bca",
+  "checkpointCommit": "bd8ab814e35245a3dd9701f92910d541b5671892",
+  "date": "2026-11-04",
+  "gateDecidedBy": "top-level session against the brief's \u00a79 gate; project-orchestrator not invoked, per the instruction to stay in the main session",
+  "checks": [
+    {
+      "command": "bash scripts/verify-ref.sh bd8ab81 (npm ci, npm run setup, npm run verify in a clean worktree)",
+      "exit": 0,
+      "summary": "toolkit ok; ruff ok; pytest 196 passed; frontend lint and typecheck ok; Vitest 70 passed; build ok; Playwright 9 passed"
+    },
+    {
+      "command": "FRONTEND_PORT=3200 BACKEND_PORT=8200 npm run demo with no .env",
+      "result": "started; journeys 1 to 5 and 7 passed against it",
+      "deviation": "ports 3000/8000 are held by unrelated services, so the gate's default URL could not be used on this machine"
+    }
+  ],
+  "visualInspection": [
+    "m1-home-1440",
+    "m1-apple-1440",
+    "m1-home-1366",
+    "m1-apple-1366",
+    "m1-home-390",
+    "m1-apple-390",
+    "m1-no-match-1440",
+    "m1-backend-down-1440",
+    "m1-backend-down-390"
+  ],
+  "liveSec": "fixtures captured on 2026-11-03, 7 requests (step m1-05); no live SEC call in this step",
+  "defectFound": "M1-E1: the header's backend-down message was screen-reader text only and the first test still passed; message made visible and test tightened",
+  "reviewType": "same-session read-only checks (scratchpad m1_review.sh), not independent; the four planned reviewers were not dispatched, per the owner's instruction",
+  "notRun": [
+    "independent reviews",
+    "Windows",
+    "Cline",
+    "GitHub CI (nothing pushed)",
+    "the owner's own look"
+  ]
+}

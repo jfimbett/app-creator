@@ -36,3 +36,6 @@ Append-only. One line per dispatched step.
 - 2026-11-03T18:42Z · **m1/m1-06-backend-api** · backend-engineer · completed · [prompt](m1/m1-06-backend-api/PROMPT.md) · [response](m1/m1-06-backend-api/RESPONSE.md) · [result](m1/m1-06-backend-api/RESULT.json)
 - 2026-11-03T18:45Z · **m1/m1-07b-overview** · backend-engineer · completed · [prompt](m1/m1-07b-overview/PROMPT.md) · [response](m1/m1-07b-overview/RESPONSE.md) · [result](m1/m1-07b-overview/RESULT.json)
 - 2026-11-03T18:54Z · **m1/m1-10-screens** · frontend-engineer · completed · [prompt](m1/m1-10-screens/PROMPT.md) · [response](m1/m1-10-screens/RESPONSE.md) · [result](m1/m1-10-screens/RESULT.json)
+- 2026-11-03T19:55Z · **m1/m1-11-e2e** · test-engineer · failed (60-minute timeout, no message) · [prompt](m1/m1-11-e2e/PROMPT.md) · [response](m1/m1-11-e2e/RESPONSE.md) · [result](m1/m1-11-e2e/RESULT.json)
+- 2026-11-04 · **recovery/R01-classroom-demo** · top-level session · completed · [prompt](recovery/R01-classroom-demo/PROMPT.md) · [response marker](recovery/R01-classroom-demo/RESPONSE.md) · [result](recovery/R01-classroom-demo/RESULT.json)
+- 2026-11-04 · **m1/m1-16-complete-m1-main-session** · top-level session · completed · [prompt](m1/m1-16-complete-m1-main-session/PROMPT.md) · [response marker](m1/m1-16-complete-m1-main-session/RESPONSE.md) · [result](m1/m1-16-complete-m1-main-session/RESULT.json)

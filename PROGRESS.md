@@ -4,7 +4,7 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 
 ## Current phase
 
-Classroom recovery (2026-11-04): GOAL.md workflow suspended at the instructor's request. M1 is not gated and there is no `m1` tag; M2–M5 are not started.
+M1 complete at tag `m1`. Execution mode (instructor, 2026-11-04): one milestone at a time, main session, then stop and report. **Waiting for the instructor; do not start M2 without instruction.**
 
 ## Audit (2026-11-03)
 
@@ -62,6 +62,7 @@ Classroom recovery (2026-11-04): GOAL.md workflow suspended at the instructor's 
 | Ref | SHA | Verified |
 |---|---|---|
 | `template` / `template-v1` (annotated) | d387e3d82f55a3ef385eade69598784fff0cf148 | clean worktree npm ci → setup → verify exit 0 (2026-11-03 18:23Z); orchestrator gate-pass (B19) |
+| `milestone/01-foundation` / `m1` (annotated) | bd8ab814e35245a3dd9701f92910d541b5671892 | clean worktree npm ci → setup → verify exit 0 (2026-11-04 06:46Z): pytest 196, Vitest 70, Playwright 9; gate decided in the main session; same-session review only |
 
 ## Publication status
 
@@ -88,10 +89,16 @@ Not started.
 
 ### Deferred until after class
 
-1. Full `npm run verify` including the new journey (not run since m1-10); clean-worktree verify.
-2. Finish M1: m1-11 full journeys and 1440/1366/390 screenshots, m1-12 four reviews, m1-13 repairs, m1-14 docs and statuses, m1-15 gate, then `milestone/01-foundation` + `m1`. `npm run demo` is not yet documented as using spare ports.
+1. Done (m1 gate).
+2. Done at `m1` except independent reviews, which the instructor set aside for this mode: consider them before publication.
 3. Diagnose the m1-11 stall before dispatching more long steps; give long steps smaller scopes.
 4. M2–M5, final documentation set (SETUP, ARCHITECTURE, TEACHING-GUIDE, CHANGELOG, FINAL-VERIFICATION, PROMPT-EXECUTION-LOG, SOURCES), record audit.
 5. Publication (nothing pushed; no remote exists). Open owner decisions first: public commit email (security #1) and `.claude/settings.json` deny hardening (security #2).
 6. `CLAUDE.md` says "every other command asks", which no longer matches the owner's settings (Ask rules removed); correct the wording.
 7. scratchpad helpers (mkimpl.py, mkreview.sh) are session-local; move them to `scripts/` if the recorded workflow resumes.
+
+## M1 completion (2026-11-04)
+
+- Instruction saved in `runs/m1/m1-16-complete-m1-main-session/` and `milestones/01-foundation/FOLLOWUPS.md`. It replaced planned steps m1-11 to m1-15.
+- Added `e2e/m1-foundation.spec.ts`, removed the scaffold smoke spec, made the backend-down header message visible (a real M1-E1 defect), completed documents and statuses.
+- Next, only on instruction: M2 from `m1`. Demo: `FRONTEND_PORT=3200 BACKEND_PORT=8200 npm run demo` → http://127.0.0.1:3200.

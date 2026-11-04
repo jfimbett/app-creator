@@ -1,0 +1,22 @@
+ref=bd8ab81 sha=bd8ab814e35245a3dd9701f92910d541b5671892 started=2026-11-04T06:45:59Z node=v22.14.0
+... (full log kept locally in .logs/verify-bd8ab81-20261104T064558Z.log, git-ignored)
+196 passed in 1.00s
+ Test Files  9 passed (9)
+      Tests  70 passed (70)
+  9 passed (8.5s)
+
+Step                             Result  Seconds
+-------------------------------  ------  -------
+toolkit checks                   pass        0.1
+backend lint (ruff)              pass        0.5
+backend tests (pytest)           pass        1.4
+frontend lint                    pass        2.7
+frontend typecheck               pass        2.0
+frontend unit tests              pass        2.5
+frontend build                   pass        6.6
+browser smoke test (Playwright)  pass       10.1
+
+All checks passed.
+Full log: .logs/verify-2026-11-04T06-46-19-554Z.log
+finished=2026-11-04T06:46:45Z exit=0
+
