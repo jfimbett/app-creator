@@ -1,0 +1,15 @@
+{
+  "stepId": "m1-11-e2e",
+  "milestone": "m1",
+  "sender": "owner (top-level Claude Code session)",
+  "receiver": "test-engineer",
+  "dispatcher": "scripts/dispatch-step.mjs (claude -p --output-format json)",
+  "permissionMode": "bypassPermissions",
+  "resumeOf": null,
+  "model": "CLI default",
+  "startedAt": "2026-11-03T18:55:08.630Z",
+  "startCommit": "646e32cdd16a1885d2890278a4d9becbb036da16",
+  "promptSha256": "b15425f61c7707c4e355f32027631a1e5c4217b3adcb852741c4384a0e4625cd",
+  "promptFileSha256": "7cb2023cc3706fe7d06b401291737bd3536fe2c4eaea0e9facc95dc772bac3b0",
+  "status": "dispatched"
+}

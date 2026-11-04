@@ -4,7 +4,7 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 
 ## Current phase
 
-M1 Foundation (template-v1 created at d387e3d)
+Classroom recovery (2026-11-04): GOAL.md workflow suspended at the instructor's request. M1 is not gated and there is no `m1` tag; M2–M5 are not started.
 
 ## Audit (2026-11-03)
 
@@ -77,3 +77,21 @@ Not started.
 - m1-01 orchestrator plan (15 steps). Implementation steps embed `milestones/01-foundation/PROMPT.md` from `template-v1` verbatim (sha256 2984572…03ac) after a step scope (helper: scratchpad mkimpl.py).
 - m1-02 skeleton 08642b2; m1-03/04/08/09 (assistant files, SEC client, design shell, frontend lib) b3879a0; m1-05 authentic fixtures (live SEC 2026-11-03, 7 requests; SEC_USER_AGENT passed via process env only, never written) + m1-07 periods 59571f0; m1-06 backend API c5dee9b; m1-07b overview 9fb82b8. Integrated `npm run verify` exit 0 after each group.
 - m1-10 screens in progress.
+
+## Classroom recovery (2026-11-04)
+
+- Instructor request saved in `runs/recovery/R01-classroom-demo/`; worked in the main session with no dispatched agents.
+- m1-11-e2e had hit its 60-minute timeout on 2026-11-03 (exit 143, no message, no spec written); cause not diagnosed. No project agents were still running.
+- Demo: `FRONTEND_PORT=3200 BACKEND_PORT=8200 npm run demo` → http://127.0.0.1:3200 (ports 3000/8000 are held by unrelated services, left alone).
+- Fixes: favicon, Next.js dev badge off, `frontend/AGENTS.md` git-ignored, browser journey `e2e/demo-journey.spec.ts`.
+- Evidence: journey passes against the dev server at 1440 px; lint and typecheck exit 0; API values match the raw fixtures; three desktop screenshots inspected.
+
+### Deferred until after class
+
+1. Full `npm run verify` including the new journey (not run since m1-10); clean-worktree verify.
+2. Finish M1: m1-11 full journeys and 1440/1366/390 screenshots, m1-12 four reviews, m1-13 repairs, m1-14 docs and statuses, m1-15 gate, then `milestone/01-foundation` + `m1`. `npm run demo` is not yet documented as using spare ports.
+3. Diagnose the m1-11 stall before dispatching more long steps; give long steps smaller scopes.
+4. M2–M5, final documentation set (SETUP, ARCHITECTURE, TEACHING-GUIDE, CHANGELOG, FINAL-VERIFICATION, PROMPT-EXECUTION-LOG, SOURCES), record audit.
+5. Publication (nothing pushed; no remote exists). Open owner decisions first: public commit email (security #1) and `.claude/settings.json` deny hardening (security #2).
+6. `CLAUDE.md` says "every other command asks", which no longer matches the owner's settings (Ask rules removed); correct the wording.
+7. scratchpad helpers (mkimpl.py, mkreview.sh) are session-local; move them to `scripts/` if the recorded workflow resumes.

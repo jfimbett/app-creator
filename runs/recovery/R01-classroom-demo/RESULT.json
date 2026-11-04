@@ -1,0 +1,49 @@
+{
+  "stepId": "R01-classroom-demo",
+  "milestone": "recovery",
+  "role": "top-level session (owner role)",
+  "status": "completed",
+  "startingCommit": "646e32cdd16a1885d2890278a4d9becbb036da16",
+  "resultCommit": "the commit that adds this file; recorded in PROGRESS.md afterwards",
+  "date": "2026-11-04",
+  "changes": [
+    "frontend/app/icon.svg (removes a favicon 404 console error)",
+    "frontend/next.config.ts (devIndicators: false)",
+    "frontend/e2e/demo-journey.spec.ts (new browser journey)",
+    ".gitignore (frontend/AGENTS.md, which next dev writes itself)"
+  ],
+  "checks": [
+    {
+      "command": "BASE_URL=http://127.0.0.1:3200 PLAYWRIGHT_BROWSERS_PATH=<repo>/.cache/ms-playwright npx --no-install playwright test e2e/demo-journey.spec.ts",
+      "exit": 0,
+      "note": "1 passed against npm run demo (next dev), 1440 px"
+    },
+    {
+      "command": "npm run lint (frontend)",
+      "exit": 0
+    },
+    {
+      "command": "npm run typecheck (frontend)",
+      "exit": 0
+    },
+    {
+      "command": "scratchpad crosscheck.py: API values vs raw fixture JSON, independent of app code",
+      "exit": 0,
+      "note": "12 of 12 latest-two-year values match; no gaps or nulls in the three series"
+    }
+  ],
+  "visualInspection": [
+    "desktop 1440: home page",
+    "desktop 1440: Apple page",
+    "desktop 1440: Apple with Last 5 years and source tooltip"
+  ],
+  "notRun": [
+    "npm run verify (full; last exit 0 at m1-10, before these changes)",
+    "pytest (backend unchanged)",
+    "narrow-width screenshots",
+    "reviews",
+    "m1 gate"
+  ],
+  "followUpOf": "runs/m1/m1-11-e2e",
+  "notesOnEarlierRecords": "runs/m1/m1-11-e2e: 60-minute timeout at 2026-11-03T19:55Z, exit 143, RESPONSE.md has a missing-message marker, no spec written. Its RESULT.json still says 'dispatched' because the dispatcher did not finish writing it; left unedited."
+}

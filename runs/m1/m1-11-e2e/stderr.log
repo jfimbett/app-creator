@@ -1,0 +1,3 @@
+Ignoring 21 permissions.allow entries from .claude/settings.json: this workspace has not been trusted. Run Claude Code interactively here once and accept the trust dialog, or set projects["/Users/[REDACTED:user]/Documents/app-creator"].hasTrustDialogAccepted: true in /Users/[REDACTED:user]/.claude.json.
+
+[dispatch-step] timeout after 60 min, terminating child

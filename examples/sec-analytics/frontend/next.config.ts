@@ -11,6 +11,8 @@ const backendUrl = process.env.BACKEND_URL || "http://127.0.0.1:8000";
 const projectRoot = process.cwd();
 
 const nextConfig: NextConfig = {
+  // No floating Next.js dev badge on screen during classroom demos (npm run demo uses the dev server).
+  devIndicators: false,
   outputFileTracingRoot: projectRoot,
   turbopack: { root: projectRoot },
   // `npm run verify` builds into .next-verify so it never disturbs a running `npm run dev` (which uses .next).

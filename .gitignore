@@ -52,3 +52,6 @@ app-starter.zip
 next-env.d.ts
 # Temporary verification worktrees
 .worktrees/
+
+# Written by next dev itself; generated, not project instructions
+examples/sec-analytics/frontend/AGENTS.md
