@@ -193,3 +193,65 @@ export interface MetricSeriesResponse {
   series: MetricSeries[];
   source: SourceInfo;
 }
+
+/** One 10-K or 10-Q from a company's SEC list. The addresses are null if SEC lists no primary document. */
+export interface FilingMeta {
+  accession: string;
+  form: string;
+  is_amendment: boolean;
+  filing_date: string;
+  report_date: string | null;
+  primary_document: string | null;
+  document_url: string | null;
+  index_url: string;
+  /** Demo: whether the full document is recorded. Live: null. */
+  document_in_snapshot: boolean | null;
+}
+
+export interface LatestFilings {
+  annual: FilingMeta | null;
+  quarterly: FilingMeta | null;
+  annual_amended_by: FilingMeta | null;
+  quarterly_amended_by: FilingMeta | null;
+  label: string;
+}
+
+export interface FilingsResponse {
+  cik: string;
+  latest: LatestFilings;
+  history: FilingMeta[];
+  coverage: { from_date: string | null; to_date: string | null; complete: boolean; note: string | null };
+  source: SourceInfo;
+}
+
+export interface FilingSection {
+  id: string;
+  item: string;
+  title: string;
+  block_start: number;
+}
+
+export type FilingBlockKind = "text" | "heading" | "table_row";
+
+/** Plain text from a filing. It is shown as text, never as HTML. */
+export interface FilingBlock {
+  id: number;
+  section_id: string | null;
+  kind: FilingBlockKind;
+  text: string;
+}
+
+export interface FilingDocumentResponse {
+  meta: FilingMeta;
+  section_status: "detected" | "not_detected";
+  note: string;
+  sections: FilingSection[];
+  blocks: FilingBlock[];
+  source_link: string;
+  scope: string;
+  truncated: boolean;
+  document_retrieved_at: string;
+  amends: FilingMeta | null;
+  amended_by: FilingMeta | null;
+  source: SourceInfo;
+}

@@ -1,0 +1,24 @@
+{
+ "step": "m3/m3-02-implement-main-session",
+ "agent": "top-level session",
+ "status": "stopped by classroom freeze; not a verified milestone",
+ "start_commit": "6880338",
+ "preserved_on": "wip/m3-filing-intelligence-unverified",
+ "observed": {
+  "baseline_npm_run_verify": "exit 0 before any change (baseline-verify-summary.log)",
+  "filing_capture": "capture_fixtures.py --filings, exit 0, 8 real SEC requests (capture-filings.log)",
+  "pytest": "431 passed, offline; live cases use mocked SEC",
+  "ruff": "passed",
+  "eslint_and_tsc": "no findings at the last run",
+  "vitest_text_search": "10 of 11 passed at the last run; the failure was fixed by a one-character edit afterwards and NOT re-run"
+ },
+ "not_run": [
+  "npm run verify on the M3 code",
+  "production build",
+  "Playwright, including fe/e2e/m3-filings.spec.ts, which was not written",
+  "any opening of the Filings or reader screens in a browser",
+  "the live SEC journey through the app",
+  "screenshots and visual inspection",
+  "full vitest suite"
+ ]
+}

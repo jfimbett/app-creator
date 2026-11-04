@@ -13,12 +13,19 @@ as a whole.
 `SEC_USER_AGENT` comes from the process environment, or else from the repository-root `.env` (only
 that key is parsed). Its value is never printed, logged or written anywhere.
 
+`--filings` adds to the fixtures instead of replacing them (milestone brief M3 §6). It reads the
+recorded submissions files without refetching them, downloads the latest original 10-K and 10-Q of
+each company (6 requests) and stores each one gzip-compressed and otherwise unmodified. When a
+company's recorded list does not reach back 10 years it also downloads the older submissions
+page(s) SEC lists for that window. Existing data files stay untouched; manifest.json gains entries.
+
 Exit codes: 0 done, 2 `SEC_USER_AGENT` missing or malformed, 3 SEC request failed, 4 the data did
 not match what was expected (for example a ticker resolved to an unexpected CIK).
 """
 
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 import os
@@ -43,6 +50,8 @@ from app.clients.sec import (  # noqa: E402
     submissions_url,
     validate_user_agent,
 )
+from app.logic import filings as filing_logic  # noqa: E402
+from app.logic.archive import document_url  # noqa: E402
 from app.logic.concepts import (  # noqa: E402
     CAPTURE_CONCEPTS,
     NET_INCOME_CONCEPT,
@@ -355,8 +364,124 @@ def write_fixtures(fetched: list[Fetched], snapshot: str) -> list[dict[str, Any]
     return entries
 
 
+# ---------------------------------------------------------------- --filings
+
+MAX_DOCUMENT_BYTES = 20 * 1024 * 1024
+DOCUMENT_SCOPE = (
+    "The complete primary document of this filing as SEC serves it. Exhibits and other documents "
+    "in the same filing are separate files and were not captured."
+)
+DOCUMENT_TRIMMED = "none; stored gzip-compressed"
+PAGE_SCOPE = (
+    "An older page of SEC's submissions list, rows with form 10-K, 10-K/A, 10-Q or 10-Q/A, all "
+    "columns, row-aligned."
+)
+PAGE_TRIMMED = "Other forms' rows removed."
+
+
+def _trim_page(body: dict[str, Any]) -> dict[str, Any]:
+    forms = body.get("form")
+    if not isinstance(forms, list) or {len(col) for col in body.values()} != {len(forms)}:
+        raise CaptureStopped("submissions page columns are not aligned", exit_code=4)
+    rows = [i for i, form in enumerate(forms) if form in KEPT_FORMS]
+    return {name: [column[i] for i in rows] for name, column in body.items()}
+
+
+def _filing_entry(row: filing_logic.FilingMeta, cik: str, content: bytes, stored: str) -> dict:
+    return {
+        "path": stored, "kind": "filing_document", "cik": cik, "source_url": row.document_url,
+        "retrieved_at": _utc_stamp(), "sha256": hashlib.sha256(content).hexdigest(),
+        "bytes": len(content), "accessions": [row.accession],
+        "periods": {"report_date": row.report_date.isoformat() if row.report_date else None},
+        "form": row.form, "scope": DOCUMENT_SCOPE, "trimmed": DOCUMENT_TRIMMED,
+    }
+
+
+def capture_filings(client: SecClient, manifest: dict[str, Any]) -> dict[str, bytes]:
+    """Fetch every new file into memory, and add its manifest entry. Returns path -> content."""
+    new: dict[str, bytes] = {}
+    entries: list[dict[str, Any]] = []
+    amendments: dict[str, dict[str, int]] = {}
+    snapshot = date.fromisoformat(manifest["snapshot_date"])
+    start = filing_logic.window_start(snapshot, filing_logic.MAX_YEARS)
+    for cik in EXPECTED.values():
+        recorded = json.loads(
+            (FIXTURES_DIR / "submissions" / f"CIK{cik}.json").read_text(encoding="utf-8")
+        )
+        recent = recorded["filings"]["recent"]
+        rows = filing_logic.parse_rows(recent, cik)
+        tables = [rows]
+        for name in filing_logic.older_pages_needed(recent, recorded["filings"]["files"], start):
+            url = f"https://data.sec.gov/submissions/{name}"
+            page = _trim_page(client.get_json(url))
+            content = (json.dumps(page, indent=1, ensure_ascii=False) + "\n").encode("utf-8")
+            stored = f"submissions/{name}"
+            new[stored] = content
+            page_rows = filing_logic.parse_rows(page, cik)
+            tables.append(page_rows)
+            dates = sorted(row.filing_date.isoformat() for row in page_rows)
+            entries.append({
+                "path": stored, "kind": "submissions_page", "cik": cik, "source_url": url,
+                "retrieved_at": _utc_stamp(), "sha256": hashlib.sha256(content).hexdigest(),
+                "bytes": len(content), "accessions": sorted(r.accession for r in page_rows),
+                "periods": {"filing_date_earliest": dates[0] if dates else None,
+                            "filing_date_latest": dates[-1] if dates else None,
+                            "rows_kept": len(dates)},
+                "scope": PAGE_SCOPE, "trimmed": PAGE_TRIMMED,
+            })
+        every_row = filing_logic.merge_rows(*tables)
+        amendments[cik] = {
+            form: sum(1 for row in filing_logic.in_window(every_row, start) if row.form == form)
+            for form in ("10-K/A", "10-Q/A")
+        }
+        latest = filing_logic.select_latest(every_row, "capture")
+        for row in (latest.annual, latest.quarterly):
+            if row is None or row.document_url is None:
+                raise CaptureStopped(f"CIK {cik} has no usable 10-K or 10-Q", exit_code=4)
+            url = document_url(cik, row.accession, row.primary_document)
+            body = client.fetch(url, max_bytes=MAX_DOCUMENT_BYTES).content
+            content = gzip.compress(body, compresslevel=9, mtime=0)
+            stored = f"filings/{cik}/{row.accession}/{row.primary_document}.gz"
+            new[stored] = content
+            entries.append(_filing_entry(row, cik, content, stored))
+    new_paths = {entry["path"] for entry in entries}
+    manifest["files"] = [e for e in manifest["files"] if e["path"] not in new_paths] + entries
+    manifest["amendment_rows"] = amendments
+    return new
+
+
+def main_filings() -> int:
+    """Add filing documents to the fixtures. Writes nothing unless every request succeeded."""
+    transport = CountingTransport()
+    manifest = json.loads((FIXTURES_DIR / "manifest.json").read_text(encoding="utf-8"))
+    try:
+        user_agent = read_user_agent()
+        print(f"{SETTING}: set (value hidden)")
+        with SecClient(user_agent, transport=transport) as client:
+            new = capture_filings(client, manifest)
+    except CaptureStopped as exc:
+        print(f"Capture stopped: {exc}", file=sys.stderr)
+        return exc.exit_code
+    except SecError as exc:
+        print(f"Capture stopped after {transport.count} request(s): {exc}. "
+              "No fixtures were written.", file=sys.stderr)
+        return 3
+    for relative, content in new.items():
+        path = FIXTURES_DIR / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+    _dump(FIXTURES_DIR / "manifest.json", manifest)
+    print(f"Added {len(new)} files in {transport.count} requests.")
+    print(f"Amendment rows in the snapshot, per CIK: {manifest['amendment_rows']}")
+    for relative, content in sorted(new.items()):
+        print(f"  {relative}  {len(content)} bytes")
+    return 0
+
+
 def main() -> int:
     """Run the capture; print progress without the User-Agent value."""
+    if "--filings" in sys.argv[1:]:
+        return main_filings()
     transport = CountingTransport()
     try:
         user_agent = read_user_agent()

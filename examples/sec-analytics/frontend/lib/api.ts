@@ -4,6 +4,8 @@ import type {
   CompanyProfile,
   DataSourceChoice,
   ErrorEnvelope,
+  FilingDocumentResponse,
+  FilingsResponse,
   FinancialsResponse,
   HealthResponse,
   MetaResponse,
@@ -113,6 +115,10 @@ export function createApi(fetcher: Fetcher = (input, init) => fetch(input, init)
       get<OverviewResponse>(`/companies/${encodeURIComponent(cik)}/overview`, { years: options.years, source: sourceParam(options.source) }, options),
     getFinancials: (cik: string, options: SourceOptions & { years?: number } = {}) =>
       get<FinancialsResponse>(`/companies/${encodeURIComponent(cik)}/financials`, { years: options.years, source: sourceParam(options.source) }, options),
+    getFilings: (cik: string, options: SourceOptions = {}) =>
+      get<FilingsResponse>(`/companies/${encodeURIComponent(cik)}/filings`, { source: sourceParam(options.source) }, options),
+    getFilingDocument: (cik: string, accession: string, options: SourceOptions = {}) =>
+      get<FilingDocumentResponse>(`/companies/${encodeURIComponent(cik)}/filings/${encodeURIComponent(accession)}`, { source: sourceParam(options.source) }, options),
     getMetricCatalog: (options?: RequestOptions) => get<MetricsCatalog>("/metrics", {}, options),
     getMetricSeries: (cik: string, ids: readonly string[], options: SourceOptions & { years?: number } = {}) =>
       get<MetricSeriesResponse>(`/companies/${encodeURIComponent(cik)}/metrics`, { ids: ids.join(","), years: options.years, source: sourceParam(options.source) }, options),

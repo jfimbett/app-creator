@@ -8,8 +8,9 @@ manifest claims. Files are read once and kept in memory; nothing here touches th
 
 from __future__ import annotations
 
+import gzip
 import json
-from datetime import date
+from datetime import date, datetime
 from functools import cached_property
 from pathlib import Path
 from typing import Any
@@ -61,6 +62,12 @@ class FixtureStore:
             for entry in self._entries.values()
             if entry.get("kind") == "companyfacts"
         }
+        self._submission_pages: dict[str, list[dict[str, Any]]] = {}
+        for entry in self._entries.values():
+            if entry.get("kind") == "submissions_page":
+                self._submission_pages.setdefault(entry["cik"], []).append(
+                    self._load(entry["path"])
+                )
 
     def _load(self, relative: str) -> Any:
         """Load a file listed in the manifest; refuse files the manifest does not list."""
@@ -106,6 +113,31 @@ class FixtureStore:
     def submissions(self, cik: str) -> dict[str, Any] | None:
         """The recorded submissions JSON for a 10-digit CIK, or None if not in the snapshot."""
         return self._submissions.get(cik)
+
+    def submission_pages(self, cik: str) -> list[dict[str, Any]]:
+        """The recorded older submissions pages of a company (filings tables, trimmed)."""
+        return self._submission_pages.get(cik, [])
+
+    def retrieved_at(self, relative: str) -> datetime:
+        """When a fixture file was retrieved from SEC, according to the manifest."""
+        stamp = self._entries[relative]["retrieved_at"]
+        return datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+
+    def filing_document_path(self, cik: str, accession: str, primary_document: str) -> str:
+        """Relative path of a recorded filing document (it may not exist in the snapshot)."""
+        return f"filings/{cik}/{accession}/{primary_document}.gz"
+
+    def has_filing_document(self, cik: str, accession: str, primary_document: str | None) -> bool:
+        """True when the manifest lists this filing's document."""
+        if primary_document is None:
+            return False
+        return self.filing_document_path(cik, accession, primary_document) in self._entries
+
+    def filing_document(self, relative: str) -> bytes:
+        """A recorded filing document, decompressed. Only files in the manifest can be read."""
+        if relative not in self._entries:
+            raise FixtureError(f"Fixture file not listed in manifest.json: {relative}")
+        return gzip.decompress((self.root / relative).read_bytes())
 
     def companyfacts_path(self, cik: str) -> str:
         """Relative path of a company's Company Facts fixture."""

@@ -80,7 +80,8 @@ def _validation_code(exc: RequestValidationError, path: str) -> tuple[str, list[
     The M1 overview accepts a wider `years` range and keeps its `invalid_request` code.
     """
     params = [str(err["loc"][-1]) for err in exc.errors() if err.get("loc")]
-    usable = [p for p in params if not (p == "years" and path.endswith("/overview"))]
+    own_years_range = path.endswith(("/overview", "/filings"))
+    usable = [p for p in params if not (p == "years" and own_years_range)]
     code = next((_CODE_BY_PARAM[p] for p in usable if p in _CODE_BY_PARAM), "invalid_request")
     return code, params
 

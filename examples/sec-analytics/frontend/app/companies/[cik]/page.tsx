@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { CompanyProfile } from "@/components/CompanyProfile";
+import { CompanyTabs } from "@/components/CompanyTabs";
 import { KeyFigures } from "@/components/KeyFigures";
 import { LiveErrorPanel } from "@/components/LiveErrorPanel";
 import { MetricExplorer } from "@/components/MetricExplorer";
@@ -80,6 +81,7 @@ export default function CompanyPage() {
   return (
     <div className="flex flex-col gap-3">
       <h1 className="text-heading font-semibold">{companyLine({ name: company.name, ticker: company.tickers[0] ?? null, cik: company.cik })}</h1>
+      <CompanyTabs cik={company.cik} active="overview" />
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,5fr)_minmax(0,8fr)]">
         <Panel title="Profile" id="profile" className="lg:self-start" badge={<InfoBadge source={company.source} />}>

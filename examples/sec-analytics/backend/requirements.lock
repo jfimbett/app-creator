@@ -3,11 +3,14 @@
 #   python3.10 -m venv /tmp/lockenv
 #   /tmp/lockenv/bin/python -m pip install -r requirements.in
 #   /tmp/lockenv/bin/python -m pip freeze  (output below)
+# 2026-11-04 (M3): beautifulsoup4 and soupsieve added by installing the existing lock plus beautifulsoup4==4.15.0
+# with Python 3.10 in a fresh venv; pip freeze showed only these two new lines and no other version changed.
 # exceptiongroup and tomli are only needed on Python 3.10; they install harmlessly on 3.11-3.13.
 # To change a version: edit requirements.in, repeat these steps, and replace the lines below.
 annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.16.0
+beautifulsoup4==4.15.0
 certifi==2026.10.23
 click==8.5.0
 exceptiongroup==1.3.1
@@ -26,6 +29,7 @@ Pygments==2.21.0
 pytest==9.1.1
 respx==0.23.1
 ruff==0.17.1
+soupsieve==2.10
 starlette==1.7.0
 tomli==2.5.0
 typing-inspection==0.4.4

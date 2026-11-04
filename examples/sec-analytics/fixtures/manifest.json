@@ -443,6 +443,247 @@
    },
    "scope": "cik, entityName and the us-gaap concepts in CAPTURE_CONCEPTS, each with label, description and every fact in every unit and form, unmodified.",
    "trimmed": "Other us-gaap concepts and other taxonomies (dei, ...) removed to keep the snapshot small; concepts_absent lists capture concepts SEC had none of."
+  },
+  {
+   "path": "filings/0000320193/0000320193-26-000026/aapl-20260926.htm.gz",
+   "kind": "filing_document",
+   "cik": "0000320193",
+   "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+   "retrieved_at": "2026-11-04T07:28:33Z",
+   "sha256": "207b148630bb8df420afd4c9f8195276f8b9ee55c98877d61dedecf4debc0437",
+   "bytes": 119638,
+   "accessions": [
+    "0000320193-26-000026"
+   ],
+   "periods": {
+    "report_date": "2026-09-26"
+   },
+   "form": "10-K",
+   "scope": "The complete primary document of this filing as SEC serves it. Exhibits and other documents in the same filing are separate files and were not captured.",
+   "trimmed": "none; stored gzip-compressed"
+  },
+  {
+   "path": "filings/0000320193/0000320193-26-000020/aapl-20260627.htm.gz",
+   "kind": "filing_document",
+   "cik": "0000320193",
+   "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627.htm",
+   "retrieved_at": "2026-11-04T07:28:34Z",
+   "sha256": "3f01cd4db239621805b825cb22a40f1073157719997ce180714930e92c95d84a",
+   "bytes": 57924,
+   "accessions": [
+    "0000320193-26-000020"
+   ],
+   "periods": {
+    "report_date": "2026-06-27"
+   },
+   "form": "10-Q",
+   "scope": "The complete primary document of this filing as SEC serves it. Exhibits and other documents in the same filing are separate files and were not captured.",
+   "trimmed": "none; stored gzip-compressed"
+  },
+  {
+   "path": "submissions/CIK0000789019-submissions-001.json",
+   "kind": "submissions_page",
+   "cik": "0000789019",
+   "source_url": "https://data.sec.gov/submissions/CIK0000789019-submissions-001.json",
+   "retrieved_at": "2026-11-04T07:28:35Z",
+   "sha256": "ced6c34916300a10e442e6b1615e486ca0f898c4196f5918ebad77af92530216",
+   "bytes": 11019,
+   "accessions": [
+    "0001193125-08-215207",
+    "0001193125-09-009386",
+    "0001193125-09-085779",
+    "0001193125-09-158735",
+    "0001193125-09-212454",
+    "0001193125-10-015598",
+    "0001193125-10-090116",
+    "0001193125-10-171791",
+    "0001193125-10-239825",
+    "0001193125-11-015947",
+    "0001193125-11-115186",
+    "0001193125-11-200680",
+    "0001193125-11-276022",
+    "0001193125-12-017029",
+    "0001193125-12-026864",
+    "0001193125-12-170665",
+    "0001193125-12-316848",
+    "0001193125-12-427209",
+    "0001193125-13-022207",
+    "0001193125-13-160748",
+    "0001193125-13-310206",
+    "0001193125-13-409855",
+    "0001193125-14-018634",
+    "0001193125-14-157088",
+    "0001193125-14-289961",
+    "0001193125-14-380252",
+    "0001193125-15-020351",
+    "0001193125-15-144151",
+    "0001193125-15-272806",
+    "0001193125-15-350718",
+    "0001193125-16-441821",
+    "0001193125-16-550254",
+    "0001193125-16-662209",
+    "0001193125-16-742796",
+    "0001564590-17-000654",
+    "0001564590-17-007547",
+    "0001564590-17-014900",
+    "0001564590-17-020171",
+    "0001564590-18-001129",
+    "0001564590-18-009307",
+    "0001564590-18-019062",
+    "0001564590-18-024893",
+    "0001564590-19-001392",
+    "0001564590-19-012709",
+    "0001564590-19-027952",
+    "0001564590-19-037549",
+    "0001564590-20-002450",
+    "0001564590-20-019706",
+    "0001564590-20-034944"
+   ],
+   "periods": {
+    "filing_date_earliest": "2008-10-23",
+    "filing_date_latest": "2020-07-30",
+    "rows_kept": 49
+   },
+   "scope": "An older page of SEC's submissions list, rows with form 10-K, 10-K/A, 10-Q or 10-Q/A, all columns, row-aligned.",
+   "trimmed": "Other forms' rows removed."
+  },
+  {
+   "path": "filings/0000789019/0001193125-26-323660/msft-20260630.htm.gz",
+   "kind": "filing_document",
+   "cik": "0000789019",
+   "source_url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm",
+   "retrieved_at": "2026-11-04T07:28:36Z",
+   "sha256": "11f37ca4337ca28d46dee9f4433bd4b4c42ec91a5614f78a4cc0fd132dbc0845",
+   "bytes": 342873,
+   "accessions": [
+    "0001193125-26-323660"
+   ],
+   "periods": {
+    "report_date": "2026-06-30"
+   },
+   "form": "10-K",
+   "scope": "The complete primary document of this filing as SEC serves it. Exhibits and other documents in the same filing are separate files and were not captured.",
+   "trimmed": "none; stored gzip-compressed"
+  },
+  {
+   "path": "filings/0000789019/0001193125-26-436133/msft-20260930.htm.gz",
+   "kind": "filing_document",
+   "cik": "0000789019",
+   "source_url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526436133/msft-20260930.htm",
+   "retrieved_at": "2026-11-04T07:28:37Z",
+   "sha256": "86370696f8d061410e8a96e38e1ed945c20ad7a0463d8c28100803c0e24242df",
+   "bytes": 220361,
+   "accessions": [
+    "0001193125-26-436133"
+   ],
+   "periods": {
+    "report_date": "2026-09-30"
+   },
+   "form": "10-Q",
+   "scope": "The complete primary document of this filing as SEC serves it. Exhibits and other documents in the same filing are separate files and were not captured.",
+   "trimmed": "none; stored gzip-compressed"
+  },
+  {
+   "path": "submissions/CIK0001652044-submissions-001.json",
+   "kind": "submissions_page",
+   "cik": "0001652044",
+   "source_url": "https://data.sec.gov/submissions/CIK0001652044-submissions-001.json",
+   "retrieved_at": "2026-11-04T07:28:38Z",
+   "sha256": "20d5497dcaa67fc97ed4eb02c0f8f365b2e50c6f12cdd6b3c5bb0a713fa3cf4b",
+   "bytes": 7732,
+   "accessions": [
+    "0001193125-16-520367",
+    "0001193125-19-028757",
+    "0001652044-15-000005",
+    "0001652044-16-000012",
+    "0001652044-16-000021",
+    "0001652044-16-000032",
+    "0001652044-16-000038",
+    "0001652044-17-000008",
+    "0001652044-17-000014",
+    "0001652044-17-000026",
+    "0001652044-17-000042",
+    "0001652044-18-000007",
+    "0001652044-18-000016",
+    "0001652044-18-000027",
+    "0001652044-18-000035",
+    "0001652044-19-000004",
+    "0001652044-19-000015",
+    "0001652044-19-000023",
+    "0001652044-19-000032",
+    "0001652044-20-000008",
+    "0001652044-20-000021",
+    "0001652044-20-000032",
+    "0001652044-20-000050",
+    "0001652044-21-000010",
+    "0001652044-21-000020",
+    "0001652044-21-000047",
+    "0001652044-21-000057",
+    "0001652044-22-000019",
+    "0001652044-22-000029",
+    "0001652044-22-000071",
+    "0001652044-22-000090",
+    "0001652044-23-000016",
+    "0001652044-23-000045",
+    "0001652044-23-000070"
+   ],
+   "periods": {
+    "filing_date_earliest": "2015-10-29",
+    "filing_date_latest": "2023-07-26",
+    "rows_kept": 34
+   },
+   "scope": "An older page of SEC's submissions list, rows with form 10-K, 10-K/A, 10-Q or 10-Q/A, all columns, row-aligned.",
+   "trimmed": "Other forms' rows removed."
+  },
+  {
+   "path": "filings/0001652044/0001652044-26-000018/goog-20251231.htm.gz",
+   "kind": "filing_document",
+   "cik": "0001652044",
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+   "retrieved_at": "2026-11-04T07:28:39Z",
+   "sha256": "b0aee733ada1541710dc1fe91fe2c4aea082de1dc720e6b262a920cd8acfeb92",
+   "bytes": 185652,
+   "accessions": [
+    "0001652044-26-000018"
+   ],
+   "periods": {
+    "report_date": "2025-12-31"
+   },
+   "form": "10-K",
+   "scope": "The complete primary document of this filing as SEC serves it. Exhibits and other documents in the same filing are separate files and were not captured.",
+   "trimmed": "none; stored gzip-compressed"
+  },
+  {
+   "path": "filings/0001652044/0001652044-26-000084/goog-20260930.htm.gz",
+   "kind": "filing_document",
+   "cik": "0001652044",
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000084/goog-20260930.htm",
+   "retrieved_at": "2026-11-04T07:28:40Z",
+   "sha256": "b8efe05051f19d306b1269ed27afcdeca95154f37eb70f426ed6f5affe85b14a",
+   "bytes": 147070,
+   "accessions": [
+    "0001652044-26-000084"
+   ],
+   "periods": {
+    "report_date": "2026-09-30"
+   },
+   "form": "10-Q",
+   "scope": "The complete primary document of this filing as SEC serves it. Exhibits and other documents in the same filing are separate files and were not captured.",
+   "trimmed": "none; stored gzip-compressed"
   }
- ]
+ ],
+ "amendment_rows": {
+  "0000320193": {
+   "10-K/A": 0,
+   "10-Q/A": 0
+  },
+  "0000789019": {
+   "10-K/A": 0,
+   "10-Q/A": 0
+  },
+  "0001652044": {
+   "10-K/A": 1,
+   "10-Q/A": 0
+  }
+ }
 }

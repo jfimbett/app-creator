@@ -97,6 +97,12 @@ class SecNotFound(SecError):
     code = "sec_not_found"
 
 
+class SecDocumentTooLarge(SecError):
+    """The document passed the size limit while being read; the rest was not downloaded."""
+
+    code = "document_too_large"
+
+
 class SecUnavailable(SecError):
     """Timeout, network failure, retries exhausted or an unexpected answer."""
 
@@ -212,8 +218,12 @@ class SecClient:
         except ValueError as exc:
             raise SecUnavailable("SEC sent a response that is not JSON") from exc
 
-    def fetch(self, url: str) -> httpx.Response:
-        """Fetch an allowlisted URL, following up to 3 allowlisted redirects by hand."""
+    def fetch(self, url: str, *, max_bytes: int | None = None) -> httpx.Response:
+        """Fetch an allowlisted URL, following up to 3 allowlisted redirects by hand.
+
+        With `max_bytes` the body is read in pieces and the download stops as soon as the decoded
+        size passes the limit (`SecDocumentTooLarge`), so a huge document is never held in memory.
+        """
         check_allowed(url)
         headers = {
             "User-Agent": validate_user_agent(self._user_agent),
@@ -221,17 +231,19 @@ class SecClient:
         }
         with self._lock:
             for _ in range(MAX_REDIRECTS + 1):
-                response = self._get_with_retries(url, headers)
+                response = self._get_with_retries(url, headers, max_bytes)
                 if not response.is_redirect:
                     return _checked(response)
                 url = urljoin(url, response.headers["Location"])
                 check_allowed(url)
         raise UpstreamNotAllowed("SEC redirected more than 3 times")
 
-    def _get_with_retries(self, url: str, headers: dict[str, str]) -> httpx.Response:
+    def _get_with_retries(
+        self, url: str, headers: dict[str, str], max_bytes: int | None = None
+    ) -> httpx.Response:
         """GET once, then retry up to twice on 429/503 after the advised wait."""
         for attempt in range(MAX_RETRIES + 1):
-            response = self._send(url, headers)
+            response = self._send(url, headers, max_bytes)
             if response.status_code not in RETRY_STATUSES:
                 return response
             if attempt == MAX_RETRIES:
@@ -249,15 +261,42 @@ class SecClient:
             )
         raise SecUnavailable(f"SEC is busy ({status}); try again later", upstream_status=status)
 
-    def _send(self, url: str, headers: dict[str, str]) -> httpx.Response:
+    def _send(
+        self, url: str, headers: dict[str, str], max_bytes: int | None = None
+    ) -> httpx.Response:
         """One throttled GET. Network failures become `SecUnavailable` (no retry)."""
         self._wait_for_slot()
         try:
-            return self._http.get(url, headers=headers)
+            if max_bytes is None:
+                return self._http.get(url, headers=headers)
+            return self._get_bounded(url, headers, max_bytes)
         except httpx.TimeoutException as exc:
             raise SecUnavailable("SEC did not answer within 20 seconds") from exc
-        except httpx.TransportError as exc:
+        except httpx.HTTPError as exc:
             raise SecUnavailable("SEC could not be reached") from exc
+
+    def _get_bounded(
+        self, url: str, headers: dict[str, str], max_bytes: int
+    ) -> httpx.Response:
+        """A GET that stops reading once the decoded body passes `max_bytes`."""
+        with self._http.stream("GET", url, headers=headers) as streamed:
+            pieces: list[bytes] = []
+            size = 0
+            for piece in streamed.iter_bytes():
+                size += len(piece)
+                if size > max_bytes:
+                    raise SecDocumentTooLarge(f"The document is larger than {max_bytes} bytes")
+                pieces.append(piece)
+            # The body is already decoded, so the rebuilt response must not decode it again.
+            kept = [
+                (name, value)
+                for name, value in streamed.headers.items()
+                if name.lower() not in {"content-encoding", "transfer-encoding", "content-length"}
+            ]
+            return httpx.Response(
+                streamed.status_code, headers=kept, content=b"".join(pieces),
+                request=streamed.request,
+            )
 
     def _wait_for_slot(self) -> None:
         """Sleep until the minimum interval has passed since the previous request started."""

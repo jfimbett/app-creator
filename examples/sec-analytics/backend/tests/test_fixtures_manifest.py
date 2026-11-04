@@ -3,6 +3,7 @@
 Reads only local files: `examples/sec-analytics/fixtures/` and `tests/synthetic/`. No network.
 """
 
+import gzip
 import hashlib
 import json
 import re
@@ -96,11 +97,42 @@ def test_submissions_keep_only_annual_and_quarterly_forms() -> None:
 
 def test_no_synthetic_marker_or_email_under_fixtures() -> None:
     for path in FIXTURES_DIR.rglob("*"):
-        if path.is_file():
+        if path.is_file() and path.suffix != ".gz":
             text = path.read_text(encoding="utf-8")
             assert MARKER not in text, path.name
             assert '"_synthetic"' not in text, path.name
             assert not EMAIL_LIKE.search(text), path.name
+
+
+def test_filing_documents_are_listed_authentic_and_unmodified_gzip() -> None:
+    # Filing text may hold a company's own published addresses, so only the marker is checked here.
+    entries = [e for e in _manifest()["files"] if e["kind"] == "filing_document"]
+    assert {e["cik"] for e in entries} == EXPECTED_CIKS
+    assert sorted(e["form"] for e in entries) == ["10-K"] * 3 + ["10-Q"] * 3
+    for entry in entries:
+        assert entry["path"].endswith(".gz")
+        assert entry["trimmed"] == "none; stored gzip-compressed"
+        assert entry["source_url"].startswith("https://www.sec.gov/Archives/edgar/data/")
+        assert entry["source_url"].rsplit("/", 1)[1] == Path(entry["path"]).stem
+        text = gzip.decompress((FIXTURES_DIR / entry["path"]).read_bytes())
+        assert MARKER.encode() not in text
+        assert b"<html" in text[:2000].lower()
+
+
+def test_amendment_rows_are_recorded_per_company() -> None:
+    manifest = _manifest()
+    counts = manifest["amendment_rows"]
+    assert set(counts) == EXPECTED_CIKS
+    assert all(set(row) == {"10-K/A", "10-Q/A"} for row in counts.values())
+    assert counts["0001652044"] == {"10-K/A": 1, "10-Q/A": 0}  # the only amendment recorded
+
+
+def test_older_submissions_pages_keep_only_the_four_forms() -> None:
+    pages = [e for e in _manifest()["files"] if e["kind"] == "submissions_page"]
+    for entry in pages:
+        page = json.loads((FIXTURES_DIR / entry["path"]).read_text(encoding="utf-8"))
+        assert set(page["form"]) <= {"10-K", "10-K/A", "10-Q", "10-Q/A"}
+        assert len({len(column) for column in page.values()}) == 1
 
 
 @pytest.mark.parametrize(
