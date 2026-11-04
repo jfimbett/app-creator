@@ -4,7 +4,7 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 
 ## Current phase
 
-M1 complete at tag `m1`. Execution mode (instructor, 2026-11-04): one milestone at a time, main session, then stop and report. **Waiting for the instructor; do not start M2 without instruction.**
+M2 complete at tag `m2`. Execution mode (instructor, 2026-11-04): one milestone at a time, main session, then stop and report. **Waiting for the instructor; do not start M3 without instruction.**
 
 ## Audit (2026-11-03)
 
@@ -63,6 +63,7 @@ M1 complete at tag `m1`. Execution mode (instructor, 2026-11-04): one milestone 
 |---|---|---|
 | `template` / `template-v1` (annotated) | d387e3d82f55a3ef385eade69598784fff0cf148 | clean worktree npm ci → setup → verify exit 0 (2026-11-03 18:23Z); orchestrator gate-pass (B19) |
 | `milestone/01-foundation` / `m1` (annotated) | bd8ab814e35245a3dd9701f92910d541b5671892 | clean worktree npm ci → setup → verify exit 0 (2026-11-04 06:46Z): pytest 196, Vitest 70, Playwright 9; gate decided in the main session; same-session review only |
+| `milestone/02-financial-intelligence` / `m2` (annotated) | 4451d43fd52f6e08c2db7a41b16434c4f078605e | clean worktree npm ci → setup → verify exit 0 (2026-11-04 07:14Z): pytest 320, Vitest 83, Playwright 24; live SEC checks passed separately; gate decided in the main session; same-session review only |
 
 ## Publication status
 
@@ -102,3 +103,12 @@ Not started.
 - Instruction saved in `runs/m1/m1-16-complete-m1-main-session/` and `milestones/01-foundation/FOLLOWUPS.md`. It replaced planned steps m1-11 to m1-15.
 - Added `e2e/m1-foundation.spec.ts`, removed the scaffold smoke spec, made the backend-down header message visible (a real M1-E1 defect), completed documents and statuses.
 - Next, only on instruction: M2 from `m1`. Demo: `FRONTEND_PORT=3200 BACKEND_PORT=8200 npm run demo` → http://127.0.0.1:3200.
+
+## M2 completion (2026-11-04)
+
+- Instruction saved before work in `runs/m2/m2-01-implement-main-session/PROMPT.md` and in `milestones/02-financial-intelligence/FOLLOWUPS.md`.
+- **SEC contact:** at the owner's request, a root `.env` holds their `SEC_USER_AGENT` (git-ignored, permissions 600, created once by the assistant; value not recorded). `AGENTS.md` says assistants never create `.env`: this was the owner's explicit exception.
+- Live testing on real companies found four defects that fixtures could not show; all fixed with tests (see `milestones/plan.md`).
+- Deviations: synchronous SEC client (brief's table says async), capex alternate outside `CAPTURE_CONCEPTS`, stricter debt rule. Recorded in the architecture decision log.
+- Classroom app: `FRONTEND_PORT=3200 BACKEND_PORT=8200 npm run dev` → http://127.0.0.1:3200 (starts on Demo, Live selector available). Plain offline demo: `npm run demo`.
+- **Deferred:** M3–M5, independent reviews, GitHub publication, commit-email decision, permission hardening, remaining final documents. Next, only on instruction: M3 from `m2`.

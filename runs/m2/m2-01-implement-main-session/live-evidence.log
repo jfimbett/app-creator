@@ -1,0 +1,39 @@
+== date: 2026-11-04T07:14:15Z; commit: 4451d43
+== 1. live smoke script (3 requests through the app's client)
+PASS  ticker map: fetched
+PASS  ticker map: lists many filers
+PASS  ticker map: NVDA found by ticker
+PASS  ticker map: Apple found by name
+PASS  submissions: name present
+PASS  submissions: fiscal year end
+PASS  submissions: recent filings
+PASS  company facts: us-gaap present
+PASS  statements: reporting currency USD
+PASS  statements: at least 5 annual periods
+PASS  statements: latest revenue reported
+PASS  statements: latest net income
+PASS  statements: latest total assets
+PASS  ratios: latest net margin computed
+INFO  latest annual period: FY2026 (ends 2026-09-26)
+live SEC: passed
+exit=0
+== 2. live browser journey (NVDA by ticker, Apple by CIK, Microsoft by name; empty cache)
+  ✓  1 [chromium] › e2e-live/live-sec.spec.ts:7:5 › Live: look up NVIDIA by ticker, read its statements and explorer, then return to Demo (4.9s)
+  1 passed (6.2s)
+exit=0
+== 3. app values vs raw SEC JSON, no app code (NVIDIA, Apple, JPMorgan, McDonald's)
+0001045810 CACHED · retrieved 2026-11-04 FY2026 10 periods
+  latest: revenue 215938000000.0 net income 120067000000.0 fcf 96676000000.0 capex concept PaymentsToAcquireProductiveAssets D/E 0.05383583503398117 ok
+0000320193 LIVE · retrieved 2026-11-04 07:14 UTC FY2026 10 periods
+  latest: revenue 478834000000.0 net income 132175000000.0 fcf 136056000000.0 capex concept PaymentsToAcquirePropertyPlantAndEquipment D/E 0.7146833432952995 ok
+0000019617 LIVE · retrieved 2026-11-04 07:14 UTC FY2025 10 periods
+  latest: revenue 182447000000.0 net income 57048000000.0 fcf None capex concept None D/E None unavailable
+0000063908 LIVE · retrieved 2026-11-04 07:14 UTC FY2025 10 periods
+  latest: revenue 26885000000.0 net income 8563000000.0 fcf 7186000000.0 capex concept PaymentsToAcquirePropertyPlantAndEquipment D/E None not_meaningful
+mismatches: 0
+exit=0
+== 4. awkward filers through the API
+TSMC (20-F): LIVE · retrieved 2026-11-04 07:14 UTC | periods 0 | ['No annual 10-K revenue in a currency unit was found.']
+McDonald's negative equity: D/E not_meaningful | n/m (negative equity) | ROE n/m (negative equity)
+CIK not in ticker file: Not in the SEC ticker file: open by CIK | cached
+unknown CIK at SEC: HTTP 404

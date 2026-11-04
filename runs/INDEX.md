@@ -39,3 +39,7 @@ Append-only. One line per dispatched step.
 - 2026-11-03T19:55Z · **m1/m1-11-e2e** · test-engineer · failed (60-minute timeout, no message) · [prompt](m1/m1-11-e2e/PROMPT.md) · [response](m1/m1-11-e2e/RESPONSE.md) · [result](m1/m1-11-e2e/RESULT.json)
 - 2026-11-04 · **recovery/R01-classroom-demo** · top-level session · completed · [prompt](recovery/R01-classroom-demo/PROMPT.md) · [response marker](recovery/R01-classroom-demo/RESPONSE.md) · [result](recovery/R01-classroom-demo/RESULT.json)
 - 2026-11-04 · **m1/m1-16-complete-m1-main-session** · top-level session · completed · [prompt](m1/m1-16-complete-m1-main-session/PROMPT.md) · [response marker](m1/m1-16-complete-m1-main-session/RESPONSE.md) · [result](m1/m1-16-complete-m1-main-session/RESULT.json)
+
+## M2
+
+- 2026-11-04 · **m2/m2-01-implement-main-session** · top-level session · completed · [prompt](m2/m2-01-implement-main-session/PROMPT.md) · [response marker](m2/m2-01-implement-main-session/RESPONSE.md) · [result](m2/m2-01-implement-main-session/RESULT.json)

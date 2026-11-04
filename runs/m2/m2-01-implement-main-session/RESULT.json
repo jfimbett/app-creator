@@ -1,0 +1,59 @@
+{
+  "stepId": "m2-01-implement-main-session",
+  "milestone": "m2",
+  "role": "top-level session (owner role)",
+  "status": "completed",
+  "startingCommit": "9ddd60d",
+  "checkpointCommit": "4451d43fd52f6e08c2db7a41b16434c4f078605e",
+  "date": "2026-11-04",
+  "workspace": "isolated worktree .worktrees/m2, branch work/m2; removed after integration",
+  "gateDecidedBy": "top-level session against the brief's section 9 gate; project-orchestrator not invoked, per the instruction to stay in the main session",
+  "offlineGate": {
+    "command": "bash scripts/verify-ref.sh 4451d43 (npm ci, npm run setup, npm run verify in a clean worktree with no .env)",
+    "exit": 0,
+    "summary": "toolkit ok; ruff ok; pytest 320 passed; frontend lint and typecheck ok; Vitest 83 passed; build ok; Playwright 24 passed"
+  },
+  "demoRun": "npm run demo on 3400/8400: data_mode fixtures, live_available false, source=live gives 409 live_disabled, statements load, no selector (2 journeys passed)",
+  "liveSec": {
+    "evidence": "live-evidence.log, fresh cache, 2026-11-04T07:14Z",
+    "smoke": "live SEC: passed, 14 checks",
+    "browserJourney": "e2e-live/live-sec.spec.ts passed: NVDA by ticker, Microsoft by name, Apple by CIK, statements, explorer, back to Demo; browser made no off-machine request",
+    "crossCheck": "app values vs raw SEC JSON, no app code: NVIDIA, Apple, JPMorgan, McDonald's, 0 mismatches",
+    "awkwardFilers": "TSMC 20-F explained; McDonald's n/m (negative equity); JPMorgan unavailable lines; unknown CIK 404",
+    "secFailuresLive": "not provoked against real SEC; 403, 429, 503, timeout and redirects are tested with a mocked SEC only"
+  },
+  "visualInspection": [
+    "live NVIDIA 1440",
+    "Apple page 1440",
+    "explorer 1440",
+    "income 1366",
+    "Apple page 390",
+    "income 390 (after fix)",
+    "ratios 390 (after fix)",
+    "explorer 390"
+  ],
+  "defectsFoundOnLiveData": [
+    "debt 0 and D/E 0.00× from a lone short-term zero (NVIDIA FY2019)",
+    "FCF from FY2012 shown as a key figure",
+    "capex under an unmapped concept",
+    "500 for a 20-F filer"
+  ],
+  "testsChangedFromM1": [
+    "test_api_m1: key figures now a superset; DATA_MODE=live became valid",
+    "e2e/m1-foundation: restatement note uses .first() because the note now appears twice",
+    "e2e/demo-journey: Net income toggle scoped to the chart"
+  ],
+  "reviewType": "same-session read-only checks (m2_review.sh), not independent; independent reviewers not dispatched, per the instruction",
+  "transcriptGaps": [
+    "top-level final message not in RESPONSE.md (marker there)",
+    "no dispatched steps in M2, so no per-step subagent responses exist",
+    "patch scripts in this folder record exact edits; interim tool output is only in the session transcript"
+  ],
+  "notRun": [
+    "independent reviews",
+    "Windows",
+    "Cline",
+    "GitHub CI (nothing pushed)",
+    "the owner's own look"
+  ]
+}

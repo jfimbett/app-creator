@@ -1,0 +1,20 @@
+ref=4451d43 sha=4451d43fd52f6e08c2db7a41b16434c4f078605e started=2026-11-04T07:14:00Z node=v22.14.0
+... (full log kept locally in .logs/ of the main checkout, git-ignored)
+320 passed in 2.67s
+ Test Files  11 passed (11)
+      Tests  83 passed (83)
+  24 passed (14.0s)
+-------------------------------  ------  -------
+toolkit checks                   pass        0.1
+backend lint (ruff)              pass        0.6
+backend tests (pytest)           pass        3.2
+frontend lint                    pass        3.1
+frontend typecheck               pass        2.2
+frontend unit tests              pass        2.8
+frontend build                   pass        6.8
+browser smoke test (Playwright)  pass       15.7
+
+All checks passed.
+Full log: .logs/verify-2026-11-04T07-14-20-927Z.log
+finished=2026-11-04T07:14:55Z exit=0
+

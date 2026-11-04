@@ -1,0 +1,14 @@
+== fixtures and briefs unchanged since m1 (expect no lines)
+== toolkit files changed since m1 (expect none)
+== browser code fetching SEC, raw HTML, browser storage, public env (expect none)
+== SEC calls outside the client (expect none)
+examples/sec-analytics/backend/app/errors.py:113:        message = "SEC refused the request (403). The app doe
+== endpoints taking a caller URL (expect none)
+== user agent printed or logged (expect none)
+examples/sec-analytics/backend/scripts/live_sec_smoke.py:65:        print("NOT RUN  SEC_USER_AGENT is not conf
+== later-milestone or valuation features in the UI (expect none)
+== tracked secrets, contact, env or cache (expect none)
+== missing values turned into 0 in logic (expect none)
+== ancestry
+m1 is an ancestor
+bd8ab81
