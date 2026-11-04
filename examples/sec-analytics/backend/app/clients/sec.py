@@ -1,13 +1,16 @@
 """Minimal, polite SEC EDGAR client (brief §7; architecture.md "SEC client rules").
 
-At M1 only `scripts/capture_fixtures.py` uses it; the running app does not import it.
+Used by the running app in live mode (through `data/source.py`), by
+`scripts/capture_fixtures.py` and by `scripts/live_sec_smoke.py`. Thread-safe: FastAPI runs the
+sync endpoints in a thread pool, and this client lets one request out at a time. Single flight and
+the disk cache are in `data/`.
 
 Rules this module enforces:
 - Allowlist: HTTPS, two hosts, fixed path patterns, no query, userinfo or port. URLs are built
   from a normalized CIK, never taken from a caller. Redirects are followed by hand (at most 3),
   each target checked before any request. This is not a URL proxy.
 - Fair access: declared User-Agent from `SEC_USER_AGENT` (passed in, never logged), at most one
-  request per second, one request in flight, 20 s timeout.
+  request per second by default (`max_requests_per_second`), one in flight, 20 s timeout.
 - Failures: on 429/503 wait for Retry-After (capped at 30 s; default 2 s then 4 s) and retry at most
   twice; on 403 never retry.
 
@@ -32,8 +35,7 @@ import httpx
 from app.logic.cik import normalize_cik
 
 TIMEOUT_SECONDS = 20.0
-# At most 1 request per second; SEC_MAX_REQUESTS_PER_SECOND arrives in M2.
-MIN_INTERVAL_SECONDS = 1.0
+DEFAULT_REQUESTS_PER_SECOND = 1.0
 MAX_RETRIES = 2
 DEFAULT_BACKOFF_SECONDS = (2.0, 4.0)
 MAX_RETRY_AFTER_SECONDS = 30.0
@@ -101,6 +103,18 @@ class SecUnavailable(SecError):
     code = "sec_unavailable"
 
 
+class SecRateLimited(SecUnavailable):
+    """SEC kept limiting us after the retries. `retry_after` is the advised wait in seconds."""
+
+    code = "sec_rate_limited"
+
+    def __init__(
+        self, message: str, retry_after: float, upstream_status: int | None = None
+    ) -> None:
+        super().__init__(message, upstream_status=upstream_status)
+        self.retry_after = retry_after
+
+
 def submissions_url(cik: str) -> str:
     """Submissions JSON URL for a CIK in any accepted form (raises `InvalidCik`)."""
     return f"https://data.sec.gov/submissions/CIK{normalize_cik(cik)}.json"
@@ -160,8 +174,10 @@ class SecClient:
         clock: Callable[[], float] = time.monotonic,
         sleep: Callable[[float], None] = time.sleep,
         wall_clock: Callable[[], datetime] = _utc_now,
+        max_requests_per_second: float = DEFAULT_REQUESTS_PER_SECOND,
     ) -> None:
         self._user_agent = user_agent
+        self._min_interval = 1.0 / max_requests_per_second
         self._clock = clock
         self._sleep = sleep
         self._wall_clock = wall_clock
@@ -221,10 +237,17 @@ class SecClient:
             if attempt == MAX_RETRIES:
                 break
             self._sleep(self._retry_delay(response, attempt))
-        raise SecUnavailable(
-            f"SEC is busy ({response.status_code}); try again later",
-            upstream_status=response.status_code,
-        )
+        return self._raise_exhausted(response)
+
+    def _raise_exhausted(self, response: httpx.Response) -> httpx.Response:
+        """Retries used up. 429, or 503 with Retry-After, is limiting; a bare 503 is an outage."""
+        status = response.status_code
+        if status == 429 or response.headers.get("Retry-After"):
+            wait = self._retry_delay(response, MAX_RETRIES - 1)
+            raise SecRateLimited(
+                f"SEC is limiting requests; try again in {wait:.0f} s", wait, upstream_status=status
+            )
+        raise SecUnavailable(f"SEC is busy ({status}); try again later", upstream_status=status)
 
     def _send(self, url: str, headers: dict[str, str]) -> httpx.Response:
         """One throttled GET. Network failures become `SecUnavailable` (no retry)."""
@@ -237,9 +260,9 @@ class SecClient:
             raise SecUnavailable("SEC could not be reached") from exc
 
     def _wait_for_slot(self) -> None:
-        """Sleep until at least MIN_INTERVAL_SECONDS have passed since the previous request."""
+        """Sleep until the minimum interval has passed since the previous request started."""
         if self._last_start is not None:
-            remaining = self._last_start + MIN_INTERVAL_SECONDS - self._clock()
+            remaining = self._last_start + self._min_interval - self._clock()
             if remaining > 0:
                 self._sleep(remaining)
         self._last_start = self._clock()

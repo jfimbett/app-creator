@@ -10,7 +10,7 @@ name. One result per CIK, so a company with several tickers (Alphabet) appears o
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 
 from app.logic.cik import InvalidCik, normalize_cik
@@ -65,6 +65,22 @@ def _best_match(company: UniverseCompany, query: str, cik: str | None) -> tuple[
     if needle in company.name.casefold():
         return _NAME, Match(company.cik, company.primary_ticker, company.name, "name")
     return None
+
+
+def universe_from_tickers(tickers: Mapping) -> list[UniverseCompany]:
+    """The searchable companies in SEC's ticker file, one per CIK, in file order.
+
+    The file lists a company once per ticker. Rows lacking a CIK or ticker are skipped.
+    """
+    names: dict[str, str] = {}
+    by_cik: dict[str, list[str]] = {}
+    for row in tickers.values():
+        if not isinstance(row, Mapping) or row.get("cik_str") is None or not row.get("ticker"):
+            continue
+        cik = str(row["cik_str"]).zfill(10)
+        names.setdefault(cik, str(row.get("title") or f"CIK {cik}"))
+        by_cik.setdefault(cik, []).append(str(row["ticker"]))
+    return [UniverseCompany(cik, names[cik], tuple(by_cik[cik])) for cik in by_cik]
 
 
 def search(query: str, universe: Iterable[UniverseCompany], limit: int) -> list[Match]:

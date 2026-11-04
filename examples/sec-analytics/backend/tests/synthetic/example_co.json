@@ -1,0 +1,57 @@
+{
+  "_synthetic": "SYNTHETIC: invented for tests, not SEC data. Example Co inputs for CALC1-CALC10 in milestones/acceptance.md.",
+  "cik": 1,
+  "entityName": "Example Co (SYNTHETIC)",
+  "facts": {
+    "us-gaap": {
+      "Revenues": {"units": {"USD": [
+        {"start": "2024-01-01", "end": "2024-12-31", "val": 800, "accn": "0000000001-25-000001", "fy": 2024, "fp": "FY", "form": "10-K", "filed": "2025-02-01"},
+        {"start": "2025-01-01", "end": "2025-12-31", "val": 1000, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "OperatingIncomeLoss": {"units": {"USD": [
+        {"start": "2025-01-01", "end": "2025-12-31", "val": 250, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "NetIncomeLoss": {"units": {"USD": [
+        {"start": "2025-01-01", "end": "2025-12-31", "val": 150, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "IncomeTaxExpenseBenefit": {"units": {"USD": [
+        {"start": "2025-01-01", "end": "2025-12-31", "val": 40, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "InterestExpense": {"units": {"USD": [
+        {"start": "2025-01-01", "end": "2025-12-31", "val": 10, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "DepreciationDepletionAndAmortization": {"units": {"USD": [
+        {"start": "2025-01-01", "end": "2025-12-31", "val": 50, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "NetCashProvidedByUsedInOperatingActivities": {"units": {"USD": [
+        {"start": "2025-01-01", "end": "2025-12-31", "val": 300, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "PaymentsToAcquirePropertyPlantAndEquipment": {"units": {"USD": [
+        {"start": "2025-01-01", "end": "2025-12-31", "val": 120, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "AssetsCurrent": {"units": {"USD": [
+        {"end": "2025-12-31", "val": 500, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "LiabilitiesCurrent": {"units": {"USD": [
+        {"end": "2025-12-31", "val": 300, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "Assets": {"units": {"USD": [
+        {"end": "2024-12-31", "val": 1000, "accn": "0000000001-25-000001", "fy": 2024, "fp": "FY", "form": "10-K", "filed": "2025-02-01"},
+        {"end": "2025-12-31", "val": 1200, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "StockholdersEquity": {"units": {"USD": [
+        {"end": "2024-12-31", "val": 400, "accn": "0000000001-25-000001", "fy": 2024, "fp": "FY", "form": "10-K", "filed": "2025-02-01"},
+        {"end": "2025-12-31", "val": 600, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "LongTermDebtNoncurrent": {"units": {"USD": [
+        {"end": "2025-12-31", "val": 200, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "LongTermDebtCurrent": {"units": {"USD": [
+        {"end": "2025-12-31", "val": 50, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}},
+      "CommercialPaper": {"units": {"USD": [
+        {"end": "2025-12-31", "val": 50, "accn": "0000000001-26-000001", "fy": 2025, "fp": "FY", "form": "10-K", "filed": "2026-02-01"}
+      ]}}
+    }
+  }
+}

@@ -143,6 +143,28 @@ out again first.
 | FX2 | Apple latest annual net income, FY2026 (ends 2026-09-26) | `NetIncomeLoss` · USD · 2025-09-28 → 2026-09-26 · 10-K · `0000320193-26-000026` · filed 2026-11-03 · `val` 132175000000 (fy 2026, fp FY) | one 10-K fact for the period, no duplicate; 363 days | 132,175,000,000 USD = 132,175 USD millions | exact | passing (test: tests/test_overview_fixtures.py) |
 | FX3 | Microsoft latest annual revenue, FY2026 (ends 2026-06-30) | `RevenueFromContractWithCustomerExcludingAssessedTax` · USD · 2025-07-01 → 2026-06-30 · 10-K · `0001193125-26-323660` · filed 2026-07-29 · `val` 331839000000 (fy 2026, fp FY) | `Revenues` has no fact for this period; one 10-K fact; 364 days | 331,839,000,000 USD = 331,839 USD millions | exact | passing (test: tests/test_overview_fixtures.py) |
 | FX4 | Microsoft latest annual net income, FY2026 (ends 2026-06-30) | `NetIncomeLoss` · USD · 2025-07-01 → 2026-06-30 · 10-K · `0001193125-26-323660` · filed 2026-07-29 · `val` 133749000000 (fy 2026, fp FY) | the file also holds the same period from a `DEF 14A` (accession `0001193125-26-427849`, filed 2026-10-21, same `val`); it is not a 10-K/10-K/A, so it is excluded even though it was filed later; 364 days | 133,749,000,000 USD = 133,749 USD millions; provenance accession `0001193125-26-323660` | exact | passing (test: tests/test_overview_fixtures.py) |
+| FX5 | Apple net margin, FY2026 | `NetIncomeLoss` USD 2025-09-28 → 2026-09-26 · 10-K · `0000320193-26-000026` · `val` 132175000000; revenue as FX1 | 132,175,000,000 ÷ 478,834,000,000 | 0.276035 | ± 0.000001 | open |
+| FX6 | Apple FCF, FY2026 | `NetCashProvidedByUsedInOperatingActivities` USD 2025-09-28 → 2026-09-26 · 10-K · `0000320193-26-000026` · `val` 145097000000; `PaymentsToAcquirePropertyPlantAndEquipment` · same · `val` 9041000000 | 145,097,000,000 − 9,041,000,000 | 136,056,000,000 USD | exact | open |
+| FX7 | Apple debt-to-equity, FY2026 | at 2026-09-26, 10-K, `0000320193-26-000026`: `LongTermDebtNoncurrent` 68208000000; `LongTermDebtCurrent` 9906000000; `CommercialPaper` 1997000000; `StockholdersEquity` 112093000000 | debt = 68,208,000,000 + 9,906,000,000 + 1,997,000,000 = 80,111,000,000; ÷ 112,093,000,000 | 0.714683 | ± 0.000001 | open |
+| FX8 | Apple ROE, FY2026 | `StockholdersEquity` 2026-09-26 112093000000 and 2025-09-27 73733000000, both `0000320193-26-000026`; net income as FX2 | average = (112,093,000,000 + 73,733,000,000) ÷ 2 = 92,913,000,000; 132,175,000,000 ÷ 92,913,000,000 | 1.422567 | ± 0.000001 | open |
+| FX9 | Apple revenue growth, FY2026 | FX1; prior `RevenueFromContractWithCustomerExcludingAssessedTax` USD 2024-09-29 → 2025-09-27 · 10-K · `0000320193-26-000026` · `val` 416161000000 | (478,834,000,000 − 416,161,000,000) ÷ 416,161,000,000 | 0.150598 | ± 0.000001 | open |
+| FX10 | Microsoft net margin, FY2026 | `NetIncomeLoss` USD 2025-07-01 → 2026-06-30 · 10-K · `0001193125-26-323660` · `val` 133749000000; revenue as FX3 | 133,749,000,000 ÷ 331,839,000,000 | 0.403054 | ± 0.000001 | open |
+| FX11 | Microsoft FCF, FY2026 | `NetCashProvidedByUsedInOperatingActivities` USD 2025-07-01 → 2026-06-30 · 10-K · `0001193125-26-323660` · `val` 182935000000; `PaymentsToAcquirePropertyPlantAndEquipment` · same · `val` 115948000000 | 182,935,000,000 − 115,948,000,000 | 66,987,000,000 USD | exact | open |
+| FX12 | Microsoft debt-to-equity, FY2026 | at 2026-06-30, 10-K, `0001193125-26-323660`: `LongTermDebtNoncurrent` 31067000000; `LongTermDebtCurrent` 9227000000; `StockholdersEquity` 442387000000; no `CommercialPaper` or `ShortTermBorrowings` fact for that date | debt = 31,067,000,000 + 9,227,000,000 = 40,294,000,000; ÷ 442,387,000,000 | 0.091083 | ± 0.000001 | open |
+| FX13 | Microsoft ROE, FY2026 | `StockholdersEquity` 2026-06-30 442387000000 (`0001193125-26-323660`) and 2025-06-30 343479000000; net income as FX4 | average = (442,387,000,000 + 343,479,000,000) ÷ 2 = 392,933,000,000; 133,749,000,000 ÷ 392,933,000,000 | 0.340386 | ± 0.000001 | open |
+| FX14 | Microsoft EBIT, FY2026 | net income as FX4; `IncomeTaxExpenseBenefit` USD 2025-07-01 → 2026-06-30 · `0001193125-26-323660` · `val` 32185000000; `InterestExpense` absent for this period, so the alternate `InterestExpenseNonoperating` · same · `val` 3051000000 | 133,749,000,000 + 32,185,000,000 + 3,051,000,000 | 168,985,000,000 USD | exact | open |
+| FX15 | Apple ROA, FY2026 | `Assets` 2026-09-26 404548000000 and 2025-09-27 359241000000, both `0000320193-26-000026`; net income as FX2 | average = (404,548,000,000 + 359,241,000,000) ÷ 2 = 381,894,500,000; 132,175,000,000 ÷ 381,894,500,000 | 0.346103 | ± 0.000001 | open |
+
+Inputs for FX5–FX15 were read from the fixture JSON by a script that imports no app code
+(`runs/m2/m2-01-implement-main-session/fx_inputs.py`), and the arithmetic was done separately
+(`fx_rows.py` in the same folder).
+
+**Unavailable by design, from the same fixtures:**
+
+- Apple EBIT and EBITDA, FY2026: no `InterestExpense` fact after FY2023, and the alternates are absent for FY2026, so both are
+  `unavailable`. Operating income (158,063 USD millions) is never substituted.
+- Microsoft and Alphabet EBITDA, all years: none of the captured D&A concepts appears in their annual 10-K facts, so EBITDA and
+  D&A are `unavailable` / `MISSING`. A recapture with another concept would need its own follow-up step.
 
 Annual periods in the snapshot (10-K/10-K/A, 350–380 days, revenue and net income; from `manifest.json` `periods`,
 checked by hand): Apple 20 (2007-09-29 to 2026-09-26), Microsoft 19 (2008-06-30 to 2026-06-30), Alphabet 13

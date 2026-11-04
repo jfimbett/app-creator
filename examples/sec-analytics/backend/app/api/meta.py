@@ -17,14 +17,14 @@ def meta(
     store: Annotated[FixtureStore, Depends(get_store)],
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> MetaResponse:
-    """Data mode and demo universe. M1 has no live mode, so live is never available."""
+    """Data mode, whether live is offered and configured, and the demo universe."""
     universe = [
         DemoCompany(cik=c.cik, ticker=c.primary_ticker, name=c.name) for c in store.universe()
     ]
     return MetaResponse(
         data_mode=settings.data_mode,
-        live_available=False,
-        live_configured=False,
+        live_available=settings.live_available,
+        live_configured=settings.live_configured,
         snapshot_date=store.snapshot_date,
         demo_universe=universe,
     )

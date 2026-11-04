@@ -1,4 +1,4 @@
-"""Annual period selection and the duplicate policy (first version, M1).
+"""Annual period selection and the duplicate and restatement policy.
 
 Pure functions over SEC Company Facts data (no files, network or clock). The rules
 (milestones/architecture.md "Financial data rules", brief §7):
@@ -11,6 +11,11 @@ Pure functions over SEC Company Facts data (no files, network or clock). The rul
 - Only `10-K` and `10-K/A` facts feed annual series.
 - Duplicates: per (concept, unit, start, end) keep the latest `filed`; on a tie the higher
   accession number. Values are never summed.
+- Instants belong to a period only when dated exactly its end date; same duplicate policy.
+- Periods shown are the distinct (start, end) pairs of revenue and net income facts. When two pairs
+  share an end date, the one from the latest filed fact (tie: higher accession) is kept.
+- Restatements: the latest filing wins, so history can differ from what was first reported.
+  The views say so: "Values may reflect later restatements; not point-in-time."
 - Missing values stay missing (`None`, status "missing", with a reason), never 0.
 """
 
@@ -164,6 +169,30 @@ def annual_facts(facts: Iterable[Fact], unit: str) -> dict[tuple[str, Period], F
 def annual_periods(selected: Mapping[tuple[str, Period], Fact]) -> list[Period]:
     """All periods that have at least one selected fact, earliest first."""
     return sorted({period for _, period in selected})
+
+
+def select_periods(
+    selected: Mapping[tuple[str, Period], Fact], concepts: Iterable[str]
+) -> list[Period]:
+    """Annual periods from `concepts`' facts, one per end date, earliest first."""
+    wanted = set(concepts)
+    best: dict[date, tuple[Period, Fact]] = {}
+    for (concept, period), fact in selected.items():
+        if concept not in wanted:
+            continue
+        current = best.get(period.end)
+        if current is None or choose_fact([current[1], fact]) is fact:
+            best[period.end] = (period, fact)
+    return [best[end][0] for end in sorted(best)]
+
+
+def instant_facts(facts: Iterable[Fact], unit: str) -> dict[tuple[str, date], Fact]:
+    """One 10-K/10-K/A instant fact per (concept, end date) in `unit`, duplicates resolved."""
+    groups: dict[tuple[str, date], list[Fact]] = {}
+    for fact in facts:
+        if is_instant(fact) and fact.unit == unit and fact.form in ANNUAL_FORMS:
+            groups.setdefault((fact.concept, fact.end), []).append(fact)
+    return {key: choose_fact(group) for key, group in groups.items()}
 
 
 def pick_first(

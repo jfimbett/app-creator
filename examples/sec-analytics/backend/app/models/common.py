@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 
 class SourceInfo(BaseModel):
-    """Where the data in a response comes from. At M1 `mode` is always "demo"."""
+    """Where the data in a response comes from: recorded demo data, SEC just now, or the cache."""
 
     mode: Literal["demo", "live", "cached"]
     label: str

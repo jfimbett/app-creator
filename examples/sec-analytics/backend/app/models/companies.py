@@ -10,6 +10,10 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.models.common import MetricValue, SourceInfo
 
 UNIVERSE_NOTE = "Search covers the demo companies only: Apple, Microsoft, Alphabet"
+LIVE_UNIVERSE_NOTE = (
+    "Live search covers SEC filers listed in the SEC ticker file; "
+    "other filers can be opened by CIK."
+)
 
 
 class DemoCompany(BaseModel):

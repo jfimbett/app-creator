@@ -204,11 +204,11 @@ def test_overview_shape_and_apple_known_answers(client) -> None:
     assert set(body) == {"cik", "key_figures", "chart", "notes", "source"}
     assert body["cik"] == APPLE
     figures = {m["metric_id"]: m for m in body["key_figures"]}
-    assert set(figures) == {"revenue", "net_income"}
+    assert {"revenue", "net_income"} <= set(figures)  # M2 adds derived figures to the strip
     # FX1 and FX2 (acceptance.md): whole USD, not millions.
     assert figures["revenue"]["value"] == 478834000000
     assert figures["net_income"]["value"] == 132175000000
-    for figure in figures.values():
+    for figure in (figures["revenue"], figures["net_income"]):
         assert (figure["unit"], figure["kind"], figure["status"]) == ("USD", "reported", "ok")
         assert (figure["fiscal_year_label"], figure["period_end"]) == ("FY2026", "2026-09-26")
         assert figure["provenance"]["accession"] == "0000320193-26-000026"
@@ -315,7 +315,7 @@ def test_settings_default_to_fixtures() -> None:
     assert settings.fixtures_dir == FIXTURES_DIR
 
 
-@pytest.mark.parametrize("mode", ["live", "cached", "FIXTURES "])
+@pytest.mark.parametrize("mode", ["cached", "FIXTURES "])  # "live" became valid at M2
 def test_settings_refuse_other_modes_naming_the_setting(mode) -> None:
     with pytest.raises(SettingsError, match="DATA_MODE"):
         load_settings({"DATA_MODE": mode})
