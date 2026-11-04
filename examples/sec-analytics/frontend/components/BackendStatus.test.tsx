@@ -16,16 +16,16 @@ describe("BackendStatus", () => {
     expect(screen.getByTestId("health-status").dataset.state).toBe("ok");
   });
 
-  it("says OFFLINE with the start command, and re-checks on request", async () => {
+  it("shows the start command in plain text, and re-checks on request", async () => {
     const fetchMock = vi.fn(async () => {
       throw new TypeError("fetch failed");
     });
     vi.stubGlobal("fetch", fetchMock);
     render(<BackendStatus />);
-    const status = await screen.findByText(/Backend OFFLINE/);
+    const status = await screen.findByText("Backend not reachable: start it with npm run demo");
     expect(status.textContent).toContain("start it with npm run demo");
     fireEvent.click(screen.getByRole("button", { name: "Check again" }));
-    await screen.findByText(/Backend OFFLINE/);
+    await screen.findByText("Backend not reachable: start it with npm run demo");
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });

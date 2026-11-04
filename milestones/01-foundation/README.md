@@ -37,4 +37,13 @@ replaying a prompt does not reproduce the same code. The tag is the reference ve
 
 ## Results
 
-Filled in after the checkpoint.
+**Added.** Dark terminal shell, keyboard search by name, ticker or CIK over three demo companies, company profile, key
+figures, annual revenue and net income chart with a data table, source tooltips, and offline, no-match and error states.
+Authentic SEC fixtures retrieved on 2026-11-03 (live SEC: 7 requests) with a manifest.
+
+**Checked.** `npm run verify` (backend lint and tests, frontend lint, typecheck, unit tests, build, Playwright journeys at
+1440, 1366 and 390 px) and visual inspection of the screenshots. The commit and exact results are in `PROGRESS.md`.
+
+**Limitations.** Recorded data for three companies only; annual revenue and net income only; no live data. The planned
+independent reviews were replaced by a same-session review at the owner's request. Windows and Cline are untested. Tables wider than a
+phone scroll inside their own box.

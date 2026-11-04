@@ -21,12 +21,12 @@ Paths are relative to `examples/sec-analytics/` (written `fe/` for the frontend 
 
 | # | Slice | Criteria | Owner (agent) | May touch | Must not touch | Skills | Status |
 |---|---|---|---|---|---|---|---|
-| 1.1 | Example skeleton: copy `scaffold/` into `examples/sec-analytics/` (`npm run create-app -- --name "SEC Analytics" --dir examples/sec-analytics`), set `docsDir` to `milestones` and `demoEnv`/`devEnv` in `app-creator.config.json`, write `examples/sec-analytics/CLAUDE.md` (SEC rules from [architecture.md](architecture.md#financial-data-rules)) | M1-AC6 (skeleton passes) | backend-engineer | `examples/sec-analytics/**`, `app-creator.config.json` | `milestones/*.md` except status updates | build-feature | todo |
-| 1.2 | Authentic fixtures: `be/scripts/capture_fixtures.py` (allowlisted, throttled, owner's `SEC_USER_AGENT`), trimmed submissions, Company Facts and ticker entries for AAPL, MSFT, GOOGL; `fixtures/manifest.json`. If blocked: record the blocker (N2), no manufactured data | M1-AC7 | backend-engineer | `be/scripts/`, `fixtures/`, `.env.example` (names only) | `fe/` | integrate-api, manage-data | todo |
-| 1.3 | Backend M1 API: settings, `data/fixtures.py`, `logic/cik.py`, `logic/search.py`, `/api/meta`, `/api/companies/search`, `/api/companies/{cik}`, error envelope | M1-AC3, M1-AC4, M1-E2 | backend-engineer | `be/app/`, `be/tests/` | `fe/`, `fixtures/` | build-feature, test-and-check, plan-architecture | todo |
-| 1.4 | Overview data: first version of `logic/periods.py` (annual selection, dedupe) for revenue and net income; `/api/companies/{cik}/overview` with provenance | M1-AC5 | backend-engineer | `be/app/logic/`, `be/app/api/`, `be/tests/` | `fe/` | test-and-check | todo |
-| 1.5 | Dark terminal shell, keyboard search, profile and dashboard, `SourceBadge`, demo-universe note, loading/empty/error states | M1-AC1, M1-AC2, M1-AC5, M1-E1, V1–V3 | frontend-engineer (with design-lead) | `fe/app/`, `fe/components/`, `fe/lib/` | `be/` | design-interface, build-feature | todo |
-| 1.6 | Playwright journey (1440 and 390 px), review (code, ux, test), milestone README, checkpoint | M1-AC1–M1-AC7 | test-engineer, then reviewers | `fe/e2e/`, `milestones/01-foundation/README.md` | app logic, except fixes found by the review | test-and-check, review-changes, orchestrate-steps | todo |
+| 1.1 | Example skeleton: copy `scaffold/` into `examples/sec-analytics/` (`npm run create-app -- --name "SEC Analytics" --dir examples/sec-analytics`), set `docsDir` to `milestones` and `demoEnv`/`devEnv` in `app-creator.config.json`, write `examples/sec-analytics/CLAUDE.md` (SEC rules from [architecture.md](architecture.md#financial-data-rules)) | M1-AC6 (skeleton passes) | backend-engineer | `examples/sec-analytics/**`, `app-creator.config.json` | `milestones/*.md` except status updates | build-feature | done (2026-11-04) |
+| 1.2 | Authentic fixtures: `be/scripts/capture_fixtures.py` (allowlisted, throttled, owner's `SEC_USER_AGENT`), trimmed submissions, Company Facts and ticker entries for AAPL, MSFT, GOOGL; `fixtures/manifest.json`. If blocked: record the blocker (N2), no manufactured data | M1-AC7 | backend-engineer | `be/scripts/`, `fixtures/`, `.env.example` (names only) | `fe/` | integrate-api, manage-data | done (2026-11-04) |
+| 1.3 | Backend M1 API: settings, `data/fixtures.py`, `logic/cik.py`, `logic/search.py`, `/api/meta`, `/api/companies/search`, `/api/companies/{cik}`, error envelope | M1-AC3, M1-AC4, M1-E2 | backend-engineer | `be/app/`, `be/tests/` | `fe/`, `fixtures/` | build-feature, test-and-check, plan-architecture | done (2026-11-04) |
+| 1.4 | Overview data: first version of `logic/periods.py` (annual selection, dedupe) for revenue and net income; `/api/companies/{cik}/overview` with provenance | M1-AC5 | backend-engineer | `be/app/logic/`, `be/app/api/`, `be/tests/` | `fe/` | test-and-check | done (2026-11-04) |
+| 1.5 | Dark terminal shell, keyboard search, profile and dashboard, `SourceBadge`, demo-universe note, loading/empty/error states | M1-AC1, M1-AC2, M1-AC5, M1-E1, V1–V3 | frontend-engineer (with design-lead) | `fe/app/`, `fe/components/`, `fe/lib/` | `be/` | design-interface, build-feature | done (2026-11-04) |
+| 1.6 | Playwright journey (1440 and 390 px), review (code, ux, test), milestone README, checkpoint | M1-AC1–M1-AC7 | test-engineer, then reviewers | `fe/e2e/`, `milestones/01-foundation/README.md` | app logic, except fixes found by the review | test-and-check, review-changes, orchestrate-steps | done (2026-11-04) |
 
 ## M2 — Financial intelligence (from `m1` → `m2`)
 
@@ -72,12 +72,14 @@ Status values: `todo`, `in progress`, `done (<date>, commit <short hash>)`, `blo
 | Date | Slice | What changed | Checks run and results (command, exit code) | Open problems |
 |---|---|---|---|---|
 | 2026-11-03 | planning | product, architecture, acceptance and plan written from the delegated decisions (step B12) | `npm run check-toolkit` (see the B12 record) | N1, N2 |
+| 2026-11-03 | 1.1–1.5 | skeleton, authentic fixtures, backend API, overview, shell and screens (runs/m1, m1-02 to m1-10) | `npm run verify` exit 0 after each group; live SEC: fixtures captured on 2026-11-03, 7 requests | m1-11 timed out with no output |
+| 2026-11-04 | 1.5–1.6 | classroom recovery; M1 journeys, visible backend-down message, documents (runs/recovery/R01, runs/m1/m1-16) | see the m1-16 record | independent reviews not run |
 
 ## Known problems and open questions
 
 - **N1** Paid live AI validation is blocked: there is no test key. Mocked integration only (owner decides).
-- **N2** Fixture capture and live SEC checks need the owner's `SEC_USER_AGENT` in the build environment. If it is
-  missing, slice 1.2 is blocked and reported, and nothing is manufactured.
-- The concept mapping, fiscal-year labels and fiscal year-ends are proposals marked `[verify against fixtures]`
-  (slices 1.4 and 2.2).
+- **N2** Resolved for the fixture capture (2026-11-03, owner's contact passed through the process environment only). Live checks in later
+  milestones still need the owner's `SEC_USER_AGENT`.
+- The M1 concept mapping and fiscal-year labels are checked against the fixtures (FX1–FX4). Concepts added in slice 2.2 are not yet.
+- M1 was reviewed only in the same session as it was finished; the planned independent reviews were replaced at the owner's request (2026-11-04).
 - With three demo companies, the four-company comparison is shown only in tests and live mode (Q19).

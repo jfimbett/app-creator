@@ -34,7 +34,7 @@ export function BackendStatus() {
   };
 
   const tone = state.kind === "ok" ? "border-positive text-positive" : state.kind === "error" ? "border-negative text-negative" : "border-line text-muted";
-  const text = state.kind === "ok" ? "Backend OK" : state.kind === "error" ? "Backend OFFLINE" : "Backend: checking…";
+  const text = state.kind === "ok" ? "Backend OK" : state.kind === "error" ? BACKEND_UNREACHABLE : "Backend: checking…";
 
   return (
     <span className="inline-flex items-center gap-1">
@@ -43,11 +43,9 @@ export function BackendStatus() {
         aria-live="polite"
         data-testid="health-status"
         data-state={state.kind}
-        title={state.kind === "error" ? BACKEND_UNREACHABLE : undefined}
-        className={`label-caps inline-flex items-center rounded-sm border px-1.5 py-px leading-4 ${tone}`}
+        className={`inline-flex items-center rounded-sm border px-1.5 py-px leading-4 ${state.kind === "error" ? "text-table font-medium" : "label-caps"} ${tone}`}
       >
         {text}
-        {state.kind === "error" ? <span className="sr-only">: {BACKEND_UNREACHABLE}</span> : null}
       </span>
       {state.kind === "error" ? (
         <button type="button" onClick={recheck} className="label-caps rounded-sm border border-line px-1.5 py-px leading-4 text-fg hover:border-accent">

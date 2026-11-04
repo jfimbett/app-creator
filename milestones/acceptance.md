@@ -11,20 +11,20 @@ Each criterion has a starting state, one action and an observable result. **Chec
 - **look**: screenshots inspected, then the owner's look.
 
 Status is one of `open`, `passing (test: <file::name>)`, `checked by hand on <date> by <who>`, `failing` or
-`blocked: <reason>`. All criteria are `open` today. Criteria are cumulative: every later milestone must still pass
+`blocked: <reason>`. M1 criteria were updated on 2026-11-04; later milestones are `open`. Criteria are cumulative: every later milestone must still pass
 the earlier ones.
 
 ## M1 — Foundation
 
 | Id | Feature | Given | When | Then | Check | Status |
 |---|---|---|---|---|---|---|
-| M1-AC1 | M1-F1 | a clean checkout of `m1`, after `npm ci` and `npm run setup` | the instructor runs `npm run demo` and opens http://127.0.0.1:3000 | the dark shell shows the header search, the badge `RECORDED SEC DEMO` and the note "Search covers the demo companies only: Apple, Microsoft, Alphabet"; no network request leaves the machine | E2E, look | open |
-| M1-AC2 | M1-F2 | fixture mode | the user presses `/`, types `aapl`, then presses ↓ and Enter | the search box is focused by `/` (and by Ctrl/Cmd-K); "Apple Inc. · AAPL · CIK 0000320193" is highlighted and opens the company page | E2E | open |
-| M1-AC3 | M1-F2 | fixture mode | the user searches `320193`, `0000320193`, `Microsoft` and `GOOGL` | each finds exactly the matching demo company (CIK normalized to 10 digits); `tesla` gives "No match in the demo universe (3 companies)" | unit (`logic/cik.py`, `logic/search.py`), API | open |
-| M1-AC4 | M1-F3 | fixture mode | the user opens Apple | the profile shows name, ticker(s), 10-digit CIK, exchange, SIC code and description, fiscal year-end and former names, exactly as in the fixture submissions file; no invented description text | API, E2E | open |
-| M1-AC5 | M1-F4 | fixture mode | the user views the Apple dashboard | key figures and the revenue / net income chart show values from the fixture, each with fiscal year-end, unit and the label `RECORDED SEC DEMO · snapshot <manifest date>`; hovering a value shows its concept and accession | API, E2E | open |
-| M1-AC6 | M1-F1 | the `m1` checkout | `npm run verify` runs | it exits 0 with no network; it includes backend lint and tests, frontend lint, typecheck, unit tests, build and the Playwright journey of M1-AC1/AC2/AC5 at 1440, 1366 and 390 px | command | open |
-| M1-AC7 | – | the fixtures folder | a reviewer opens `fixtures/manifest.json` | every fixture file has source URL, retrieval date, accession(s), periods and scope; synthetic test data lives only in `backend/tests/synthetic/` and is marked `SYNTHETIC` | unit (manifest check), review | open |
+| M1-AC1 | M1-F1 | a clean checkout of `m1`, after `npm ci` and `npm run setup` | the instructor runs `npm run demo` and opens http://127.0.0.1:3000 | the dark shell shows the header search, the badge `RECORDED SEC DEMO` and the note "Search covers the demo companies only: Apple, Microsoft, Alphabet"; no network request leaves the machine | E2E, look | passing (test: e2e/m1-foundation.spec.ts journey 1 and the request-host check); looked at 2026-11-04 by assistant |
+| M1-AC2 | M1-F2 | fixture mode | the user presses `/`, types `aapl`, then presses ↓ and Enter | the search box is focused by `/` (and by Ctrl/Cmd-K); "Apple Inc. · AAPL · CIK 0000320193" is highlighted and opens the company page | E2E | passing (test: e2e/m1-foundation.spec.ts journey 2; lib/shortcuts.test.ts; lib/combobox.test.ts) |
+| M1-AC3 | M1-F2 | fixture mode | the user searches `320193`, `0000320193`, `Microsoft` and `GOOGL` | each finds exactly the matching demo company (CIK normalized to 10 digits); `tesla` gives "No match in the demo universe (3 companies)" | unit (`logic/cik.py`, `logic/search.py`), API | passing (test: tests/test_search.py, tests/test_cik.py, tests/test_api_m1.py; e2e journey 4) |
+| M1-AC4 | M1-F3 | fixture mode | the user opens Apple | the profile shows name, ticker(s), 10-digit CIK, exchange, SIC code and description, fiscal year-end and former names, exactly as in the fixture submissions file; no invented description text | API, E2E | passing (test: tests/test_api_m1.py; e2e journey 3) |
+| M1-AC5 | M1-F4 | fixture mode | the user views the Apple dashboard | key figures and the revenue / net income chart show values from the fixture, each with fiscal year-end, unit and the label `RECORDED SEC DEMO · snapshot <manifest date>`; hovering a value shows its concept and accession | API, E2E | passing (test: tests/test_overview_fixtures.py, tests/test_api_m1.py; e2e journey 3) |
+| M1-AC6 | M1-F1 | the `m1` checkout | `npm run verify` runs | it exits 0 with no network; it includes backend lint and tests, frontend lint, typecheck, unit tests, build and the Playwright journey of M1-AC1/AC2/AC5 at 1440, 1366 and 390 px | command | passing (npm run verify, clean worktree (runs/m1/m1-16-complete-m1-main-session)) |
+| M1-AC7 | – | the fixtures folder | a reviewer opens `fixtures/manifest.json` | every fixture file has source URL, retrieval date, accession(s), periods and scope; synthetic test data lives only in `backend/tests/synthetic/` and is marked `SYNTHETIC` | unit (manifest check), review | passing (test: tests/test_fixtures_manifest.py) |
 
 ## M2 — Financial intelligence
 
@@ -86,6 +86,8 @@ the earlier ones.
 | V2 | the same screens at 1366 and 390 px | no sideways page scrolling; wide tables scroll inside their own box; search and badges usable | Playwright screenshots | assistant, then owner |
 | V3 | missing / unavailable / error / offline states | text explains the reason and next step; meaning never carried by colour alone | Playwright on synthetic states | assistant, then owner |
 
+M1 visual check, 2026-11-04, assistant: home and Apple at 1440, 1366 and 390 px, plus no-match (1440) and backend down (1440, 390). The missing-value state has no case in the three recorded companies, so it is covered by unit and API tests, not by a screenshot. The owner's own look is pending.
+
 ## Calculations (known answers)
 
 **ILLUSTRATIVE INPUTS. These are round numbers invented for teaching and testing. They are NOT SEC values for any
@@ -137,10 +139,10 @@ out again first.
 
 | Id | Number | Fact quoted from the fixture (concept · unit · start → end · form · accession · filed · `val`) | Hand working | Expected result | Tolerance | Status |
 |---|---|---|---|---|---|---|
-| FX1 | Apple latest annual revenue, FY2026 (ends 2026-09-26) | `RevenueFromContractWithCustomerExcludingAssessedTax` · USD · 2025-09-28 → 2026-09-26 · 10-K · `0000320193-26-000026` · filed 2026-11-03 · `val` 478834000000 (fy 2026, fp FY) | `Revenues` has no fact for this period, so the second priority concept is used; one 10-K fact, no duplicate; duration 363 days (annual) | 478,834,000,000 USD = 478,834 USD millions | exact | open |
-| FX2 | Apple latest annual net income, FY2026 (ends 2026-09-26) | `NetIncomeLoss` · USD · 2025-09-28 → 2026-09-26 · 10-K · `0000320193-26-000026` · filed 2026-11-03 · `val` 132175000000 (fy 2026, fp FY) | one 10-K fact for the period, no duplicate; 363 days | 132,175,000,000 USD = 132,175 USD millions | exact | open |
-| FX3 | Microsoft latest annual revenue, FY2026 (ends 2026-06-30) | `RevenueFromContractWithCustomerExcludingAssessedTax` · USD · 2025-07-01 → 2026-06-30 · 10-K · `0001193125-26-323660` · filed 2026-07-29 · `val` 331839000000 (fy 2026, fp FY) | `Revenues` has no fact for this period; one 10-K fact; 364 days | 331,839,000,000 USD = 331,839 USD millions | exact | open |
-| FX4 | Microsoft latest annual net income, FY2026 (ends 2026-06-30) | `NetIncomeLoss` · USD · 2025-07-01 → 2026-06-30 · 10-K · `0001193125-26-323660` · filed 2026-07-29 · `val` 133749000000 (fy 2026, fp FY) | the file also holds the same period from a `DEF 14A` (accession `0001193125-26-427849`, filed 2026-10-21, same `val`); it is not a 10-K/10-K/A, so it is excluded even though it was filed later; 364 days | 133,749,000,000 USD = 133,749 USD millions; provenance accession `0001193125-26-323660` | exact | open |
+| FX1 | Apple latest annual revenue, FY2026 (ends 2026-09-26) | `RevenueFromContractWithCustomerExcludingAssessedTax` · USD · 2025-09-28 → 2026-09-26 · 10-K · `0000320193-26-000026` · filed 2026-11-03 · `val` 478834000000 (fy 2026, fp FY) | `Revenues` has no fact for this period, so the second priority concept is used; one 10-K fact, no duplicate; duration 363 days (annual) | 478,834,000,000 USD = 478,834 USD millions | exact | passing (test: tests/test_overview_fixtures.py) |
+| FX2 | Apple latest annual net income, FY2026 (ends 2026-09-26) | `NetIncomeLoss` · USD · 2025-09-28 → 2026-09-26 · 10-K · `0000320193-26-000026` · filed 2026-11-03 · `val` 132175000000 (fy 2026, fp FY) | one 10-K fact for the period, no duplicate; 363 days | 132,175,000,000 USD = 132,175 USD millions | exact | passing (test: tests/test_overview_fixtures.py) |
+| FX3 | Microsoft latest annual revenue, FY2026 (ends 2026-06-30) | `RevenueFromContractWithCustomerExcludingAssessedTax` · USD · 2025-07-01 → 2026-06-30 · 10-K · `0001193125-26-323660` · filed 2026-07-29 · `val` 331839000000 (fy 2026, fp FY) | `Revenues` has no fact for this period; one 10-K fact; 364 days | 331,839,000,000 USD = 331,839 USD millions | exact | passing (test: tests/test_overview_fixtures.py) |
+| FX4 | Microsoft latest annual net income, FY2026 (ends 2026-06-30) | `NetIncomeLoss` · USD · 2025-07-01 → 2026-06-30 · 10-K · `0001193125-26-323660` · filed 2026-07-29 · `val` 133749000000 (fy 2026, fp FY) | the file also holds the same period from a `DEF 14A` (accession `0001193125-26-427849`, filed 2026-10-21, same `val`); it is not a 10-K/10-K/A, so it is excluded even though it was filed later; 364 days | 133,749,000,000 USD = 133,749 USD millions; provenance accession `0001193125-26-323660` | exact | passing (test: tests/test_overview_fixtures.py) |
 
 Annual periods in the snapshot (10-K/10-K/A, 350–380 days, revenue and net income; from `manifest.json` `periods`,
 checked by hand): Apple 20 (2007-09-29 to 2026-09-26), Microsoft 19 (2008-06-30 to 2026-06-30), Alphabet 13
@@ -150,8 +152,8 @@ checked by hand): Apple 20 (2007-09-29 to 2026-09-26), Microsoft 19 (2008-06-30 
 
 | Id | M | Situation (synthetic unless stated) | Expected behaviour | Check | Status |
 |---|---|---|---|---|---|
-| M1-E1 | 1 | backend down | the header shows "Backend not reachable: start it with npm run demo"; no stack trace | E2E | open |
-| M1-E2 | 1 | CIK `abc`, `12345678901` (11 digits) | 422 `invalid_cik` with "A CIK has up to 10 digits" | unit, API | open |
+| M1-E1 | 1 | backend down | the header shows "Backend not reachable: start it with npm run demo"; no stack trace | E2E | passing (test: e2e journey 5; components/BackendStatus.test.tsx) |
+| M1-E2 | 1 | CIK `abc`, `12345678901` (11 digits) | 422 `invalid_cik` with "A CIK has up to 10 digits" | unit, API | passing (test: tests/test_cik.py, tests/test_api_m1.py) |
 | M2-E1 | 2 | **missing tag**: no revenue concept in FY2022 | revenue `MISSING`; margins and growth `unavailable` with reason; the chart draws a gap | unit | open |
 | M2-E2 | 2 | **alternate revenue concept**: FY2023 only `RevenueFromContractWithCustomerExcludingAssessedTax`, FY2024 `Revenues` | each year uses its own concept, never a sum; the series is flagged "revenue concept changes between years" | unit | open |
 | M2-E3 | 2 | **duplicate filings / restatement**: same concept, unit, start, end in a 10-K filed 2024-11-01 (1,000) and a 10-K/A filed 2025-02-01 (1,010) | value 1,010 (not 2,010), provenance = the 10-K/A; restatement note shown | unit | open |

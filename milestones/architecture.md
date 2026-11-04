@@ -271,3 +271,13 @@ Tests and `npm run demo` need no `.env`.
 | 2026-11-03 | OpenRouter key in `X-OpenRouter-Key` header per request, never stored server-side | transient key, redaction-friendly | GOAL.md §7; assumption Q36, Q44 |
 | 2026-11-03 | Filing text search runs in the browser over the returned blocks; no search endpoint | the text is already loaded; less API surface | routine technical choice under delegation |
 | 2026-11-03 | Rejected: SQLite cache, vector database, server-side key storage, 8-K history | not needed / forbidden / new scope | GOAL.md §4, §7; assumption Q42 |
+| 2026-11-04 | Nested skill `sec-edgar-data` lives in `examples/sec-analytics/.claude/skills/` | keeps SEC rules out of the generic toolkit; it loads when files in that folder are touched; Cline users open it themselves | brief §5; docs/research/claude-code-and-cline.md |
+| 2026-11-04 | The overview response also has `notes` and a `years` parameter | the M1 brief defines them and it takes precedence over the table above | brief §5; m1-01 |
+| 2026-11-04 | Search returns one result per CIK and shows the ticker from the demo universe; relative `FIXTURES_DIR` resolves from the repository root | Alphabet has four tickers; the launcher runs from varying folders | routine choice; m1-06 |
+| 2026-11-04 | Validation error codes by parameter: `q`/`limit` → `invalid_query`, `cik` → `invalid_cik`, others → `invalid_request` | stable codes for the frontend | routine choice; m1-06, m1-07b |
+| 2026-11-04 | Duplicate tie-break compares accession digits as one integer; currency tie goes to the alphabetically first; fact rows missing `end`, `val`, `form`, `accn` or `filed` are skipped | deterministic results; a fact without those fields cannot carry a source | routine choice; m1-07 |
+| 2026-11-04 | A company with no revenue facts has no reporting currency: empty chart with a note | the reporting currency is defined by revenue facts | routine choice; m1-07b |
+| 2026-11-04 | SEC client: timeouts and network errors are not retried; 404 is `SecNotFound`; the throttle measures the gap between request starts | conservative toward SEC | routine choice; m1-04 |
+| 2026-11-04 | Former-name dates arrive as raw SEC timestamps and are formatted by the frontend; `/` is ignored in text fields while Ctrl/Cmd-K works inside the search box | keep source data intact; `/` can still be typed | routine choice; m1-06, m1-09 |
+| 2026-11-04 | `npm run demo` keeps the dev server, with the Next.js dev badge off; `frontend/AGENTS.md`, which `next dev` writes, is git-ignored | classroom display; generated file | recovery R01 |
+| 2026-11-04 | The header's backend-down state shows the full message as visible text | M1-E1 requires the header to show it; it was screen-reader text only | m1-16 |
