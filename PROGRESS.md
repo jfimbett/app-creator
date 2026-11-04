@@ -4,7 +4,88 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 
 ## Current phase
 
-M2 complete at tag `m2`. Execution mode (instructor, 2026-11-04): one milestone at a time, main session, then stop and report. **Waiting for the instructor; do not start M3 without instruction.**
+**M2 is complete and verified. M3 is next and has not been started.** Execution mode (instructor, 2026-11-04): one milestone at a
+time, in the main session, then stop and report. Wait for the instructor's instruction before implementing.
+
+## Handoff for a new session (written 2026-11-04, before a context clear)
+
+Read this section first. The older sections below are history.
+
+**Verified refs (do not move or rewrite)**
+
+| Ref | Commit | State |
+|---|---|---|
+| `template-v1`, branch `template` | `d387e3d` | generic toolkit |
+| `m1`, branch `milestone/01-foundation` | `bd8ab81` | M1 verified |
+| `m2`, branch `milestone/02-financial-intelligence` | `4451d43` | M2 verified: clean worktree `npm ci`, setup, verify exit 0; pytest 320, Vitest 83, Playwright 24; live SEC checks passed separately |
+| `main` | `6088a29` plus the handoff commit that adds this section (`git log -1 main` shows it) | `m2` plus records only; no application changes since `m2` |
+
+Nothing has been pushed; there is no remote.
+
+**Working directories**
+
+- Main checkout: `/Users/[REDACTED:user]/Documents/app-creator`, branch `main`. The classroom app runs from here, so do not change app files here.
+- M3 worktree: `.worktrees/m3` (git-ignored), branch `work/m3`, at the same commit as `main`, with a `.env` symlink to the root `.env`.
+  It has no dependencies yet: run `npm ci` and `npm run setup` there first. Use separate ports, for example 3300/8300.
+
+**Running services**
+
+| Service | Address | Started by | Mode |
+|---|---|---|---|
+| Classroom app, verified M2, frontend | http://127.0.0.1:3200 | `npm run dev` from the main checkout, detached | Demo/Live selector, starts on Demo; live configured |
+| Classroom app, backend | 127.0.0.1:8200 | same process | |
+| Other services, not ours; leave them alone | ports 3000 and 8000 | unknown | the launcher refuses these ports |
+
+Check with `curl -s http://127.0.0.1:3200/api/meta`. These processes may not survive a machine restart. Restart:
+
+```bash
+pkill -f 'scripts/dev.mjs'
+cd /Users/[REDACTED:user]/Documents/app-creator
+FRONTEND_PORT=3200 BACKEND_PORT=8200 npm run dev
+```
+
+`pkill -f 'scripts/dev.mjs'` stops every dev launcher, including one started from the M3 worktree, so check first. Offline only:
+`npm run demo` with the same ports.
+
+**Local configuration (no values recorded here)**
+
+- Root `.env`, git-ignored, holds `SEC_USER_AGENT` only, created at the instructor's explicit request for live SEC. Never print it,
+  read it or commit it. The project's deny rules block reads, and shell commands naming that file may be refused too: that is correct, so
+  do not work around it. To check live configuration, use `live_configured` from `/api/meta`. Students use their own contact.
+- Node 22.14 (floor 22.13). Python: `/opt/homebrew/bin/python3.10`, found automatically by `npm run setup`. No OpenRouter key exists, and
+  none should be requested in chat.
+- Chromium is project-local at `.cache/ms-playwright`, full Chromium via `channel: "chromium"`. The headless shell hung here.
+
+**Permission settings: preserve them**
+
+The instructor removed the Ask rules with `/permissions`. `.claude/settings.json` has `"ask": []` and 20 deny rules. Do not restore Ask rules,
+overwrite the file or run `git restore` on it. `check-toolkit` checks deny rules only. Permission hardening is deferred, and only with the instructor's decision.
+
+**Instructions and records**
+
+- Goal: `GOAL.md`. Current M3 instruction, saved verbatim before any work: `runs/m3/m3-01-implement-main-session/PROMPT.md`. It includes a rule: on the classroom freeze
+  instruction, stop adding features, preserve unfinished work and run the latest verified milestone.
+- M3 brief: `milestones/03-filing-intelligence/PROMPT.md`. Criteria: `milestones/acceptance.md` (M3-AC1 to AC7, M3-E1 to E5). Decisions: `milestones/architecture.md`.
+- M2 record: `runs/m2/m2-01-implement-main-session/` (prompt, result, evidence logs). M1: `runs/m1/`. Index: `runs/INDEX.md`. Setup guide: `docs/SETUP.md`.
+- **Capture gaps:** for main-session steps, `RESPONSE.md` holds a marker instead of the final message. That message is only in the session transcript. A context clear does not recover it. Mark gaps this way; never reconstruct them.
+- Session-local helpers in the old scratchpad (`mkstep.py`, `mkimpl.py`) are not in the repo and are not needed in main-session mode.
+
+**M3 is next. Facts already read from the brief and fixtures (no implementation exists)**
+
+- Starting point: `work/m3`, which descends from `m2`. Run `npm run verify` as the brief asks before changing anything.
+- The fixtures have no filing documents yet. `capture_fixtures.py --filings` is to be added: latest original 10-K and 10-Q per company, 6 requests, stored gzip-compressed. Do not change existing fixture data files.
+- **The recorded snapshot holds no 10-K/A or 10-Q/A rows**, so amendment labels rely on synthetic tests unless older pages supply some. Say so.
+- The instructor's M3 instruction also asks that a recorded excerpt is never presented as the full document, and a recorded filing never as the latest live report.
+- `beautifulsoup4==4.15.0` must be added to the backend lock (`html.parser`, no lxml).
+- Switch the classroom app to M3 only after its gate passes. If M3 is blocked, leave M2 running. On a pass, create branch `milestone/03-filing-intelligence` and annotated tag `m3` at the verified commit.
+
+**Deferred, do not start**
+
+- M4 and M5: after class.
+- Publication to GitHub. Before it, the instructor decides on the public commit email and permission hardening.
+- Independent reviews; Windows, Cline and CI checks; the remaining final documents (ARCHITECTURE, TEACHING-GUIDE, CHANGELOG, FINAL-VERIFICATION, PROMPT-EXECUTION-LOG, SOURCES).
+- `CLAUDE.md` still says "every other command asks", which no longer matches the instructor's settings. Fix only with toolkit work.
+- Known M2 limitations: see `milestones/plan.md`, "Known problems".
 
 ## Audit (2026-11-03)
 
