@@ -5,7 +5,7 @@ import re
 
 SHA = "4451d43fd52f6e08c2db7a41b16434c4f078605e"
 d = "runs/m2/m2-01-implement-main-session"
-log = "/Users/juan/Documents/app-creator/.logs/verify-4451d43-20261104T071359Z.log"
+log = "/Users/[REDACTED:user]/Documents/app-creator/.logs/verify-4451d43-20261104T071359Z.log"
 lines = open(log).read().split("\n")
 keep = [lines[0], "... (full log kept locally in .logs/ of the main checkout, git-ignored)"]
 keep += [l for l in lines if re.search(r"\d+ passed in|Test Files|^\s+Tests |^\s+\d+ passed", l)] + lines[-14:]
