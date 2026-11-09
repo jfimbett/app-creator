@@ -1,15 +1,16 @@
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { LandingFooter } from "@/components/landing/LandingFooter";
+import { LandingHeader } from "@/components/landing/LandingHeader";
 
-/** Layout of the landing page at /. Replaced by the full landing header and footer in slice 6.4. */
+/**
+ * Layout of the landing page at /: its own header and footer, sharing the theme and tokens with the app.
+ * Static: it makes no backend call, so it renders even when the backend is down.
+ */
 export default function MarketingLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      <header className="mx-auto flex w-full max-w-[1440px] justify-end px-4 py-2">
-        <ThemeToggle />
-      </header>
-      <main id="main" className="mx-auto w-full max-w-[1440px] px-4 py-4">
-        {children}
-      </main>
+      <LandingHeader />
+      <main id="main">{children}</main>
+      <LandingFooter />
     </>
   );
 }
