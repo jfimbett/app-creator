@@ -4,7 +4,17 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 
 ## Current phase
 
-**M5 complete and pushed (2026-11-09). All five milestones are built. Live AI not verified (N1): the instructor will run the live test.**
+**M6 complete (not pushed), 2026-11-09. All six milestones are built. Live AI not verified (N1).**
+
+## M6 completion (2026-11-09, newest)
+
+- Instruction: `runs/m6/m6-01-implement-main-session/PROMPT.md` ("Run milestones/06-polish-and-launch/PROMPT.md …"). Results: its `RESULT.json`.
+- Worktree `.worktrees/m6`, branch `work/m6`, from `main` b1ff390 (tag `m5` plus documentation commits; b1ff390 adds the brief).
+- Slice commits on `work/m6`: 27ea8a8, 9171eb7, f4d083d, 0b7a0ee, 0835f76, 17465ac; then the checkpoint commit that adds this entry.
+- Locally: `work/m6` merged into `main` (fast-forward); branch `milestone/06-polish-and-launch` and tag `m6` at the checkpoint commit.
+- **Not pushed.** The instructor pushes after reading the report.
+- Video: `examples/sec-analytics/brag-output/brag.mp4` (22.5 s). The owner's look at both themes and the video is pending.
+- Open minor items: `milestones/plan.md` "Known problems" (M6 items).
 
 ## M5 completion (2026-11-09, newest)
 

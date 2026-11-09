@@ -94,4 +94,18 @@ Changes: the OpenRouter boundary, grounded chat with checked citations, the Anal
 |---|---|---|---|
 | [m5-01-implement-main-session](../runs/m5/m5-01-implement-main-session/PROMPT.md) | built M5 (backend in the session, frontend by a subagent), reviews and fixes, gate | **gap:** [marker](../runs/m5/m5-01-implement-main-session/RESPONSE.md) | [result](../runs/m5/m5-01-implement-main-session/RESULT.json) |
 
-All five milestones now have tags.
+## M6 Polish and launch: tag `m6`, branch `milestone/06-polish-and-launch`
+
+Built, reviewed and verified on 2026-11-09 (m6-01) in the main session. The app-screen overhaul (slice 6.3) was built by a
+design-lead subagent briefed in the same session; three read-only reviewer subagents (UX, code, security and honesty)
+reviewed the work. Changes: dark and light themes, the interface overhaul, a landing page at `/` with the app at `/app`,
+and a launch video. [Milestone README](06-polish-and-launch/README.md).
+
+- Brief: [06-polish-and-launch/PROMPT.md](06-polish-and-launch/PROMPT.md)
+- Follow-ups: [06-polish-and-launch/FOLLOWUPS.md](06-polish-and-launch/FOLLOWUPS.md)
+
+| Step (prompt) | What it did | Response | Result |
+|---|---|---|---|
+| [m6-01-implement-main-session](../runs/m6/m6-01-implement-main-session/PROMPT.md) | built M6 (overhaul by a subagent), reviews and fixes, gate, video | **gap:** [marker](../runs/m6/m6-01-implement-main-session/RESPONSE.md) | [result](../runs/m6/m6-01-implement-main-session/RESULT.json) |
+
+All six milestones now have tags.

@@ -26,12 +26,18 @@ demo universe (3 companies)". `npm run dev` adds a Demo / Live selector that sta
 listed in the SEC ticker file, and other filers can be opened by CIK. It does not cover non-SEC companies. Setup, your contact
 setting and the smoke check are in [docs/SETUP.md](../../docs/SETUP.md).
 
+**Landing page, themes and video** (M6): `/` is a landing page that explains the product (its testimonials, pricing and
+company story are fictional or illustrative and say so on the page; there are no accounts or payments). The app itself is at
+`/app`. Every header has a sun/moon button that switches between the dark and light themes; the choice is remembered in this
+browser (`localStorage`, key `sec-analytics.theme`, display preference only). A 22-second launch video made with the
+`/brag` skill is in [brag-output/brag.mp4](brag-output/brag.mp4), with its plan and share text.
+
 ## Run it (from the repository root)
 
 ```bash
 npm ci           # once: the launcher's lockfile
 npm run setup    # once: backend and frontend packages, project-local browser
-npm run demo     # offline demo on recorded data: http://127.0.0.1:3000
+npm run demo     # offline demo on recorded data: http://127.0.0.1:3000 (landing), /app (the app)
 npm run dev      # the same, with the Demo / Live selector
 npm run verify   # every check, no network needed
 ```

@@ -65,6 +65,20 @@ Paths are relative to `examples/sec-analytics/` (written `fe/` for the frontend 
 | 5.3 | AI settings (masked key, memory, sessionStorage opt-in, model list, test, clear) and the analyst panel on company, filing and comparison screens; cancel | M5-AC1–M5-AC4, M5-AC6, M5-AC8, V1–V3 | frontend-engineer (with design-lead) | `fe/` | `be/` | design-interface, build-feature | done (2026-11-09) |
 | 5.4 | E2E with a mocked backend, security review (key handling), README stating "live AI: not verified" unless N1 is lifted, checkpoint | all M5; M5-AC9 stays `blocked: N1` | test-engineer, reviewers | `fe/e2e/`, `milestones/05-ai-financial-analyst/README.md` | – | review-changes, orchestrate-steps | done (2026-11-09); M5-AC9 `blocked: N1` |
 
+## M6 — Polish and launch (from `m5` → `m6`)
+
+Brief: [06-polish-and-launch/PROMPT.md](06-polish-and-launch/PROMPT.md). Owner decisions O1–O6. Built in one main session
+(runs/m6/m6-01); slice 6.3 by a design-lead subagent; reviews by ux-, code- and security-reviewer subagents.
+
+| # | Slice | Criteria | Owner | Status |
+|---|---|---|---|---|
+| 6.1 | Decisions O1–O6; route groups; app home moves to `/app`; specs updated | M6-AC3 | main session | done (2026-11-09, commit 27ea8a8) |
+| 6.2 | Theme: `lib/theme.ts`, pre-paint script, toggle, contrast function and token test, compare series as tokens; the localStorage test change | M6-AC1, M6-AC5 | main session | done (2026-11-09, commit 9171eb7) |
+| 6.3 | Interface overhaul of the app screens, screen by screen, screenshots in both themes | M6-AC2, M6-AC8 | design-lead subagent, integrated in the session | done (2026-11-09, commit f4d083d) |
+| 6.4 | Landing page with captured screenshots, `m6-landing.spec.ts`, `landing-content.test.ts` | M6-AC4, M6-AC6 | main session | done (2026-11-09, commit 0b7a0ee) |
+| 6.5 | Reviews in parallel (ux, code, security and honesty) and fixes | all M6 | reviewer subagents; fixes in the session | done (2026-11-09, commit 0835f76) |
+| 6.6 | Launch video with /brag | M6-AC7 | main session (brag-slim) | done (2026-11-09, commit 17465ac) |
+
 Status values: `todo`, `in progress`, `done (<date>, commit <short hash>)`, `blocked: <reason>`.
 
 ## Progress log
@@ -79,6 +93,8 @@ Status values: `todo`, `in progress`, `done (<date>, commit <short hash>)`, `blo
 | 2026-11-09 | 3.1–3.4 | finished M3 on Windows 11 (runs/m3/m3-04): Windows test-guard fix, six M3 browser journeys, phone and error-message fixes, live NVIDIA check, independent security and test reviews with fixes (nested-table parsing, download time and unzip limits, date-independent tests, stronger E1/E4/AC4/AC7/search tests) | `npm run verify` exit 0 (see m3-04 RESULT.json) | minor review items below |
 | 2026-11-09 | 4.1–4.3 | M4 in one main session (runs/m4/m4-01): comparison and CSV API with indexing, Compare screen, 13 browser journeys, live 4-company check, independent security and test reviews with fixes | `npm run verify` exit 0 (see m4-01 RESULT.json) | minor items below |
 | 2026-11-09 | 5.1–5.4 | M5 in the main session (runs/m5/m5-01), frontend by a frontend-engineer subagent: OpenRouter client and AI API, grounding (retrieval, prompt, citations, scope pre-check), Analyst panel and settings, 13 browser journeys with a mocked backend; independent security (backend, frontend) and test reviews with fixes | `npm run verify` exit 0 with no key (see m5-01 RESULT.json); live AI not verified (N1) | M5-AC9 blocked: N1; minor items below |
+
+| 2026-11-09 | 6.1–6.6 | M6 in the main session (runs/m6/m6-01): route groups and /app, dark and light themes, interface overhaul (design-lead subagent), landing page, three independent reviews with fixes, launch video | `npm run verify` exit 0 (74 browser checks); `npm run check-toolkit` exit 0; all journeys against `npm run demo` (see m6-01 RESULT.json) | minor items below; owner's look pending |
 
 ## Known problems and open questions
 
@@ -96,3 +112,15 @@ Status values: `todo`, `in progress`, `done (<date>, commit <short hash>)`, `blo
 - **M3 review items left open (minor, 2026-11-09):** no component test for the "Amended by" link on the latest card (the recorded data has no amended latest report; the API test covers the data); untested sanitizer paths (`visibility:hidden`, `!important`, a `.txt` file whose HTML starts after 2 KB; a block that is only a year such as "2025" is dropped as a page number); the section rule that keeps short leading items when there is no contents list.
 - **M4 items left open (minor, 2026-11-09):** a company with two annual periods carrying the same fiscal year label (a 52/53-week year ending on 1 January and on 31 December of one year) would show one of them in the table; not seen in the fixtures or live checks. The fifth-company refusal and the currency warning are shown in the browser only with mocked data (the demo has three USD companies).
 - **M5 items (2026-11-09):** live AI is not verified (N1: no authorized limited test key). The scope pre-check misses a one-word company name written in lower case ("what about microsoft?"); the model then still sees only the loaded data. Abbreviation tickers such as GM, ON or ALL are never treated as company mentions.
+- **M6 review items accepted, not fixed (2026-11-09):** the Overview has about 380 Tab stops because every value is a
+  focusable source button (existed before M6; a "jump to" list or one Tab stop per table would change behaviour); at 390 px a
+  company page shows the "Recorded SEC demo" badge three times (header, heading, panel), kept because it is source
+  information; the header brand link always goes to Demo `/app` (as before M6; the Home link keeps `?source=live`); a
+  future Content-Security-Policy must allow the fixed pre-paint theme script by its hash; `.btn-quiet` and `.toggle.is-on`
+  are documented but unused style classes.
+- **M6 test margins:** at 390 px the first filings-history Read link sits about 30 px above the bottom of the 844 px
+  viewport in `m3-filings.spec.ts`; adding content above it on phones may break that test. On a cold `next dev` compile
+  the first `demo-journey` run can exceed its 5 s chart wait (seen once against `npm run demo`; passed on two re-runs and
+  in `npm run verify`).
+- Net income has no year-on-year line on its key-figure card: the backend sends no net income growth, and the frontend
+  computes none.

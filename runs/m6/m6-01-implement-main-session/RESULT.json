@@ -1,0 +1,51 @@
+{
+ "step": "m6/m6-01-implement-main-session",
+ "agent": "top-level session (Opus 5.5); slice 6.3 by a design-lead subagent briefed in the session; three read-only reviewer subagents (ux-reviewer, code-reviewer, security-reviewer)",
+ "status": "completed; M6 gate passed; tag m6 (local, not pushed)",
+ "machine": "Windows 11, Node 24.13.0, Python 3.13.9 in examples/sec-analytics/backend/.venv",
+ "start_commit": "b1ff390 (main; tag m5 plus documentation commits; b1ff390 adds the M6 brief)",
+ "commits": {
+  "27ea8a8": "feat(m6): route groups, app home moves to /app, owner decisions O1-O6",
+  "9171eb7": "feat(m6): dark and light themes with a toggle, pre-paint script and contrast tests",
+  "f4d083d": "feat(m6): interface overhaul of the app screens (by the design-lead subagent)",
+  "0b7a0ee": "feat(m6): landing page at / with screenshots, honesty labels and tests",
+  "0835f76": "fix(m6): review findings (UX, code, security and honesty)",
+  "17465ac": "feat(m6): launch video made with /brag (brag-slim on Opus 5.5)",
+  "checkpoint": "the commit that adds this file; tagged m6"
+ },
+ "observed": {
+  "baseline_npm_run_verify": "exit 0 before any change: 56 browser checks (.logs/verify-baseline.log, not committed)",
+  "final_npm_run_verify": "exit 0 with no key and no .env (.logs/verify-6.5.log, not committed): toolkit checks, ruff, pytest, eslint, tsc, Vitest, production build, Playwright 74 passed (56 M1-M5 + 18 M6)",
+  "check_toolkit": "exit 0 (35 ok, 3 warnings, 0 failures)",
+  "demo_journeys": "all 74 specs against npm run demo (worktree, no .env, fixture mode, ports 3600/8600): 73 passed, 1 failed on the first run (demo-journey: the chart took longer than its 5 s wait during a cold next-dev compile right after edits); that spec passed on two re-runs",
+  "landing_offline": "the landing page renders with /api/** aborted and makes no request off 127.0.0.1/localhost (e2e/m6-landing.spec.ts)",
+  "analyst_without_key": "the panel shows 'AI not configured: add your own OpenRouter key' (e2e and screenshots)",
+  "visual_inspection": "assistant looked at: light Overview, Compare and AI settings at 1440 after slice 6.2; the landing page in both themes at 1440 and 390; /app dark 1440 and light 390; the hero shot (Overview dark); reader light 1440; Compare light 390 and 1366 (series patterns); filings dark 390; Analyst dark 1366; AI settings dark 390; pricing light 1366; the landing feature crop. The design-lead subagent and the ux-reviewer looked at the full set (8 screens x 2 themes x 3 widths) and more crops.",
+  "fixed_after_looking": "design-lead: stretched sparkline dot, grey-on-grey cards in light, wrapping change line, squeezed key figures with the analyst open, wide compare company column on phones; session: an incomplete testimonial row (a sixth added), video caption over the tooltip, video chart crop, video analyst crop",
+  "independent_reviews": {
+   "ux": "pass with minor issues: 11 minor. Fixed: 1, 2, 3 (line patterns), 4 (legend order), 6 (toggle group), 7 (reader heading), 8 (hints), 9 (menu outside click), 11 (tab titles). Accepted: 5 (about 380 Tab stops on Overview, existed before M6), 10 (demo badge three times at 390 px; source information).",
+   "code": "pass with minor issues: 1 major (statement-table sticky header did not work), 9 minor. Fixed: 1-8; 9 partly (readTheme comment; unused classes kept as documented vocabulary). Accepted: 10 (brand link resets to Demo, as before M6).",
+   "security_and_honesty": "pass with minor issues: 4 minor. Fixed: FAQ storage wording, Classroom pricing button to /app, a Live-mode no-prefetch test. Recorded: a future CSP must allow the fixed theme script by hash."
+  },
+  "video": {
+   "path": "examples/sec-analytics/brag-output/brag.mp4",
+   "duration_s": 22.5,
+   "size_bytes": 7493439,
+   "video": "h264 1920x1080 30 fps, 675 frames",
+   "audio": "aac 192k, synthesized locally (96 BPM, D major)",
+   "made_with": "installed /brag skill, which hands off to brag-slim on Opus 5.5; Playwright Chromium, Node, ffmpeg already on the machine; nothing installed or downloaded",
+   "inspected": "stills of every scene and mid-transition frames before rendering, and 12 stills extracted from the final mp4; duration with ffprobe",
+   "content_rules": "real demo-mode screens only (snapshot 2026-11-03); no testimonials or pricing; Analyst shown only as not configured; no key or personal data; end card with 'SEC Analytics', 'Demo mode works offline', the repository URL and 'Not affiliated with the SEC'"
+  }
+ },
+ "not_run": [
+  "live AI (N1)",
+  "live SEC (not needed for M6)",
+  "GitHub CI",
+  "Cline",
+  "macOS",
+  "a real screen reader",
+  "the owner's own look at the screens and the video"
+ ],
+ "published": false
+}

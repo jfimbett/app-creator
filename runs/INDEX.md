@@ -58,3 +58,7 @@ Append-only. One line per dispatched step.
 ## M5
 
 - 2026-11-09 · **m5/m5-01-implement-main-session** · top-level session (frontend by a frontend-engineer subagent; three read-only review subagents) · completed; M5 gate passed with mocked AI, live AI not verified (N1), tag `m5` · [prompt](m5/m5-01-implement-main-session/PROMPT.md) · [response marker](m5/m5-01-implement-main-session/RESPONSE.md) · [result](m5/m5-01-implement-main-session/RESULT.json)
+
+## M6
+
+- 2026-11-09 · **m6/m6-01-implement-main-session** · top-level session (app-screen overhaul by a design-lead subagent; three read-only review subagents) · completed; M6 gate passed, tag `m6` (local, not pushed) · [prompt](m6/m6-01-implement-main-session/PROMPT.md) · [response marker](m6/m6-01-implement-main-session/RESPONSE.md) · [result](m6/m6-01-implement-main-session/RESULT.json)
