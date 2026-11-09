@@ -255,3 +255,48 @@ export interface FilingDocumentResponse {
   amended_by: FilingMeta | null;
   source: SourceInfo;
 }
+
+// ------------------------------------------------------------------ M4 comparison (GET /api/compare)
+
+export interface CompareCompany {
+  cik: string;
+  ticker: string;
+  name: string;
+  /** MM-DD of the company's latest period end in the window, or null without data. */
+  fiscal_year_end: string | null;
+  currency: string | null;
+}
+
+/** One data point. `unit` is a currency code, "index" or "ratio"; `value` is null unless status is "ok". */
+export interface CompareRow {
+  cik: string;
+  metric_id: string;
+  fiscal_year_label: string;
+  period_start: string | null;
+  period_end: string;
+  value: number | null;
+  unit: string;
+  kind: "reported" | "derived";
+  status: "ok" | "missing" | "unavailable" | "not_meaningful";
+  reason: string | null;
+  indexed: boolean;
+  source_concept: string | null;
+  accession: string | null;
+  data_source: string;
+}
+
+export interface CompareWarning {
+  code: "fiscal_years_not_aligned" | "currencies_differ" | "no_common_fiscal_year" | "index_base_unavailable";
+  message: string;
+}
+
+export interface CompareResponse {
+  companies: CompareCompany[];
+  metrics: string[];
+  rows: CompareRow[];
+  index_base: { fiscal_year_by_cik: Record<string, string>; period_end_by_cik: Record<string, string> } | null;
+  warnings: CompareWarning[];
+  /** True when "Index = 100 at first common fiscal year" can be used for these companies and metrics. */
+  index_available: boolean;
+  source: SourceInfo;
+}

@@ -65,4 +65,5 @@ class CompareResponse(BaseModel):
     rows: list[CompareRow]
     index_base: IndexBase | None
     warnings: list[CompareWarning]
+    index_available: bool
     source: SourceInfo

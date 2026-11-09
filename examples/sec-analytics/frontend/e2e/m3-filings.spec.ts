@@ -1,5 +1,10 @@
 import { expect, type Page, test } from "@playwright/test";
 
+// A mocked request can still be in flight when a test ends; drop the mocks quietly so it cannot fail the test.
+test.afterEach(async ({ page }) => {
+  await page.unrouteAll({ behavior: "ignoreErrors" });
+});
+
 // M3 browser journeys in offline fixture mode (milestones/acceptance.md, M3). Run by `npm run verify`.
 // The recorded snapshot holds the latest 10-K and 10-Q documents of Apple, Microsoft and Alphabet.
 // Tests named "(mocked backend)" use page.route for states the recorded data cannot produce.

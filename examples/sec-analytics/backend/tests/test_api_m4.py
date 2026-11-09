@@ -216,3 +216,11 @@ def test_live_compare_is_throttled_cached_and_labelled(live) -> None:
     assert router.calls.call_count == 4
     assert second["source"]["mode"] == "cached"
     assert [r["value"] for r in second["rows"]] == [r["value"] for r in first["rows"]]
+
+
+def test_index_available_is_in_the_response(demo) -> None:
+    body = demo.get("/api/compare", params={"ciks": f"{APPLE},{MICROSOFT}"}).json()
+    assert body["index_available"] is True
+    body = demo.get("/api/compare", params={"ciks": f"{APPLE},{MICROSOFT}",
+                                            "metrics": "net_margin"}).json()
+    assert body["index_available"] is False

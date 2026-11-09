@@ -8,14 +8,16 @@ type AppHeaderProps = {
   mode?: ReactNode;
   /** Backend status indicator (BackendStatus). */
   status?: ReactNode;
+  /** Navigation links (M4: Compare). */
+  nav?: ReactNode;
 };
 
 /**
  * Compact app header: wordmark, search slot, the data source and backend status.
  * At 390 px the search drops to its own full-width row below the wordmark.
- * No menu items: there are no other screens.
+ * One navigation link (Compare, from M4); company pages are reached through the search.
  */
-export function AppHeader({ search, mode, status }: AppHeaderProps) {
+export function AppHeader({ search, mode, status, nav }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-panel">
       <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2">
@@ -25,6 +27,7 @@ export function AppHeader({ search, mode, status }: AppHeaderProps) {
         >
           SEC ANALYTICS
         </Link>
+        {nav ? <nav aria-label="Main">{nav}</nav> : null}
         {search ? (
           <div data-testid="header-search-slot" className="order-last w-full min-w-0 md:order-none md:w-auto md:max-w-md md:flex-1">
             {search}

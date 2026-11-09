@@ -2,6 +2,7 @@
 
 import type {
   CompanyProfile,
+  CompareResponse,
   DataSourceChoice,
   ErrorEnvelope,
   FilingDocumentResponse,
@@ -14,6 +15,7 @@ import type {
   OverviewResponse,
   SearchResponse,
 } from "./types";
+import type { CompareState } from "./compare-state";
 
 export const BACKEND_UNREACHABLE = "Backend not reachable: start it with npm run demo";
 
@@ -76,6 +78,17 @@ function sourceParam(source: DataSourceChoice | undefined): DataSourceChoice | u
   return source === "live" ? "live" : undefined;
 }
 
+/** The query of /api/compare and /api/compare.csv; demo is left off the URL like every other call. */
+export function compareParams(state: CompareState): Record<string, string | number | undefined> {
+  return {
+    ciks: state.ciks.join(","),
+    metrics: state.metrics.join(","),
+    years: state.years,
+    index: state.index,
+    source: sourceParam(state.source),
+  };
+}
+
 /** Builds the client around a fetch function (the browser's by default; a fake one in tests). */
 export function createApi(fetcher: Fetcher = (input, init) => fetch(input, init)) {
   async function get<T>(path: string, params: Record<string, string | number | undefined> = {}, options: RequestOptions = {}): Promise<T> {
@@ -104,6 +117,30 @@ export function createApi(fetcher: Fetcher = (input, init) => fetch(input, init)
     throw clientError(response.status, "invalid_response", `The backend answered with HTTP ${response.status}.`);
   }
 
+  /** A file answer (the CSV): its bytes and the file name from Content-Disposition. Errors are the JSON envelope. */
+  async function getFile(path: string, params: Record<string, string | number | undefined>, options: RequestOptions = {}): Promise<{ blob: Blob; filename: string }> {
+    const query = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined) query.set(key, String(value));
+    }
+    let response: Response;
+    try {
+      response = await fetcher(`/api${path}?${query}`, { signal: options.signal });
+    } catch (error) {
+      if ((error as { name?: unknown } | null)?.name === "AbortError") throw error;
+      throw clientError(null, "backend_unreachable", BACKEND_UNREACHABLE);
+    }
+    if (!response.ok) {
+      const body = await readJson(response);
+      if (isEnvelope(body)) throw new ApiError(response.status, body);
+      if (response.status >= 500) throw clientError(response.status, "backend_unreachable", BACKEND_UNREACHABLE);
+      throw clientError(response.status, "invalid_response", `The backend answered with HTTP ${response.status}.`);
+    }
+    const disposition = response.headers.get("Content-Disposition") ?? "";
+    const filename = /filename="([^"]+)"/.exec(disposition)?.[1] ?? "sec-analytics-compare.csv";
+    return { blob: await response.blob(), filename };
+  }
+
   return {
     getHealth: (options?: RequestOptions) => get<HealthResponse>("/health", {}, options),
     getMeta: (options?: RequestOptions) => get<MetaResponse>("/meta", {}, options),
@@ -122,6 +159,8 @@ export function createApi(fetcher: Fetcher = (input, init) => fetch(input, init)
     getMetricCatalog: (options?: RequestOptions) => get<MetricsCatalog>("/metrics", {}, options),
     getMetricSeries: (cik: string, ids: readonly string[], options: SourceOptions & { years?: number } = {}) =>
       get<MetricSeriesResponse>(`/companies/${encodeURIComponent(cik)}/metrics`, { ids: ids.join(","), years: options.years, source: sourceParam(options.source) }, options),
+    getCompare: (state: CompareState, options: RequestOptions = {}) => get<CompareResponse>("/compare", compareParams(state), options),
+    downloadCompareCsv: (state: CompareState, options: RequestOptions = {}) => getFile("/compare.csv", compareParams(state), options),
   };
 }
 

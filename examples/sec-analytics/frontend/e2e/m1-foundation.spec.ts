@@ -1,5 +1,10 @@
 import { expect, type Page, test } from "@playwright/test";
 
+// A mocked request can still be in flight when a test ends; drop the mocks quietly so it cannot fail the test.
+test.afterEach(async ({ page }) => {
+  await page.unrouteAll({ behavior: "ignoreErrors" });
+});
+
 // M1 browser journeys in offline fixture mode (brief §9). Run by `npm run verify`.
 // By hand: BASE_URL=http://127.0.0.1:3200 npx playwright test e2e/m1-foundation.spec.ts
 const APPLE = "/companies/0000320193";

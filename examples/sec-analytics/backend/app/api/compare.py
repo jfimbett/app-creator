@@ -124,6 +124,7 @@ def compare(
         rows=result.rows,
         index_base=result.index_base,
         warnings=result.warnings,
+        index_available=result.index_available,
         source=combine_sources(sources),
     )
 

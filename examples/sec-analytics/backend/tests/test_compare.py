@@ -234,3 +234,13 @@ def test_fx16_apple_and_microsoft_revenue_index() -> None:
     assert by_key[("0000320193", "FY2026")] == pytest.approx(208.88, abs=0.01)
     assert by_key[("0000789019", "FY2026")] == pytest.approx(343.62, abs=0.01)
     assert "fiscal_years_not_aligned" in [w.code for w in result.warnings]
+
+
+def test_index_available_says_whether_the_toggle_can_be_used() -> None:
+    # The toggle is disabled without a common fiscal year (M4-E1) or without a money metric,
+    # also while indexing is off, so the screen never has to work this out itself.
+    assert cmp.compare([company("XMPL"), company("SMPL")], ["revenue"], 10, False).index_available
+    assert not cmp.compare([company("XMPL"), company("GAPC")], ["revenue"], 10, False
+                           ).index_available
+    assert not cmp.compare([company("XMPL"), company("SMPL")], ["net_margin"], 10, False
+                           ).index_available

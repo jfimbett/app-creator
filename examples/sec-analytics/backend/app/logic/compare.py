@@ -70,6 +70,8 @@ class CompareResult:
     rows: list[CompareRow]
     index_base: IndexBase | None
     warnings: list[CompareWarning]
+    # True when indexing would work for these companies and metrics, also while it is off.
+    index_available: bool
 
 
 def _window(company: CompanyInput, metric_id: str, years: int) -> list[MetricValue]:
@@ -172,7 +174,8 @@ def compare(
     warnings = _alignment_and_currency_warnings(info, metrics)
 
     money = [m for m in metrics if m in MONEY_METRICS]
-    base_label = _common_base_label(companies, money, years) if index and money else None
+    common_label = _common_base_label(companies, money, years) if money else None
+    base_label = common_label if index else None
     if index and money and base_label is None:
         warnings.append(CompareWarning(code="no_common_fiscal_year", message=NO_COMMON_YEAR))
 
@@ -203,4 +206,6 @@ def compare(
         if base_label is not None
         else None
     )
-    return CompareResult(info, list(metrics), rows, index_base, warnings)
+    return CompareResult(
+        info, list(metrics), rows, index_base, warnings, index_available=common_label is not None
+    )
