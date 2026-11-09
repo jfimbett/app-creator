@@ -4,7 +4,6 @@
 
 **`main` contains M3 functionality** (tag `m3`), as of 2026-11-09. M3 was finished and verified on Windows 11 after the classroom freeze.
 The old branch `wip/m3-filing-intelligence-unverified` is kept only as history; use `m3` instead.
-**Until the instructor pushes these commits, the GitHub copy of `main` still contains M2.**
 
 ## Versions
 
