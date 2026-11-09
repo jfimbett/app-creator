@@ -79,5 +79,18 @@ def test_only_invalid_citations_also_say_no_valid_sources() -> None:
 
 
 def test_similar_looking_text_is_not_a_citation() -> None:
-    result = validate("Fiscal [FY2026] and [F 2] and [f2] and [F0002].", FACTS, PASSAGES)
+    result = validate("Fiscal [FY2026] and [F 2] and [f2] and [footnote].", FACTS, PASSAGES)
     assert result.citations == [] and result.invalid_references == []
+
+
+def test_grouped_references_and_full_width_brackets_count() -> None:
+    # Test review 2026-11-09: models often write several ids in one bracket.
+    result = validate("Both [F2, P1] and [F3; F2] and \u3010F4\u3011.", FACTS, PASSAGES)
+    assert [c.source_id for c in result.citations] == ["F2", "P1", "F3", "F4"]
+    assert result.invalid_references == []
+
+
+def test_malformed_ids_are_listed_as_invalid() -> None:
+    result = validate("Odd [F01] and [F0] and [F1000] and [P2].", FACTS, PASSAGES)
+    assert [c.source_id for c in result.citations] == ["P2"]
+    assert result.invalid_references == ["F01", "F0", "F1000"]

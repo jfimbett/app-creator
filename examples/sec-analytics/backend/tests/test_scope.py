@@ -76,12 +76,91 @@ def test_m5_e4_a_known_company_that_is_not_loaded_is_refused() -> None:
 
 
 def test_tickers_count_only_as_whole_upper_case_words() -> None:
-    # "msft" in lower case or inside a word is not a ticker mention; names match case-insensitively.
+    # "msft" in lower case or inside a word is not a ticker mention. A one-word name counts only
+    # when capitalised mid-sentence, so "what about microsoft?" reaches the model: an accepted
+    # false negative (the model still sees only the loaded data), the price of not refusing
+    # "revenue target" because of a company called Target.
     assert check("is the msft-like growth sustainable?") is None
-    assert check("what about microsoft?") is not None
+    assert check("What about Microsoft?") is not None
+    assert check("what about microsoft?") is None
 
 
 def test_empty_context_is_refused() -> None:
     refusal = check("What is the net margin trend?", has_context=False)
     assert (refusal.code, refusal.message) == ("missing_context", MISSING_CONTEXT)
     assert MISSING_CONTEXT == "Not enough loaded data to answer this question"
+
+
+# ------------------------------------------------------------------ test review 2026-11-09
+# In live mode `known` is SEC's whole ticker file. These invented-for-test entries use the kind of
+# names and tickers it holds (common words, finance abbreviations); normal questions must pass.
+LIVE_LIKE = KNOWN + [
+    KnownCompany("EQR", "EQUITY RESIDENTIAL"),
+    KnownCompany("FSLR", "FIRST SOLAR, INC."),
+    KnownCompany("GM", "GENERAL MOTORS CO"),
+    KnownCompany("IBM", "INTERNATIONAL BUSINESS MACHINES CORP"),
+    KnownCompany("UAL", "United Airlines Holdings, Inc."),
+    KnownCompany("TGT", "TARGET CORP"),
+    KnownCompany("SG", "Sweetgreen, Inc."),
+    KnownCompany("NI", "NISOURCE INC."),
+    KnownCompany("NET", "Cloudflare, Inc."),
+    KnownCompany("ON", "ON SEMICONDUCTOR CORP"),
+    KnownCompany("ALL", "ALLSTATE CORP"),
+    KnownCompany("NOW", "ServiceNow, Inc."),
+    KnownCompany("ARE", "ALEXANDRIA REAL ESTATE EQUITIES, INC."),
+    KnownCompany("CF", "CF Industries Holdings, Inc."),
+    KnownCompany("A", "AGILENT TECHNOLOGIES, INC."),
+]
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "How did Apple's share buybacks affect equity?",
+        "What happened in the first quarter?",
+        "How did general and administrative expenses change?",
+        "How large is SG&A compared with revenue?",
+        "Is NI growing?",
+        "How much International revenue is there?",
+        "What share of sales is in the United States?",
+        "WHAT IS THE NET MARGIN?",
+        "Did Apple meet its revenue target?",
+        "Is the buyback program ON track?",
+        "List ALL risk factors about supply",
+        "How much did Apple invest in R&D?",
+        "Is there a valuation allowance on deferred tax assets?",
+        "How is inventory valuation described?",
+        "Will trade tariffs hurt margins?",
+        "What does the 10-K say about CF and FCF?",
+    ],
+)
+def test_live_sized_lists_do_not_block_normal_questions(question) -> None:
+    assert precheck(question, loaded=[APPLE], known=LIVE_LIKE, has_context=True) is None
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "How does Apple compare with General Motors?",
+        "Is IBM more profitable?",
+        "What about First Solar's margins?",
+        "Compare with Target's revenue",
+        "How does it compare with Microsoft?",
+    ],
+)
+def test_live_sized_lists_still_find_unloaded_companies(question) -> None:
+    refusal = precheck(question, loaded=[APPLE], known=LIVE_LIKE, has_context=True)
+    assert refusal is not None and refusal.code == "company_not_loaded"
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Give me a valuation of Apple",
+        "Where will Apple trade in 2027?",
+        "Should I invest in Apple?",
+        "Is Apple stock worth buying?",
+    ],
+)
+def test_narrowed_patterns_still_refuse_advice(question) -> None:
+    assert check(question).code == "out_of_scope"

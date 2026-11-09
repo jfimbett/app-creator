@@ -212,3 +212,18 @@ def test_scope_data_errors_keep_their_codes(client, upstream) -> None:
     response = ask(client, scope={"kind": "company", "cik": "1045810"})
     assert response.status_code == 404 and response.json()["error"]["code"] == "company_not_found"
     assert upstream.calls.call_count == 0
+
+
+def test_missing_context_is_refused_without_calling_the_model(
+    client, upstream, monkeypatch
+) -> None:
+    from app.api import ai as ai_api
+    from app.logic.retrieval import Context
+
+    monkeypatch.setattr(ai_api.retrieval, "build_context", lambda *a, **k: Context((), (), 0))
+    body = ask(client).json()
+    assert body["refusal"] == {
+        "code": "missing_context",
+        "message": "Not enough loaded data to answer this question",
+    }
+    assert upstream.calls.call_count == 0

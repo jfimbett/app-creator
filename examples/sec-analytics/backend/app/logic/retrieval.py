@@ -193,12 +193,17 @@ def _fact(source: FactSource, metric: MetricValue) -> Fact:
 def select_facts(sources: list[FactSource], metric_ids: list[str] | None) -> list[Fact]:
     """Facts in priority order, newest year first, company order; at most 60, without ids yet."""
     order = metric_ids if metric_ids is not None else list(FACT_PRIORITY)
+    # A comparison spreads the 60 facts over every company and metric (fewer years each), so no
+    # selected metric is left out (test review 2026-11-09).
+    years = FACT_YEARS
+    if metric_ids is not None and sources:
+        years = max(1, min(FACT_YEARS, MAX_FACTS // (len(sources) * max(1, len(metric_ids)))))
     facts: list[Fact] = []
     for metric_id in order:
         newest_first = [
             [
                 v
-                for v in reversed(list(source.series.get(metric_id, []))[-FACT_YEARS:])
+                for v in reversed(list(source.series.get(metric_id, []))[-years:])
                 if v.status == "ok" and v.value is not None
             ]
             for source in sources

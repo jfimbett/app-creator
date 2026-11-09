@@ -125,3 +125,76 @@ def test_passage_budget_counts_the_facts_too() -> None:
     assert len(context.passages) <= 8
     assert context.chars <= 24_000
     assert all(p.section == "no section detected" for p in context.passages)
+
+
+# ------------------------------------------------------------------ test review 2026-11-09
+
+
+def synthetic_document(texts: list[str]) -> retrieval.DocumentInput:
+    return retrieval.DocumentInput(
+        cik=APPLE,
+        ticker="AAPL",
+        form="10-K",
+        accession=APPLE_10K,
+        filing_date=date(2026, 11, 3),
+        blocks=[Block("text", t) for t in texts],
+        section_of_block=[f"s{i}" for i in range(len(texts))],
+        section_labels={f"s{i}": f"Section {i}" for i in range(len(texts))},
+    )
+
+
+def test_ranking_order_is_exact_with_ties_by_block_order() -> None:
+    texts = [
+        "nothing relevant",
+        "supply",
+        "supply chain",
+        "supply chain risk",
+        "chain supply",
+        "risk",
+    ]
+    context = retrieval.build_context([], None, synthetic_document(texts), "supply chain risk")
+    assert [p.block_start for p in context.passages] == [3, 2, 4, 1, 5]
+
+
+def test_at_most_eight_passages_even_when_more_fit() -> None:
+    document = synthetic_document([f"revenue note {n}" for n in range(20)])
+    context = retrieval.build_context([], None, document, "revenue")
+    assert len(context.passages) == 8
+    assert [p.block_start for p in context.passages] == list(range(8))
+
+
+def test_edge_cases_long_block_empty_document_stop_words() -> None:
+    long_block = synthetic_document(["revenue " * 700])  # 5,600 characters
+    parts = retrieval.build_context([], None, long_block, "revenue").passages
+    assert [len(p.text) for p in parts] == [3000, 2600]
+    assert retrieval.build_context([], None, synthetic_document([]), "revenue").passages == ()
+    only_stop_words = retrieval.build_context([], None, long_block, "why did it do that")
+    assert only_stop_words.passages == ()
+
+
+def test_a_ratio_fact_matches_its_known_answer() -> None:
+    facts = retrieval.build_context([apple_facts_source()], None, None, "x").facts
+    leverage = next(
+        f for f in facts if f.metric_id == "debt_to_equity" and f.fiscal_year_label == "FY2026"
+    )
+    assert abs(leverage.value - 0.714683) < 0.000001  # FX7 in milestones/acceptance.md
+    assert leverage.value_text == "0.71×"
+
+
+def test_comparisons_keep_every_selected_metric() -> None:
+    series = apple_facts_source().series
+    sources = [
+        retrieval.FactSource(cik=f"{n:010d}", ticker=f"T{n}", series=series) for n in range(4)
+    ]
+    metrics = [
+        "revenue",
+        "revenue_growth",
+        "operating_margin",
+        "net_margin",
+        "operating_cash_flow",
+        "fcf",
+    ]
+    facts = retrieval.build_context(sources, metrics, None, "x").facts
+    assert len(facts) <= 60
+    assert {f.metric_id for f in facts} == set(metrics)
+    assert {f.ticker for f in facts} == {"T0", "T1", "T2", "T3"}

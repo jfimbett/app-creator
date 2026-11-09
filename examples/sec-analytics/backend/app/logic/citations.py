@@ -17,7 +17,10 @@ from app.logic.retrieval import Fact, Passage
 
 NOT_SUPPLIED = "Reference not in the supplied sources"
 NO_VALID_SOURCES = "No valid sources cited"
-_REFERENCE = re.compile(r"\[(F|P)([1-9]\d{0,2})\]")
+# A bracket holding one or more ids: "[F2]", "[F2, P1]", "[F3; F2]"; also fullwidth 【F4】.
+_GROUP = re.compile(r"[\[【]\s*([FP]\d+(?:\s*[,;]\s*[FP]\d+)*)\s*[\]】]")
+_ID = re.compile(r"[FP]\d+")
+_WELL_FORMED = re.compile(r"[FP][1-9]\d{0,2}")
 
 
 @dataclass(frozen=True)
@@ -72,9 +75,9 @@ def validate(
     supplied.update({p.source_id: _passage_chip(p) for p in passages})
     citations: list[Chip] = []
     invalid: list[str] = []
-    for kind, number in _REFERENCE.findall(answer):
-        source_id = f"{kind}{number}"
-        if source_id in supplied:
+    ids = [i for group in _GROUP.findall(answer) for i in _ID.findall(group)]
+    for source_id in ids:
+        if _WELL_FORMED.fullmatch(source_id) and source_id in supplied:
             if all(c.source_id != source_id for c in citations):
                 citations.append(supplied[source_id])
         elif source_id not in invalid:
