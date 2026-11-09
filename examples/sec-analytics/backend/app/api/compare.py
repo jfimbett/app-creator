@@ -34,6 +34,8 @@ CiksParam = Annotated[str, Query(description="Comma list of 2-4 CIKs")]
 MetricsParam = Annotated[str, Query(description="Comma list of 1-6 comparison metrics")]
 COUNT_MESSAGE = "Compare 2–4 companies"
 DEFAULT_METRICS = ",".join(logic.DEFAULT_METRICS)
+# Four companies written as "CIK0000000000" with spaces and commas fit easily in this length.
+MAX_CIKS_TEXT = 200
 
 
 def _today() -> date:
@@ -41,11 +43,19 @@ def _today() -> date:
 
 
 def _parse_ciks(raw: str) -> list[str]:
-    """2-4 distinct normalized CIKs in the order given; otherwise a 422 with its own code."""
+    """2-4 distinct normalized CIKs in the order given; otherwise a 422 with its own code.
+
+    A long parameter is refused before parsing, and parsing stops at a fifth company, so a huge
+    list is never processed in full (security review 2026-11-09).
+    """
+    if len(raw) > MAX_CIKS_TEXT:
+        raise AppError("too_many_companies", COUNT_MESSAGE, 422, {"length": len(raw)})
     ciks: list[str] = []
     for part in (p.strip() for p in raw.split(",")):
         if not part:
             continue
+        if len(ciks) == logic.MAX_COMPANIES:
+            raise AppError("too_many_companies", COUNT_MESSAGE, 422, {"count": len(ciks) + 1})
         cik = parse_cik(part)
         if cik in ciks:
             raise AppError(
@@ -55,8 +65,6 @@ def _parse_ciks(raw: str) -> list[str]:
         ciks.append(cik)
     if len(ciks) < logic.MIN_COMPANIES:
         raise AppError("too_few_companies", COUNT_MESSAGE, 422, {"count": len(ciks)})
-    if len(ciks) > logic.MAX_COMPANIES:
-        raise AppError("too_many_companies", COUNT_MESSAGE, 422, {"count": len(ciks)})
     return ciks
 
 

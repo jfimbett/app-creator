@@ -93,3 +93,6 @@ rules") and `backend/app/logic/`. Fixtures cannot show every filer's tagging, so
 - Mixing units or currencies in one series; converting currencies.
 - Labelling synthetic data as SEC data, or hand-editing a fixture "to make a test pass".
 - Taking a URL from a caller, following a redirect off the allowlist, or retrying a 403.
+- Aligning companies to calendar years, converting currencies, indexing a ratio, or indexing in the frontend (M4: one rule, in
+  `logic/compare.py`; see the example's `CLAUDE.md` "Comparison, indexing and CSV").
+- Writing 0 for a missing value in a CSV, or a text cell that starts with `=`, `+`, `-` or `@` without the leading `'`.

@@ -90,3 +90,27 @@ def _renamed(name: str):
         series=first.series, data_source=first.data_source,
     )
     return cmp.compare([renamed, company("SMPL")], ["revenue"], 10, False)
+
+
+def test_guard_sees_through_leading_space_line_feed_and_fullwidth_signs() -> None:
+    # Security review 2026-11-09: spreadsheets may trim leading whitespace or fold fullwidth signs.
+    for raw in (" =1+1", " =1", "\n=1", "＝1+1", "＋1", "－1", "＠1"):
+        assert parsed(to_csv(_renamed(raw)))[1][0] == "'" + raw, repr(raw)
+    assert parsed(to_csv(_renamed(" Plain Co")))[1][0] == " Plain Co"
+
+
+def test_embedded_line_breaks_stay_inside_one_quoted_cell() -> None:
+    name = 'Line\r\n=HYPERLINK("http://example.invalid")'
+    lines = parsed(to_csv(_renamed(name)))
+    assert lines[1][0] == name
+    assert all(len(line) == len(HEADER) for line in lines)
+
+
+def test_numbers_are_plain_decimals_and_non_finite_values_are_empty() -> None:
+    from app.logic.csv_export import _number
+
+    assert _number(1e-05) == "0.00001"
+    assert _number(0.276035) == "0.276035"
+    assert _number(478834000000.0) == "478834000000"
+    assert _number(-2.5) == "-2.5"
+    assert _number(float("nan")) == "" and _number(float("inf")) == ""

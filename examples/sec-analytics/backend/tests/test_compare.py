@@ -244,3 +244,33 @@ def test_index_available_says_whether_the_toggle_can_be_used() -> None:
                            ).index_available
     assert not cmp.compare([company("XMPL"), company("SMPL")], ["net_margin"], 10, False
                            ).index_available
+
+
+# ------------------------------------------------------------------ test review 2026-11-09
+
+
+def test_base_is_the_first_label_where_every_company_has_a_value() -> None:
+    # Late Start has no FY2024 revenue, so the common base is FY2025, not the window's first label.
+    result = cmp.compare([company("XMPL"), company("LATE")], ["revenue"], 10, index=True)
+    assert result.index_base.fiscal_year_by_cik == {"0000000901": "FY2025", "0000000906": "FY2025"}
+    example = rows_for(result, "XMPL", "revenue")
+    assert [r.value for r in example] == [80.0, 100.0]  # 800 / 1,000 and 1,000 / 1,000, x 100
+    late = rows_for(result, "LATE", "revenue")
+    assert (late[0].value, late[0].indexed, late[1].value) == (None, True, 100.0)
+
+
+def test_several_money_metrics_share_one_base_label() -> None:
+    # Partial FCF has revenue in FY2024 but FCF only from FY2025: both metrics use base FY2025.
+    result = cmp.compare([company("XMPL"), company("PART")], ["revenue", "fcf"], 10, index=True)
+    assert set(result.index_base.fiscal_year_by_cik.values()) == {"FY2025"}
+    revenue = rows_for(result, "PART", "revenue")
+    assert [r.value for r in revenue] == [80.0, 100.0]  # 400 / 500 and 500 / 500, x 100
+    assert [r.value for r in rows_for(result, "XMPL", "fcf")] == [pytest.approx(50 / 70 * 100),
+                                                                  100.0]
+
+
+def test_a_zero_base_is_unavailable_not_a_division_error() -> None:
+    result = cmp.compare([company("XMPL"), company("ZERO")], ["fcf"], 10, index=True)
+    zero = rows_for(result, "ZERO", "fcf")
+    assert all(r.value is None and r.status == "unavailable" for r in zero)
+    assert zero[0].reason == "index base FY2024 is ≤ 0 (0 USD)"

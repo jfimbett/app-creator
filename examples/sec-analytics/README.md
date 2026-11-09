@@ -13,6 +13,11 @@ Search by name, ticker or CIK; a company profile; key figures; an annual revenue
 summaries** of the income statement, balance sheet and cash flow; ratios; and a metric explorer. Hovering or focusing a value
 shows the SEC fact it came from, or its formula and inputs. A value that is not available says so and why; it is never 0.
 
+**Filings** (M3): the latest 10-K and 10-Q, a 10-year filing history with amendment labels, and a reader with the filing's own
+text, detected sections, search and links to sec.gov. **Compare** (M4, header link): 2–4 companies side by side by their own
+fiscal years, with an optional "Index = 100 at first common fiscal year" for amounts, line and bar charts, and Export CSV. The
+comparison state is in the URL, so a link shows the same comparison.
+
 These summaries are built from SEC Company Facts. They are not the complete filed statements. Metric ids, concepts and
 formulas are in `backend/app/logic/concepts.py` and `metrics.py`; the selection policy is in `logic/periods.py`.
 

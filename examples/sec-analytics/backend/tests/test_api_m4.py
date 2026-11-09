@@ -176,8 +176,9 @@ def test_csv_is_an_attachment_with_exactly_the_json_rows(demo, monkeypatch) -> N
         cells = dict(zip(HEADER, line, strict=True))
         assert (cells["cik"], cells["metric"], cells["fiscal_year_label"]) == (
             row["cik"], row["metric_id"], row["fiscal_year_label"])
-        assert cells["value"] == ("" if row["value"] is None else cells["value"])
-        if row["value"] is not None:
+        if row["value"] is None:
+            assert cells["value"] == ""
+        else:
             assert float(cells["value"]) == pytest.approx(row["value"], rel=1e-12)
 
 
@@ -224,3 +225,9 @@ def test_index_available_is_in_the_response(demo) -> None:
     body = demo.get("/api/compare", params={"ciks": f"{APPLE},{MICROSOFT}",
                                             "metrics": "net_margin"}).json()
     assert body["index_available"] is False
+
+
+def test_a_long_ciks_list_is_refused_without_parsing_it_all(demo) -> None:
+    many = ",".join(f"{n:010d}" for n in range(1, 5000))
+    error(demo.get("/api/compare", params={"ciks": many}), 422, "too_many_companies")
+    error(demo.get("/api/compare", params={"ciks": "1," * 300}), 422, "too_many_companies")

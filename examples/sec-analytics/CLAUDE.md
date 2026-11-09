@@ -88,6 +88,23 @@ known answers `FX…`), [plan.md](../../milestones/plan.md) (slices, progress, k
 11. **Key figures** use the latest period, or say why not; only revenue and net income fall back to the latest reported
     value, dated. An old value next to the latest figures would look current.
 
+## Comparison, indexing and CSV (from M4)
+
+1. **2–4 companies**, each by its **own fiscal years** (`FY<year of end date>`), every value with its own period end. No calendar
+   alignment: when the year-ends differ, say "Fiscal years are not aligned". Checked on the fixtures 2026-11-09: Apple 09-26
+   (52/53 weeks, so 09-24 to 09-30), Microsoft 06-30, Alphabet 12-31.
+2. **No currency conversion.** Different reporting currencies: no shared axis for money, the warning
+   "Different reporting currencies (USD, EUR): not converted", each value in its own unit; ratios are still compared.
+3. **Indexing** ("Index = 100 at first common fiscal year") only for money metrics (`revenue`, `operating_cash_flow`, `fcf`),
+   in `backend/app/logic/compare.py`. One base label for the whole comparison: the earliest label at which every company has a
+   value for every selected money metric. Each company is divided by its own base value; a base ≤ 0 makes that company's index
+   `unavailable` with the reason. Ratios are never indexed. The frontend never computes or re-indexes values.
+4. **CSV** (`backend/app/logic/csv_export.py`): the exact header, one line per comparison row in table order, full-precision
+   values in whole units, an empty cell for missing (never 0), and the formula-injection guard (a text cell starting with `=`,
+   `+`, `-`, `@`, tab or carriage return gets a leading `'`). `/api/compare.csv` and `/api/compare` share one builder.
+5. **Live comparisons** fetch Company Facts and submissions per company, one after another through the throttled client
+   (a 4-company comparison takes several seconds the first time), and never fall back to demo data by themselves.
+
 ## Never
 
 - Market prices, market capitalisation, valuation metrics (P/E, EV/EBITDA and the like), currency conversion or

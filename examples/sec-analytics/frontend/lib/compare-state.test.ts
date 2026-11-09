@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   addCompany,
+  companiesCutFromUrl,
   ALREADY_ADDED,
   COUNT_RULE,
   DEFAULT_STATE,
@@ -98,5 +99,18 @@ describe("metrics", () => {
     const six = { ...DEFAULT_STATE, metrics: ["revenue", "revenue_growth", "operating_margin", "net_margin", "operating_cash_flow", "fcf"] };
     expect(toggleMetric(six, "fcf_margin").metrics).toEqual(six.metrics);
     expect(toggleMetric(six, "fcf").metrics).toHaveLength(5);
+  });
+});
+
+describe("test review 2026-11-09", () => {
+  it("accepts years only as plain digits", () => {
+    expect(parseCompareState(new URLSearchParams("years=0xA")).years).toBe(10);
+    expect(parseCompareState(new URLSearchParams("years=1e1")).years).toBe(10);
+    expect(parseCompareState(new URLSearchParams("years=7")).years).toBe(7);
+  });
+
+  it("tells when a URL listed more than four companies", () => {
+    expect(companiesCutFromUrl(new URLSearchParams(`ciks=${[AAPL, MSFT, GOOGL, NVDA, FIFTH].join(",")}`))).toBe(true);
+    expect(companiesCutFromUrl(new URLSearchParams(`ciks=${[AAPL, MSFT, AAPL, GOOGL, NVDA].join(",")}`))).toBe(false);
   });
 });

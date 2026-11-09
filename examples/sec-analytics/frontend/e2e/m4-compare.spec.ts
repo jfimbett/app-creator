@@ -145,6 +145,27 @@ test("Export CSV downloads exactly the shown data points (M4-AC6)", async ({ pag
   expect(lines[0]).toBe(CSV_HEADER);
   expect(lines.length - 1).toBe(cells);
   expect(lines[1]).toMatch(/^Apple Inc\.,AAPL,0000320193,FY2017,/);
+  // Values match the table: Apple FY2026 revenue (FX1), full precision in whole dollars, with its provenance.
+  expect(lines).toContain(
+    "Apple Inc.,AAPL,0000320193,FY2026,2026-09-26,2025-09-28,2026-09-26,revenue,478834000000,USD,reported,false,RevenueFromContractWithCustomerExcludingAssessedTax,0000320193-26-000026,RECORDED SEC DEMO · snapshot 2026-11-03",
+  );
+});
+
+test("no common fiscal year: the index toggle is disabled with the reason (M4-E1, mocked backend)", async ({ page }) => {
+  await page.route("**/api/compare?*", async (route) => {
+    const response = await route.fetch();
+    await route.fulfill({ response, json: { ...(await response.json()), index_available: false } });
+  });
+  await page.goto(COMPARE_THREE);
+  await expect(page.getByTestId("compare-table")).toBeVisible();
+  await expect(page.getByTestId("index-unavailable")).toHaveText("No common fiscal year to index from");
+  await expect(page.getByTestId("index-toggle")).toBeDisabled();
+});
+
+test("a link with five companies keeps four and says so", async ({ page }) => {
+  await page.goto("/compare?ciks=0000320193,0000789019,0001652044,0001045810,0000000905&metrics=revenue&years=10&index=none&source=demo");
+  await expect(page.getByTestId("company-chip")).toHaveCount(4);
+  await expect(page.getByTestId("compare-message")).toHaveText("Compare 2–4 companies");
 });
 
 test("reloading restores the same comparison from the URL", async ({ page }) => {

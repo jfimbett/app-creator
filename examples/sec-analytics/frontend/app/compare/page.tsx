@@ -15,6 +15,8 @@ import { api } from "@/lib/api";
 import {
   addCompany,
   canCompare,
+  companiesCutFromUrl,
+  COUNT_RULE,
   type CompareState,
   NEED_TWO,
   parseCompareState,
@@ -34,7 +36,8 @@ export default function ComparePage() {
   const router = useRouter();
   const pathname = usePathname();
   const state = useMemo(() => parseCompareState(new URLSearchParams(params.toString())), [params]);
-  const [message, setMessage] = useState<string | null>(null);
+  // A shared link with more than four companies keeps the first four and says so.
+  const [message, setMessage] = useState<string | null>(() => (companiesCutFromUrl(new URLSearchParams(params.toString())) ? COUNT_RULE : null));
   const [known, setKnown] = useState<Record<string, { ticker: string; name: string }>>({});
 
   const update = useCallback(

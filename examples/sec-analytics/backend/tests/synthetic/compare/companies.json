@@ -2,30 +2,181 @@
   "_synthetic": "SYNTHETIC: invented for tests, not SEC data",
   "_note": "Annual series per company. Money in whole currency units; ratios as decimals. null = missing. CALC11 inputs: Example Co revenue 800 -> 1,000 and Sample Ltd revenue 50 -> 40.",
   "companies": [
-    {"cik": "0000000901", "ticker": "XMPL", "name": "Example Co", "currency": "USD",
-     "periods": [
-       {"start": "2024-01-01", "end": "2024-12-31", "revenue": 800, "net_margin": 0.10, "fcf": 50},
-       {"start": "2025-01-01", "end": "2025-12-31", "revenue": 1000, "net_margin": 0.12, "fcf": 70}
-     ]},
-    {"cik": "0000000902", "ticker": "SMPL", "name": "Sample Ltd", "currency": "USD",
-     "periods": [
-       {"start": "2023-07-01", "end": "2024-06-30", "revenue": 50, "net_margin": 0.20, "fcf": -10},
-       {"start": "2024-07-01", "end": "2025-06-30", "revenue": 40, "net_margin": null, "fcf": 5}
-     ]},
-    {"cik": "0000000903", "ticker": "EURO", "name": "Euro AG", "currency": "EUR",
-     "periods": [
-       {"start": "2024-01-01", "end": "2024-12-31", "revenue": 300, "net_margin": 0.05, "fcf": 30},
-       {"start": "2025-01-01", "end": "2025-12-31", "revenue": 330, "net_margin": 0.06, "fcf": 33}
-     ]},
-    {"cik": "0000000904", "ticker": "GAPC", "name": "Gap Corp", "currency": "USD",
-     "periods": [
-       {"start": "2019-01-01", "end": "2019-12-31", "revenue": 10, "net_margin": 0.01, "fcf": 1},
-       {"start": "2020-01-01", "end": "2020-12-31", "revenue": 11, "net_margin": 0.02, "fcf": 2}
-     ]},
-    {"cik": "0000000905", "ticker": "FRML", "name": "=HYPERLINK(\"http://example.invalid\")", "currency": "USD",
-     "periods": [
-       {"start": "2024-01-01", "end": "2024-12-31", "revenue": 5, "net_margin": -0.5, "fcf": -2},
-       {"start": "2025-01-01", "end": "2025-12-31", "revenue": 6, "net_margin": 0.1, "fcf": 1}
-     ]}
+    {
+      "cik": "0000000901",
+      "ticker": "XMPL",
+      "name": "Example Co",
+      "currency": "USD",
+      "periods": [
+        {
+          "start": "2024-01-01",
+          "end": "2024-12-31",
+          "revenue": 800,
+          "net_margin": 0.1,
+          "fcf": 50
+        },
+        {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "revenue": 1000,
+          "net_margin": 0.12,
+          "fcf": 70
+        }
+      ]
+    },
+    {
+      "cik": "0000000902",
+      "ticker": "SMPL",
+      "name": "Sample Ltd",
+      "currency": "USD",
+      "periods": [
+        {
+          "start": "2023-07-01",
+          "end": "2024-06-30",
+          "revenue": 50,
+          "net_margin": 0.2,
+          "fcf": -10
+        },
+        {
+          "start": "2024-07-01",
+          "end": "2025-06-30",
+          "revenue": 40,
+          "net_margin": null,
+          "fcf": 5
+        }
+      ]
+    },
+    {
+      "cik": "0000000903",
+      "ticker": "EURO",
+      "name": "Euro AG",
+      "currency": "EUR",
+      "periods": [
+        {
+          "start": "2024-01-01",
+          "end": "2024-12-31",
+          "revenue": 300,
+          "net_margin": 0.05,
+          "fcf": 30
+        },
+        {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "revenue": 330,
+          "net_margin": 0.06,
+          "fcf": 33
+        }
+      ]
+    },
+    {
+      "cik": "0000000904",
+      "ticker": "GAPC",
+      "name": "Gap Corp",
+      "currency": "USD",
+      "periods": [
+        {
+          "start": "2019-01-01",
+          "end": "2019-12-31",
+          "revenue": 10,
+          "net_margin": 0.01,
+          "fcf": 1
+        },
+        {
+          "start": "2020-01-01",
+          "end": "2020-12-31",
+          "revenue": 11,
+          "net_margin": 0.02,
+          "fcf": 2
+        }
+      ]
+    },
+    {
+      "cik": "0000000905",
+      "ticker": "FRML",
+      "name": "=HYPERLINK(\"http://example.invalid\")",
+      "currency": "USD",
+      "periods": [
+        {
+          "start": "2024-01-01",
+          "end": "2024-12-31",
+          "revenue": 5,
+          "net_margin": -0.5,
+          "fcf": -2
+        },
+        {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "revenue": 6,
+          "net_margin": 0.1,
+          "fcf": 1
+        }
+      ]
+    },
+    {
+      "cik": "0000000906",
+      "ticker": "LATE",
+      "name": "Late Start Inc",
+      "currency": "USD",
+      "periods": [
+        {
+          "start": "2024-01-01",
+          "end": "2024-12-31",
+          "revenue": null,
+          "net_margin": 0.1,
+          "fcf": null
+        },
+        {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "revenue": 200,
+          "net_margin": 0.1,
+          "fcf": 20
+        }
+      ]
+    },
+    {
+      "cik": "0000000907",
+      "ticker": "ZERO",
+      "name": "Zero Base Co",
+      "currency": "USD",
+      "periods": [
+        {
+          "start": "2024-01-01",
+          "end": "2024-12-31",
+          "revenue": 100,
+          "net_margin": 0.1,
+          "fcf": 0
+        },
+        {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "revenue": 110,
+          "net_margin": 0.1,
+          "fcf": 5
+        }
+      ]
+    },
+    {
+      "cik": "0000000908",
+      "ticker": "PART",
+      "name": "Partial FCF Co",
+      "currency": "USD",
+      "periods": [
+        {
+          "start": "2024-01-01",
+          "end": "2024-12-31",
+          "revenue": 400,
+          "net_margin": 0.1,
+          "fcf": null
+        },
+        {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "revenue": 500,
+          "net_margin": 0.1,
+          "fcf": 60
+        }
+      ]
+    }
   ]
 }

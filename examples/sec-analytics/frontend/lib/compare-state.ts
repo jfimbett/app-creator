@@ -68,7 +68,8 @@ function list(value: string | null): string[] {
 export function parseCompareState(params: URLSearchParams): CompareState {
   const ciks = [...new Set(list(params.get("ciks")).map(normalizeCik).filter((cik): cik is string => cik !== null))].slice(0, MAX_COMPANIES);
   const metrics = [...new Set(list(params.get("metrics")).filter((id) => KNOWN.has(id)))].slice(0, MAX_METRICS);
-  const years = Number(params.get("years"));
+  const rawYears = params.get("years") ?? "";
+  const years = /^\d{1,2}$/.test(rawYears) ? Number(rawYears) : NaN;
   return {
     ciks,
     metrics: metrics.length > 0 ? metrics : DEFAULT_STATE.metrics,
@@ -76,6 +77,12 @@ export function parseCompareState(params: URLSearchParams): CompareState {
     index: params.get("index") === "first_common_year" ? "first_common_year" : "none",
     source: params.get("source") === "live" ? "live" : "demo",
   };
+}
+
+/** True when the URL named more than four usable companies, so some were left out (say so on screen). */
+export function companiesCutFromUrl(params: URLSearchParams): boolean {
+  const usable = new Set(list(params.get("ciks")).map(normalizeCik).filter((cik) => cik !== null));
+  return usable.size > MAX_COMPANIES;
 }
 
 /** The URL query for a state, in a fixed order. */

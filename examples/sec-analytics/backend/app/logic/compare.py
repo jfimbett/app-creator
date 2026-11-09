@@ -132,6 +132,7 @@ def _common_base_label(
 def _indexed(row: CompareRow, base: CompareRow) -> CompareRow:
     """The row as index points against its company's own base row."""
     if base.value is None or base.value <= 0:
+        # The base label always has a value (see _common_base_label); None is only a guard.
         shown = _plain_number(base.value) if base.value is not None else "missing"
         return row.model_copy(update={
             "value": None, "unit": INDEX_UNIT, "kind": "derived", "indexed": True,
