@@ -2,7 +2,7 @@
 
 **Repository:** <https://github.com/jfimbett/app-creator>
 
-**`main` contains M5 functionality** (tag `m5`), as of 2026-11-09. M3–M5 were verified on Windows 11; the M5 AI analyst was verified with a mocked AI service only (live AI not verified, N1).
+**`main` contains M6** (tag `m6`), as of 2026-11-09: the landing page is at <http://127.0.0.1:3000> and the app at `/app`. M3–M6 were verified on Windows 11; the M5 AI analyst was verified with a mocked AI service only (live AI not verified, N1).
 The old branch `wip/m3-filing-intelligence-unverified` is kept only as history; use `m3` instead.
 
 ## Versions
@@ -15,6 +15,7 @@ The old branch `wip/m3-filing-intelligence-unverified` is kept only as history; 
 | M3 Filing intelligence | Filings tab: latest 10-K/10-Q, 10-year history with amendments, a reader with sections, search and sec.gov links | `milestone/03-filing-intelligence` | `m3` | verified (Windows 11) |
 | M4 Comparative analysis | Compare screen: 2–4 companies by their own fiscal years, indexing, charts, CSV export | `milestone/04-comparative-analysis` | `m4` | verified (Windows 11) |
 | M5 AI financial analyst | Analyst panel on company, filing and Compare screens with your own OpenRouter key; grounded answers with checked source chips | `milestone/05-ai-financial-analyst` | `m5` | verified with a mocked AI service (Windows 11); live AI not verified (N1) |
+| M6 Polish and launch | dark and light themes, a redesigned interface, a landing page at `/` (the app moves to `/app`), a launch video | `milestone/06-polish-and-launch` | `m6` | verified (Windows 11) |
 
 "Verified" means a checkout passed `npm ci`, `npm run setup` and `npm run verify`: on macOS for M1 and M2, on Windows 11 for M3. Cline and GitHub CI are untested.
 
@@ -98,7 +99,7 @@ npm ci
 npm run setup
 ```
 
-Then give the assistant [`milestones/02-financial-intelligence/PROMPT.md`](milestones/02-financial-intelligence/PROMPT.md). To build M3 yourself, start from `m2` with [the M3 brief](milestones/03-filing-intelligence/PROMPT.md); to build M4, start from `m3`; to build M5, start from `m4`.
+Then give the assistant [`milestones/02-financial-intelligence/PROMPT.md`](milestones/02-financial-intelligence/PROMPT.md). To build M3 yourself, start from `m2` with [the M3 brief](milestones/03-filing-intelligence/PROMPT.md); to build M4, start from `m3`; to build M5, start from `m4`; to build M6, start from `m5`.
 Your result will differ from the tag: replaying a prompt does not reproduce the same code. The tag is the reference.
 
 The briefs are **not** all the instructions that were actually used. See [the prompt index](milestones/PROMPT-INDEX.md).
@@ -147,11 +148,17 @@ Click **Compare** in the header. Add `aapl`, `msft` and `googl` in the box. Poin
 
 **Limitations.** No calendar alignment and no currency conversion, by design. One index base year is used for all selected amounts, so adding FCF can move it later. The demo has three companies, so the four-company limit needs Live mode.
 
-### M5 (`main`, or `git switch --detach m5`)
+### M5 (`git switch --detach m5`)
 
 Open Apple and click **Analyst**. Without a key, point out "AI not configured: add your own OpenRouter key", the context line ("Context: AAPL facts FY2022–FY2026 + 10-K passages") and that everything else still works. With a limited key from the instructor: **AI settings** → paste the key (masked, memory only; the sessionStorage option warns that page scripts can read it) → choose a model from the list (prices per million tokens; none is preselected) → optionally "Test connection" (it warns about a small charge first). Ask "Why did net margin change?": the answer is plain text with numbered source chips; click a passage chip to open the 10-K at that block. Point out the notice: a valid chip shows the source exists, not that the sentence is true. Ask "Should I buy MSFT?" to see the refusal, which happens before any model call. Students follow [the student guide in the example README](examples/sec-analytics/README.md#optional-ai-analyst-m5).
 
 **Limitations.** Live AI was not verified in this build (no authorized test key, N1): the tests use a mocked AI service. Each question costs credits on the person's own key. Answers can still be wrong. Do not expose the app to a network: it is a local teaching app, not an AI proxy.
+
+### M6 (`main`, or `git switch --detach m6`)
+
+Open <http://127.0.0.1:3000>: the landing page. Point out the labels under Reviews ("Fictional testimonials written for this teaching demo."), under Pricing ("Prices are illustrative. This teaching app has no accounts and takes no payments.") and under About, and the SEC disclaimer in the footer: fictional content is allowed only when it says so where it appears. Click **Open the app** (the app now lives at `/app`). Click the sun/moon button in the header to switch to the light theme, then reload: the choice stays (it is the app's only `localStorage` entry, a display preference). Open Apple and compare the redesigned key-figure cards, charts and tables with `m5`. Watch the 22-second launch video, `examples/sec-analytics/brag-output/brag.mp4`, in a normal video player (VS Code cannot play its audio).
+
+**Limitations.** No new features: M6 changes the look, adds the landing page and the video. The video has music and captions, no voice. The interface was checked at 1440, 1366 and 390 px in both themes, not with a real screen reader.
 
 ## Prompts and records
 

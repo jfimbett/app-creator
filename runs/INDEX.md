@@ -62,3 +62,4 @@ Append-only. One line per dispatched step.
 ## M6
 
 - 2026-11-09 · **m6/m6-01-implement-main-session** · top-level session (app-screen overhaul by a design-lead subagent; three read-only review subagents) · completed; M6 gate passed, tag `m6` (local, not pushed) · [prompt](m6/m6-01-implement-main-session/PROMPT.md) · [response marker](m6/m6-01-implement-main-session/RESPONSE.md) · [result](m6/m6-01-implement-main-session/RESULT.json)
+- 2026-11-09 · **m6/m6-02-publish-main-session** · top-level session · music remix, branch documentation, push of `main`, `milestone/06-polish-and-launch` and tag `m6` · [prompt](m6/m6-02-publish-main-session/PROMPT.md) · [response marker](m6/m6-02-publish-main-session/RESPONSE.md) · [result](m6/m6-02-publish-main-session/RESULT.json)

@@ -21,9 +21,9 @@ not tested in this build). Both read the same rules, skills and review criteria.
 
 ## Two paths
 
-- **Path A: look at a finished example.** SEC Analytics, a financial dashboard built with this toolkit in five
-  versions (milestones `m1`–`m5`), lives on the `main` branch. This becomes available **after the example is
-  published**; it is not on this `template` branch.
+- **Path A: look at a finished example.** SEC Analytics, a financial dashboard built with this toolkit in six
+  versions (milestones `m1`–`m6`), lives on the `main` branch and the `milestone/…` branches (one per tag). It is
+  not on the `template` branch. The branches are explained in [README.md](README.md#branches-and-tags).
 - **Path B: build your own app.** Start from the `template` branch (or the `template-v1` tag). It contains the
   toolkit and a tiny working app to grow, and no SEC code.
 
@@ -43,13 +43,13 @@ Put the folder somewhere that is **not inside another project** (for example `Do
 read instruction files from the folders above. Files starting with a dot (`.claude`, `.clinerules`, `.gitignore`)
 may be hidden in Finder or Explorer. Keep them.
 
-**Path A** (after the example is published; not verified yet):
+**Path A:**
 
 ```bash
-git clone <repository-url> app-creator
+git clone https://github.com/jfimbett/app-creator.git app-creator
 cd app-creator
 git fetch origin --tags
-git switch --detach m1        # look at milestone 1; later m2 … m5
+git switch --detach m1        # look at milestone 1; later m2 … m6
 npm ci
 npm run setup
 npm run demo

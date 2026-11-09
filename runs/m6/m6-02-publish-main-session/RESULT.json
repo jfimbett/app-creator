@@ -1,0 +1,22 @@
+{
+ "step": "m6/m6-02-publish-main-session",
+ "agent": "top-level session (Opus 5.5)",
+ "status": "in progress: records and branch documentation committed; push pending (updated after the push)",
+ "start_commit": "5b9d905 (main)",
+ "done_before_push": {
+  "follow_ups": "milestones/06-polish-and-launch/FOLLOWUPS.md follow-ups 2-4 (no sound and hydration error; no voice and stop the server; commit and push)",
+  "servers": "the instructor's stale npm run demo/dev on 3000/8000 stopped; frontend .next cache cleared; a fresh demo checked (6 screens x 2 themes, no console or hydration errors), then stopped at the instructor's request",
+  "video": "music remixed and re-muxed (picture unchanged): -13.5 LUFS integrated, -1.5 dBFS true peak; instructor chose to keep it without narration",
+  "branch_docs": "README.md (branches and tags), CLASSROOM.md (M6 row and walkthrough), START-HERE.md, milestones/README.md (six releases, status), milestones/PROMPT-INDEX.md (m6-02)",
+  "tag": "local m6 and milestone/06-polish-and-launch moved from c44982a (never published) to the commit that adds this file"
+ },
+ "to_push": [
+  "main",
+  "milestone/06-polish-and-launch",
+  "tag m6"
+ ],
+ "not_pushed": [
+  "local work/* branches"
+ ],
+ "published": false
+}

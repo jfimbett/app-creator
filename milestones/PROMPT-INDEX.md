@@ -107,5 +107,8 @@ and a launch video. [Milestone README](06-polish-and-launch/README.md).
 | Step (prompt) | What it did | Response | Result |
 |---|---|---|---|
 | [m6-01-implement-main-session](../runs/m6/m6-01-implement-main-session/PROMPT.md) | built M6 (overhaul by a subagent), reviews and fixes, gate, video | **gap:** [marker](../runs/m6/m6-01-implement-main-session/RESPONSE.md) | [result](../runs/m6/m6-01-implement-main-session/RESULT.json) |
+| [m6-02-publish-main-session](../runs/m6/m6-02-publish-main-session/PROMPT.md) | after the report: stale server fixed, music remixed, branch documentation, push | **gap:** [marker](../runs/m6/m6-02-publish-main-session/RESPONSE.md) | [result](../runs/m6/m6-02-publish-main-session/RESULT.json) |
+
+The instructor's messages after the M6 report (no sound, no voice, stop the server, push) are in follow-ups 2–4.
 
 All six milestones now have tags.

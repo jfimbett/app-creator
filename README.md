@@ -1,6 +1,6 @@
 # App Creator
 
-> **In class?** Start with [CLASSROOM.md](CLASSROOM.md). `main` currently contains the verified M2 version of the SEC Analytics example.
+> **In class?** Start with [CLASSROOM.md](CLASSROOM.md). `main` contains the latest SEC Analytics example, M6 (tag `m6`).
 
 App Creator is a starter for building a web application with an AI coding assistant. It gives the assistant
 working rules, 15 skills (step-by-step instructions for planning, building, testing, reviewing and shipping) and
@@ -9,34 +9,42 @@ Windows. **Claude Code** is the main route; **Cline** (a VS Code extension) is d
 build.
 
 It was made for a business-school programming and AI course. Students first **inspect** a prepared example app,
-SEC Analytics, in five versions, and later **start their own** app from the generic starter.
+SEC Analytics, in six versions, and later **start their own** app from the generic starter.
 
 New here? Read [START-HERE.md](START-HERE.md). It walks you through both paths step by step.
 
-## Two branches
+## Branches and tags
 
-| Branch / tag | Contains | Use it to |
-|---|---|---|
-| `template`, tag `template-v1` | the generic toolkit and a tiny walking-skeleton app (`scaffold/`). **No SEC application.** | start a new, unrelated app |
-| `main`, tags `m1` … `m5` | the same toolkit plus the complete SEC Analytics example, one tag per milestone | inspect the prepared versions in class |
+A **tag** is a fixed, named version; a **branch** is a line of work that can move. Every published version has both:
+the tag is the reference you check out, the branch of the same name points at the same commit.
 
-You are reading the `template` branch. The generic starter works on its own: you do not need the SEC example.
+| Branch | Tag | What it holds | Brief and records |
+|---|---|---|---|
+| `template` | `template-v1` | the generic toolkit and a tiny walking-skeleton app (`scaffold/`). **No SEC application.** Start a new, unrelated app here. | [runs/bootstrap](runs/bootstrap) |
+| `milestone/01-foundation` | `m1` | SEC Analytics M1: dark shell, search, profile, revenue and net income from recorded SEC data | [01-foundation](milestones/01-foundation/README.md) |
+| `milestone/02-financial-intelligence` | `m2` | + Demo/Live, statement summaries, ratios, metric explorer | [02-financial-intelligence](milestones/02-financial-intelligence/README.md) |
+| `milestone/03-filing-intelligence` | `m3` | + filings, the 10-K/10-Q reader with sections and search | [03-filing-intelligence](milestones/03-filing-intelligence/README.md) |
+| `milestone/04-comparative-analysis` | `m4` | + Compare 2–4 companies, indexing, CSV export | [04-comparative-analysis](milestones/04-comparative-analysis/README.md) |
+| `milestone/05-ai-financial-analyst` | `m5` | + the optional AI analyst with your own OpenRouter key | [05-ai-financial-analyst](milestones/05-ai-financial-analyst/README.md) |
+| `milestone/06-polish-and-launch` | `m6` | + dark and light themes, the redesigned interface, a landing page at `/` (app at `/app`), a launch video | [06-polish-and-launch](milestones/06-polish-and-launch/README.md) |
+| `main` | (none) | the newest milestone plus later documentation commits; today the same as `m6` plus its records | [PROGRESS.md](PROGRESS.md) |
+| `wip/m3-filing-intelligence-unverified` | (none) | history only: M3 as it stood when a classroom freeze stopped it, before any browser check. Use `m3` instead. | [m3-03 record](runs/m3/m3-03-classroom-freeze/PROMPT.md) |
+
+Each version keeps everything earlier ones did. Every prompt given to an assistant for a milestone, the exact brief, its
+follow-ups and the step records, is listed in [milestones/PROMPT-INDEX.md](milestones/PROMPT-INDEX.md). Branches named
+`work/…` or `exercise/…` exist only on the computer that made them and are never published.
 
 ## Path A: inspect the prepared SEC Analytics milestones
 
-Available **after the example is published**: `main` and the tags `m1`–`m5` do not exist on this branch yet.
-
 ```bash
-git clone <repository-url> app-creator
+git clone https://github.com/jfimbett/app-creator.git app-creator
 cd app-creator
 git fetch origin --tags
-git switch --detach m1        # or m2 … m5
+git switch --detach m1        # or m2 … m6
 npm ci
 npm run setup
 npm run demo                  # offline demo, no keys, no network
 ```
-
-_Not verified: the milestone tags do not exist yet. `<repository-url>` is replaced by the publisher._
 
 ## Path B: start a new app from the generic starter
 

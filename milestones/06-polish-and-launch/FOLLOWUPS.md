@@ -47,3 +47,25 @@ stop the serve ryourself and start again the correct one
   barely play. The music was remixed (pad an octave up, louder pluck and bells, a kick with a second harmonic, high-pass at
   70 Hz) and re-muxed at −14 LUFS target (measured −13.5 LUFS, true peak −1.5 dBFS); the picture is unchanged. Also noted:
   VS Code's built-in player cannot decode AAC audio, so the file plays silently there.
+
+## Follow-up 3 (2026-11-09): no voice in the video; stop the server
+
+Typed by the instructor after the remix. Appended here after it was acted on (stopping a server changes no files).
+
+```text
+there is subtitles but no voice its pretty, bad stop the server
+```
+
+- The session stopped the `npm run demo` it had started (and the launcher's child processes, which outlived the stop).
+- The video was made without narration: the brief forbade installing anything in the autonomous run, and brag-slim has
+  no voice. The session offered three choices: the full /brag with a downloaded voice model, the robotic built-in Windows
+  voice, or keeping the video. **The instructor chose "Keep it as is"**, so the video stays music and captions only.
+
+## Follow-up 4 (2026-11-09): commit and push M6
+
+Recorded in [runs/m6/m6-02-publish-main-session/PROMPT.md](../../runs/m6/m6-02-publish-main-session/PROMPT.md)
+before the documentation changes and the push.
+
+```text
+ok commit and push m6, and make sure all branches are properly explained, witht heir prompts recorded etc. just like we did with m1 and m2
+```
