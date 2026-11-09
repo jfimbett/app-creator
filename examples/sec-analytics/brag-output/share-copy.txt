@@ -1,0 +1,1 @@
+Every number, with its filing. SEC Analytics turns public SEC EDGAR data into ten years of figures, the 10-K itself and side-by-side comparisons, and one hover shows where each value came from. A teaching app with a demo mode that works offline: https://github.com/jfimbett/app-creator
