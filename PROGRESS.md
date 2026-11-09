@@ -4,13 +4,13 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 
 ## Current phase
 
-**M4 complete (2026-11-09): tag `m4`, branch `milestone/04-comparative-analysis`; local `main` fast-forwarded to M4. Not pushed. M5 not started. Wait for the instructor.**
+**M4 complete and pushed (2026-11-09). M5 in progress (instructor: "push and start with m5").**
 
 ## M4 completion (2026-11-09, newest)
 
 - Instruction: `runs/m4/m4-01-implement-main-session/PROMPT.md` ("ok push and start working on m4"). Results: its `RESULT.json`.
 - Worktree `.worktrees/m4`, local branch `work/m4`, from `main` 6f6ab1d (tag `m3` plus one documentation commit).
-- **Not pushed.** GitHub still shows `main` = M3. Pushing `main`, `milestone/04-comparative-analysis` and `m4` waits for the instructor.
+- **Pushed 2026-11-09** at the instructor's request: `main`, `milestone/04-comparative-analysis` and tag `m4`.
 - Open minor items: `milestones/plan.md` "Known problems" (M4 items).
 
 ## M3 completion (2026-11-09, newest; overrides the sections below where they differ)

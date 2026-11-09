@@ -2,7 +2,7 @@
 
 **Repository:** <https://github.com/jfimbett/app-creator>
 
-**`main` contains M4 functionality** (tag `m4`), as of 2026-11-09, on the instructor's machine. **Until those commits are pushed, the GitHub copy of `main` contains M3.** M3 and M4 were verified on Windows 11.
+**`main` contains M4 functionality** (tag `m4`), as of 2026-11-09. M3 and M4 were verified on Windows 11.
 The old branch `wip/m3-filing-intelligence-unverified` is kept only as history; use `m3` instead.
 
 ## Versions
