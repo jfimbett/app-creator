@@ -126,7 +126,7 @@ test("tooltips: reported shows full provenance, derived shows formula and inputs
 });
 
 test("demo run has no mode selector (M1 behaviour kept)", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/app");
   await expect(page.getByTestId("health-status")).toHaveAttribute("data-state", "ok", { timeout: 15_000 });
   await expect(page.getByTestId("mode-selector")).toHaveCount(0);
   await expect(page.getByText("RECORDED SEC DEMO").first()).toBeVisible();
@@ -140,7 +140,7 @@ test("selector is explicit and starts on Demo; Live without a contact shows the 
       json: { error: { code: "sec_contact_not_configured", message: NOT_CONFIGURED, details: { setting: "SEC_USER_AGENT" }, reference: null } },
     }),
   );
-  await page.goto("/");
+  await page.goto("/app");
   const selector = page.getByTestId("mode-selector");
   await expect(selector.getByRole("radio", { name: "Demo" })).toBeChecked();
   await selector.getByText("Live", { exact: true }).click();

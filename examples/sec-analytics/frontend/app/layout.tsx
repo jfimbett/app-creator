@@ -1,11 +1,5 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
-import { AppHeader } from "@/components/AppHeader";
-import { BackendStatus } from "@/components/BackendStatus";
-import { CompanySearch } from "@/components/CompanySearch";
-import { CompareLink } from "@/components/CompareLink";
-import { ModeSelector } from "@/components/ModeSelector";
 import { APP_NAME } from "@/lib/site";
 
 import "./globals.css";
@@ -16,8 +10,8 @@ export const metadata: Metadata = {
 };
 
 /**
- * The shell: skip link, compact header, and one <main> for the page content.
- * Pages render sections inside this <main>; they do not add their own <main>.
+ * Root layout: <html>, <body>, the skip link and the global styles. The app shell lives in app/(app)/layout.tsx,
+ * the landing page's header and footer in app/(marketing)/layout.tsx. Both render one <main id="main">.
  */
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -29,13 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         >
           Skip to content
         </a>
-        {/* Suspense: these read the page URL (?source=), which is only known in the browser. */}
-        <Suspense fallback={<AppHeader status={<BackendStatus />} />}>
-          <AppHeader search={<CompanySearch />} nav={<CompareLink />} mode={<ModeSelector />} status={<BackendStatus />} />
-        </Suspense>
-        <main id="main" className="mx-auto w-full max-w-[1440px] px-4 py-4">
-          <Suspense fallback={null}>{children}</Suspense>
-        </main>
+        {children}
       </body>
     </html>
   );

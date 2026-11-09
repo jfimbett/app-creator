@@ -32,7 +32,7 @@ async function addCompany(page: Page, query: string, ticker: string) {
 
 test("header → Compare, add AAPL, MSFT and GOOGL: table and chart by fiscal year (M4-AC1, M4-AC3)", async ({ page }) => {
   const assertLocalOnly = recordHosts(page);
-  await page.goto("/");
+  await page.goto("/app");
   await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Compare" }).click();
   await expect(page).toHaveURL(/\/compare$/);
   await expect(page.getByText("Add at least 2 companies to compare")).toBeVisible();

@@ -172,7 +172,7 @@ async function noSidewaysScroll(page: Page) {
 test("no key: Overview, Filings, the reader and Compare work; the panel says AI not configured (M5-AC1, mocked backend)", async ({ page }) => {
   const assertLocal = recordRequests(page);
   const calls = await mockAi(page);
-  await page.goto("/");
+  await page.goto("/app");
   await expect(page.getByTestId("analyst-open")).toHaveCount(0);
 
   await page.goto(APPLE);

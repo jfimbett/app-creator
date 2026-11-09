@@ -15,7 +15,7 @@ test("classroom journey: search by name, ticker and CIK; figures, chart and sour
   });
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
+  await page.goto("/app");
   await expect(page.getByTestId("health-status")).toHaveAttribute("data-state", "ok", { timeout: 15_000 });
   await expect(page.getByText("RECORDED SEC DEMO").first()).toBeVisible();
   await expect(page.getByRole("link", { name: /Apple/ })).toBeVisible();

@@ -16,7 +16,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
         title="Something went wrong while showing this page"
         message={
           <p>
-            Try again. If it keeps happening, go back to the <Link href="/">list of demo companies</Link>.
+            Try again. If it keeps happening, go back to the <Link href="/app">list of demo companies</Link>.
           </p>
         }
         reference={error.digest ?? null}

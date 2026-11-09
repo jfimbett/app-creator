@@ -27,7 +27,7 @@ function recordHosts(page: Page) {
 
 test("journey 1: home shows the badge, the demo-universe note and backend status (M1-AC1)", async ({ page }) => {
   const assertLocalOnly = recordHosts(page);
-  await page.goto("/");
+  await page.goto("/app");
   await expect(page.getByTestId("health-status")).toHaveAttribute("data-state", "ok", { timeout: 15_000 });
   await expect(page.getByTestId("health-status")).toContainText("OK");
   await expect(page.getByText(/RECORDED SEC DEMO/).first()).toBeVisible();
@@ -37,7 +37,7 @@ test("journey 1: home shows the badge, the demo-universe note and backend status
 
 test("journey 2: `/` and Ctrl/Cmd-K focus search; aapl, down, Enter opens Apple (M1-AC2)", async ({ page }) => {
   const assertLocalOnly = recordHosts(page);
-  await page.goto("/");
+  await page.goto("/app");
   await expect(page.getByTestId("health-status")).toHaveAttribute("data-state", "ok", { timeout: 15_000 });
   const search = page.getByRole("combobox");
 
@@ -95,7 +95,7 @@ test("journey 3: the company page shows profile, figures, chart, label and sourc
 });
 
 test("journey 4: a company outside the snapshot is reported, not substituted (M1-AC3)", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/app");
   await page.getByRole("combobox").fill("tesla");
   await expect(page.getByText("No match in the demo universe (3 companies)").first()).toBeVisible();
   await expect(page.getByRole("option")).toHaveCount(0);
@@ -104,7 +104,7 @@ test("journey 4: a company outside the snapshot is reported, not substituted (M1
 
 test("journey 5: with the backend down the header says how to start it (M1-E1)", async ({ page }) => {
   await page.route("**/api/**", (route) => route.abort());
-  await page.goto("/");
+  await page.goto("/app");
   const status = page.getByTestId("health-status");
   await expect(status).toHaveText("Backend not reachable: start it with npm run demo", { timeout: 15_000 });
   await expect(status).toBeVisible();
@@ -118,7 +118,7 @@ test("journey 5: with the backend down the header says how to start it (M1-E1)",
 for (const { width, height } of widths) {
   test(`journey 7: home and Apple fit at ${width} px, with screenshots (V1, V2)`, async ({ page }) => {
     await page.setViewportSize({ width, height });
-    for (const [screen, url] of [["home", "/"], ["apple", APPLE]] as const) {
+    for (const [screen, url] of [["home", "/app"], ["apple", APPLE]] as const) {
       await page.goto(url);
       await expect(page.getByTestId("health-status")).toHaveAttribute("data-state", "ok", { timeout: 15_000 });
       if (screen === "apple") await expect(page.getByTestId("overview-chart").locator("svg").first()).toBeVisible();
