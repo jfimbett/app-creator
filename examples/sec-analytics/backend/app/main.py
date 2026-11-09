@@ -7,7 +7,7 @@ network; live requests go to SEC only when a request asks for `source=live` (see
 
 from fastapi import FastAPI
 
-from app.api import companies, filings, financials, meta
+from app.api import companies, compare, filings, financials, meta
 from app.clients.sec import SecClient
 from app.data.fixtures import FixtureError, FixtureStore
 from app.data.source import DataSource
@@ -44,6 +44,7 @@ def create_app(settings: Settings | None = None, sec_client: SecClient | None = 
     application.include_router(companies.router)
     application.include_router(financials.router)
     application.include_router(filings.router)
+    application.include_router(compare.router)
     return application
 
 
