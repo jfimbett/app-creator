@@ -1,11 +1,9 @@
 """In fixture mode the app serves every M1 endpoint without any network access.
 
-respx is active with no routes (any httpx call would fail) and opening a socket raises.
+respx is active with no routes (any httpx call would fail) and reaching another machine raises
+(see `no_external_network` in conftest.py).
 """
 
-import socket
-
-import pytest
 import respx
 from fastapi.testclient import TestClient
 
@@ -26,17 +24,7 @@ M1_REQUESTS = [
 ]
 
 
-@pytest.fixture
-def no_sockets(monkeypatch):
-    def refuse(*args, **kwargs):
-        raise AssertionError("network access attempted in fixture mode")
-
-    monkeypatch.setattr(socket.socket, "connect", refuse)
-    monkeypatch.setattr(socket, "create_connection", refuse)
-    monkeypatch.setattr(socket, "getaddrinfo", refuse)
-
-
-def test_all_m1_endpoints_work_offline(no_sockets) -> None:
+def test_all_m1_endpoints_work_offline(no_external_network) -> None:
     with respx.mock(assert_all_called=False, assert_all_mocked=True) as router:
         client = TestClient(create_app())
         for path, params in M1_REQUESTS:

@@ -6,7 +6,6 @@ they show this app's handling, never SEC's real answers. No test here reaches th
 
 import gzip
 import json
-import socket
 from pathlib import Path
 
 import httpx
@@ -210,13 +209,7 @@ def test_live_under_fixture_mode_is_refused(demo) -> None:
     assert response.json()["error"]["code"] == "live_disabled"
 
 
-def test_demo_filing_access_uses_no_network(monkeypatch) -> None:
-    def refuse(*args, **kwargs):
-        raise AssertionError("network access attempted in demo mode")
-
-    monkeypatch.setattr(socket.socket, "connect", refuse)
-    monkeypatch.setattr(socket, "create_connection", refuse)
-    monkeypatch.setattr(socket, "getaddrinfo", refuse)
+def test_demo_filing_access_uses_no_network(no_external_network) -> None:
     with respx.mock(assert_all_called=False, assert_all_mocked=True) as router:
         client = TestClient(create_app(Settings(data_mode="fixtures")))
         assert client.get(f"/api/companies/{APPLE}/filings").status_code == 200
