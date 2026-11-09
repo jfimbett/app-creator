@@ -41,7 +41,7 @@ export function CompareTable({ response }: { response: CompareResponse }) {
   return (
     // relative: the screen-reader-only labels in the cells are absolutely positioned; without it they escape this
     // scroll box and widen the whole page at 390 px.
-    <div className="table-scroll relative">
+    <div className="table-box relative">
       <table className="data-table" data-testid="compare-table" data-points={model.points}>
         <caption className="sr-only">Comparison by each company&apos;s own fiscal year; each cell gives its own period end</caption>
         <thead>
@@ -62,14 +62,14 @@ export function CompareTable({ response }: { response: CompareResponse }) {
             const ticker = line.company.ticker || line.company.cik;
             return (
               <tr key={`${line.company.cik}-${line.metric}`} data-testid="compare-line" data-cik={line.company.cik} data-metric={line.metric}>
-                <th scope="row" className="text-left font-normal">
-                  <span className="inline-flex items-center gap-1.5">
+                <th scope="row" className="max-w-[9.5rem] whitespace-normal! py-1! text-left font-normal leading-tight sm:max-w-none sm:whitespace-nowrap!">
+                  <span className="inline-flex flex-wrap items-center gap-x-1.5">
                     <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: colour(line.company.cik) }} />
                     <span className="font-semibold">{ticker}</span>
                     <span>{metricLabel(line.metric)}</span>
                     <span className="text-muted">({unit})</span>
                     {indexed ? (
-                      <span data-testid="indexed-badge" className="label-caps rounded-sm border border-accent px-1 leading-4 text-accent">
+                      <span data-testid="indexed-badge" className="tag border-accent! text-accent!">
                         INDEXED
                       </span>
                     ) : null}

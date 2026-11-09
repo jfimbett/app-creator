@@ -72,11 +72,11 @@ export function ModelPicker({ apiKey, keyVersion, selected, onChoose }: Props) {
               spellCheck={false}
               value={filter}
               onChange={(event) => setFilter(event.target.value)}
-              className="rounded-sm border border-line bg-bg px-2 py-1 text-fg placeholder:text-muted focus:border-accent focus:outline-none"
+              className="field"
             />
           </label>
           {/* `relative` keeps the sr-only caption inside this scroll box, so it cannot widen the page. */}
-          <div className="table-scroll relative max-h-64 overflow-y-auto border border-line">
+          <div className="table-box relative max-h-64">
             <table data-testid="model-table" className="data-table">
               <caption className="sr-only">Models from OpenRouter; prices in USD per million tokens</caption>
               <thead>
@@ -141,9 +141,9 @@ export function ModelPicker({ apiKey, keyVersion, selected, onChoose }: Props) {
                 chooseManual();
               }
             }}
-            className="min-w-0 flex-1 rounded-sm border border-line bg-bg px-2 py-1 font-mono text-fg focus:border-accent focus:outline-none"
+            className="field min-w-0 flex-1 font-mono"
           />
-          <button type="button" onClick={chooseManual} className="rounded-sm border border-line px-2 py-1 text-fg hover:border-accent">
+          <button type="button" onClick={chooseManual} className="btn">
             Use this id
           </button>
         </div>

@@ -21,7 +21,7 @@ export function ValueCell({ metric, className }: { metric: MetricValue; classNam
         ? metric.reason || "n/m"
         : UNAVAILABLE;
   return (
-    <ProvenanceTip metric={metric} className="inline-block max-w-[7.5rem] whitespace-normal text-right text-label leading-tight text-muted [overflow-wrap:anywhere]">
+    <ProvenanceTip metric={metric} className="cell-note">
       <span data-status={metric.status}>{text}</span>
     </ProvenanceTip>
   );

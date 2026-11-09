@@ -19,7 +19,7 @@ function PointTooltip({ active, payload }: TooltipContentProps) {
   if (!active || !point) return null;
   const { metric } = point;
   return (
-    <div className="max-w-xs border border-line bg-panel-raised px-2 py-1.5 text-table text-fg shadow-lg shadow-black/40">
+    <div className="popover max-w-xs px-2.5 py-2 text-table">
       <p className="font-semibold">{formatFiscalYear(metric.fiscal_year_label, metric.period_end)}</p>
       <p className="num text-left">
         {statusText(metric)} {metric.status === "ok" && metric.unit !== "percent" && metric.unit !== "ratio" ? unitCaption(metric.unit) : ""}
@@ -44,7 +44,7 @@ export function MetricChart({ series, showAxis }: { series: MetricSeries; showAx
 
   return (
     <figure data-testid="metric-chart" data-metric={series.metric_id} className="min-w-0">
-      <figcaption className="flex flex-wrap items-baseline justify-between gap-x-2 text-table">
+      <figcaption className="mb-1 flex flex-wrap items-baseline justify-between gap-x-2 text-table">
         <span className="font-semibold">{series.label}</span>
         <span className="text-muted">{unitCaption(series.unit)}</span>
       </figcaption>
@@ -57,32 +57,34 @@ export function MetricChart({ series, showAxis }: { series: MetricSeries; showAx
         <div aria-hidden="true" className={`${showAxis ? "h-[150px]" : "h-[125px]"} w-full min-w-0`}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={points} margin={{ top: 6, right: 12, bottom: 0, left: 4 }}>
-              <CartesianGrid stroke="var(--border)" strokeDasharray="2 4" vertical={false} />
+              <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="label"
-                stroke="var(--text-muted)"
+                stroke="var(--border-strong)"
                 tick={showAxis ? { fill: "var(--text-muted)", fontSize: 11 } : false}
                 height={showAxis ? 24 : 4}
                 tickLine={false}
                 minTickGap={8}
               />
               <YAxis
-                stroke="var(--text-muted)"
+                stroke="var(--border-strong)"
                 tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                tickLine={false}
+                axisLine={false}
                 tickFormatter={(value: number) => formatAxis(value, series.unit)}
                 domain={[(min: number) => Math.min(0, min), (max: number) => Math.max(0, max)]}
                 width={64}
               />
               <ReferenceLine y={0} stroke="var(--text-muted)" />
-              <Tooltip content={PointTooltip} cursor={{ stroke: "var(--border)" }} />
+              <Tooltip content={PointTooltip} cursor={{ stroke: "var(--border-strong)", strokeDasharray: "3 3" }} />
               <Line
                 type="linear"
                 dataKey="value"
                 name={series.label}
                 stroke="var(--series-revenue)"
                 strokeWidth={2}
-                dot={{ r: 2.5, fill: "var(--series-revenue)" }}
-                activeDot={{ r: 4 }}
+                dot={{ r: 2.5, fill: "var(--series-revenue)", strokeWidth: 0 }}
+                activeDot={{ r: 4.5, stroke: "var(--panel)", strokeWidth: 2 }}
                 connectNulls={false}
                 isAnimationActive={false}
               />

@@ -27,7 +27,7 @@ export function SourceChips({ citations }: { citations: readonly AiCitation[] })
           "data-testid": "source-chip",
           "data-kind": citation.kind,
           "data-source-id": citation.source_id,
-          className: `inline-flex max-w-full items-baseline gap-1 rounded-sm border border-line bg-panel-raised px-1.5 py-0.5 text-table text-fg no-underline ${href ? "hover:border-link hover:no-underline" : ""}`,
+          className: `inline-flex max-w-full items-baseline gap-1 rounded-md border border-line-strong bg-panel-raised px-1.5 py-0.5 text-table text-fg no-underline ${href ? "hover:border-link hover:no-underline" : ""}`,
         };
         const content = (
           <>

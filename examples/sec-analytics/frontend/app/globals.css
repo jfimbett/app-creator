@@ -180,9 +180,190 @@
 
 /* ---------- Shared presentational classes ---------- */
 @layer components {
-  /* Filing reader: a readable column of plain text (brief §4: 15 px, 1.6 line height, about 80 characters). */
+  /*
+    Controls. One look for every button, toggle and field (M6 §4.2). Outlines use --border-strong (≥ 3:1), the
+    selected state is the amber fill, and the meaning is always also in the text (or aria-pressed / checked).
+      .btn            neutral button          .btn-primary   the one primary action (amber fill)
+      .btn-quiet      secondary, borderless   .btn-danger    destructive (red outline)
+      .toggle         a choice that stays on: aria-pressed="true", a checked radio inside, or .is-on
+      .field          text input, select, textarea
+  */
+  .btn,
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    min-height: 1.75rem;
+    padding: 0.125rem 0.625rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--panel);
+    color: var(--text);
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease);
+  }
+
+  .btn:hover:not(:disabled),
+  .toggle:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--panel-raised);
+  }
+
+  .btn:disabled,
+  .toggle:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .btn-primary {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--accent) 88%, var(--text));
+    color: var(--on-accent);
+  }
+
+  .btn-quiet {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  .btn-danger {
+    border-color: var(--negative);
+    color: var(--negative);
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    border-color: var(--negative);
+  }
+
+  .toggle[aria-pressed="true"],
+  .toggle:has(> input:checked),
+  .toggle.is-on {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .toggle[aria-pressed="true"]:hover:not(:disabled),
+  .toggle:has(> input:checked):hover,
+  .toggle.is-on:hover {
+    background: color-mix(in srgb, var(--accent) 88%, var(--text));
+  }
+
+  /* A visually hidden radio inside a label: the label shows the keyboard focus. */
+  .toggle:has(> input:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .field {
+    min-height: 1.75rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color var(--dur-fast) var(--ease);
+  }
+
+  .field::placeholder {
+    color: var(--text-muted);
+  }
+
+  .field:focus,
+  .field:focus-within {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+
+  /* Surfaces: a panel (section with a title row) and a card (one item inside it, or a link). */
+  .surface {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel);
+    box-shadow: var(--elev-1);
+  }
+
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel-raised);
+  }
+
+  a.card,
+  .card-link {
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      border-color var(--dur-fast) var(--ease),
+      box-shadow var(--dur) var(--ease),
+      transform var(--dur) var(--ease);
+  }
+
+  a.card:hover,
+  .card-link:hover {
+    border-color: var(--accent);
+    box-shadow: var(--elev-2);
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+
+  /* Keyboard key hint. */
+  .kbd {
+    display: inline-block;
+    min-width: 1.25rem;
+    padding: 0 0.3rem;
+    border: 1px solid var(--border-strong);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.125rem;
+    text-align: center;
+  }
+
+  /* Small text tag (REPORTED, ORIGINAL, INDEXED …): bordered caps, never colour alone. */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.3rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* A chart tooltip or popover: the raised panel with the pop elevation in both themes. */
+  .popover {
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--panel-raised);
+    color: var(--text);
+    box-shadow: var(--elev-2);
+  }
+
+  /* Filing reader: a readable column of plain text (15 px, 1.6 line height, about 76 characters: M6 asks for 70–80). */
   .reader-column {
-    max-width: 80ch;
+    max-width: 76ch;
     font-size: 0.9375rem;
     line-height: 1.6;
     overflow-wrap: anywhere;
@@ -278,6 +459,42 @@
     background: var(--panel-raised);
   }
 
+  /* Row hover: the whole row, including the sticky first cell, so the eye can follow a line across years. */
+  .data-table tbody tr {
+    transition: background-color var(--dur-fast) var(--ease);
+  }
+
+  .data-table tbody tr:hover > th,
+  .data-table tbody tr:hover > td {
+    background: var(--panel-raised);
+  }
+
+  .data-table tbody tr:last-child > th,
+  .data-table tbody tr:last-child > td {
+    border-bottom: 0;
+  }
+
+  /* A table that scrolls inside its own box: the header stays visible (sticky top inside the box). */
+  .table-box {
+    max-width: 100%;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  /* "Not reported" and "unavailable" in a table cell: readable words, quieter than a figure, never a blank. */
+  .cell-note {
+    display: inline-block;
+    max-width: 9rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-style: italic;
+    line-height: 1rem;
+    text-align: right;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
   .data-table tbody tr[aria-selected="true"] td {
     box-shadow: inset 0 0 0 9999px color-mix(in srgb, var(--accent) 12%, transparent);
   }
@@ -286,8 +503,9 @@
   .skeleton {
     display: block;
     height: 12px;
-    border-radius: 2px;
-    background: var(--panel-raised);
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--panel-raised), color-mix(in srgb, var(--panel-raised) 70%, var(--border-strong)), var(--panel-raised));
+    background-size: 200% 100%;
     animation: skeleton-pulse 1.4s ease-in-out infinite;
   }
 }

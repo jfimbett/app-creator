@@ -49,8 +49,8 @@ export function SectionNav({ status, note, sections, onJump }: Props) {
 
   if (status === "not_detected") {
     return (
-      <aside aria-label="Sections" className="lg:sticky lg:top-16 lg:self-start">
-        <p data-testid="section-note" data-status={status} className="border border-line border-l-warning bg-panel p-2 text-table text-warning">
+      <aside aria-label="Sections" className="lg:sticky lg:top-[4.5rem] lg:self-start">
+        <p data-testid="section-note" data-status={status} className="rounded-md border border-l-[3px] border-line border-l-warning bg-panel-raised px-3 py-2 text-table text-warning">
           {note}
         </p>
       </aside>
@@ -58,7 +58,7 @@ export function SectionNav({ status, note, sections, onJump }: Props) {
   }
 
   return (
-    <aside aria-label="Sections" className="flex min-w-0 flex-col gap-2 lg:sticky lg:top-16 lg:max-h-[calc(100vh-5rem)] lg:self-start">
+    <aside aria-label="Sections" className="flex min-w-0 flex-col gap-2 lg:sticky lg:top-[4.5rem] lg:max-h-[calc(100vh-5.5rem)] lg:self-start">
       <p data-testid="section-note" data-status={status} className="text-table text-muted">
         {note}
       </p>
@@ -71,7 +71,7 @@ export function SectionNav({ status, note, sections, onJump }: Props) {
             const target = sections.find((section) => section.id === event.target.value);
             if (target) onJump(target.block_start);
           }}
-          className="w-full rounded-sm border border-line bg-panel-raised px-2 py-1.5 text-fg"
+          className="field w-full py-1.5"
         >
           <option value="" disabled>
             Jump to a section
@@ -83,7 +83,7 @@ export function SectionNav({ status, note, sections, onJump }: Props) {
           ))}
         </select>
       </label>
-      <nav data-testid="section-rail" aria-label="Filing sections" className="hidden min-h-0 overflow-y-auto border border-line bg-panel lg:block">
+      <nav data-testid="section-rail" aria-label="Filing sections" className="surface hidden min-h-0 overflow-y-auto py-1 lg:block">
         <ul>
           {sections.map((section) => (
             <li key={section.id}>
@@ -92,7 +92,7 @@ export function SectionNav({ status, note, sections, onJump }: Props) {
                 data-section={section.id}
                 aria-current={active === section.id ? "true" : undefined}
                 onClick={() => onJump(section.block_start)}
-                className={`block w-full border-l-2 px-2 py-1 text-left text-table hover:bg-panel-raised ${active === section.id ? "border-accent bg-panel-raised text-fg" : "border-transparent text-muted"}`}
+                className={`block w-full border-l-2 px-3 py-1.5 text-left text-table transition-colors duration-[var(--dur-fast)] hover:bg-panel-raised ${active === section.id ? "border-accent bg-panel-raised text-fg" : "border-transparent text-muted"}`}
               >
                 <span className="font-semibold text-fg">{section.item}</span>
                 {section.title ? <span className="block [overflow-wrap:anywhere]">{section.title}</span> : null}

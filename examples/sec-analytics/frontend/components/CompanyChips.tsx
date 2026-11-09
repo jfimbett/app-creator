@@ -90,7 +90,7 @@ export function CompanyChips({ ciks, names, source, onAdd, onRemove, message, au
             const known = names[cik];
             const label = known?.ticker || cik;
             return (
-              <li key={cik} data-testid="company-chip" data-cik={cik} className="flex items-center gap-1.5 rounded-sm border border-line bg-panel-raised py-0.5 pl-2 pr-1 text-table">
+              <li key={cik} data-testid="company-chip" data-cik={cik} className="flex h-8 items-center gap-1.5 rounded-full border border-line-strong bg-panel-raised pl-3 pr-1 text-table">
                 <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: SERIES_COLOURS[index] }} />
                 <span className="font-semibold">{label}</span>
                 {known?.name ? <span className="hidden max-w-[12rem] truncate text-muted sm:inline">{known.name}</span> : null}
@@ -98,7 +98,7 @@ export function CompanyChips({ ciks, names, source, onAdd, onRemove, message, au
                   type="button"
                   aria-label={`Remove ${label}`}
                   onClick={() => onRemove(cik)}
-                  className="rounded-sm px-1 leading-4 text-muted hover:text-fg"
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-full text-muted transition-colors duration-[var(--dur-fast)] hover:bg-panel hover:text-fg"
                 >
                   ×
                 </button>
@@ -106,7 +106,7 @@ export function CompanyChips({ ciks, names, source, onAdd, onRemove, message, au
             );
           })}
         </ul>
-        <div className="relative w-full min-w-0 sm:w-64">
+        <div className="relative w-full min-w-0 sm:w-72">
           <label htmlFor={`${listboxId}-input`} className="sr-only">
             Add a company by name, ticker or CIK
           </label>
@@ -131,10 +131,10 @@ export function CompanyChips({ ciks, names, source, onAdd, onRemove, message, au
             }}
             onBlur={() => setCombo((state) => comboboxReducer(state, { type: "close" }))}
             onKeyDown={onKeyDown}
-            className="w-full rounded-sm border border-line bg-bg px-2 py-1 text-fg placeholder:text-muted focus:border-accent focus:outline-none"
+            className="field h-8 w-full"
           />
           {showPopup ? (
-            <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-30 border border-line bg-panel-raised shadow-lg shadow-black/40">
+            <div className="popover absolute left-0 right-0 top-[calc(100%+4px)] z-30 overflow-hidden">
               <ul id={listboxId} role="listbox" aria-label="Companies to add" className="max-h-64 overflow-y-auto py-1">
                 {results.map((result, index) => (
                   <li
@@ -144,7 +144,7 @@ export function CompanyChips({ ciks, names, source, onAdd, onRemove, message, au
                     aria-selected={index === combo.activeIndex}
                     onMouseDown={(event) => event.preventDefault()}
                     onClick={() => choose(result)}
-                    className={`cursor-pointer truncate border-l-2 px-2 py-1 ${index === combo.activeIndex ? "border-accent bg-panel" : "border-transparent hover:bg-panel"}`}
+                    className={`cursor-pointer truncate border-l-2 px-2.5 py-1.5 ${index === combo.activeIndex ? "border-accent bg-panel" : "border-transparent hover:bg-panel"}`}
                   >
                     {companyLine(result)}
                   </li>

@@ -46,12 +46,13 @@ const DEFAULT_TITLE: Record<StateKind, string> = {
   error: "Something went wrong",
 };
 
-const TONE: Record<StateKind, string> = {
-  loading: "border-l-line text-muted",
-  empty: "border-l-line text-muted",
-  missing: "border-l-line text-muted",
-  offline: "border-l-warning text-warning",
-  error: "border-l-negative text-negative",
+/** The left rule and the tag repeat the state; the words carry it. */
+const TONE: Record<StateKind, { rule: string; tag: string }> = {
+  loading: { rule: "border-l-line-strong", tag: "text-muted" },
+  empty: { rule: "border-l-line-strong", tag: "text-muted" },
+  missing: { rule: "border-l-line-strong", tag: "text-muted" },
+  offline: { rule: "border-l-warning", tag: "border-warning! text-warning" },
+  error: { rule: "border-l-negative", tag: "border-negative! text-negative" },
 };
 
 export function StatePanel({ kind, title, message, reference, action, secondaryAction, rows = 3, className }: StatePanelProps) {
@@ -62,7 +63,7 @@ export function StatePanel({ kind, title, message, reference, action, secondaryA
     return (
       <div role="status" aria-live="polite" data-testid="state-panel" data-state={kind} className={className}>
         <span className="sr-only">{heading}</span>
-        <div aria-hidden="true" className="flex flex-col gap-2 py-1">
+        <div aria-hidden="true" className="flex flex-col gap-2.5 py-1">
           {Array.from({ length: rows }, (_, i) => (
             <span key={i} className="skeleton" style={{ width: `${92 - ((i * 17) % 40)}%` }} />
           ))}
@@ -77,26 +78,26 @@ export function StatePanel({ kind, title, message, reference, action, secondaryA
       aria-live={isProblem ? undefined : "polite"}
       data-testid="state-panel"
       data-state={kind}
-      className={`border-l-2 bg-panel-raised px-3 py-2 ${TONE[kind]} ${className ?? ""}`}
+      className={`rounded-md border border-l-[3px] border-line bg-panel-raised px-4 py-3 ${TONE[kind].rule} ${className ?? ""}`}
     >
       <p className="flex flex-wrap items-baseline gap-x-2">
-        <span className="label-caps">{TAG[kind]}</span>
+        <span className={`tag ${TONE[kind].tag}`}>{TAG[kind]}</span>
         <span className="font-semibold text-fg">{heading}</span>
       </p>
-      {message ? <div className="mt-1 text-fg">{message}</div> : null}
+      {message ? <div className="mt-1.5 max-w-prose text-fg">{message}</div> : null}
       {reference ? (
-        <p className="mt-1 text-muted">
+        <p className="mt-1.5 text-table text-muted">
           Reference: <span className="code-id">{reference}</span>
         </p>
       ) : null}
       {action || secondaryAction ? (
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           {[secondaryAction, action].filter((item) => item !== undefined).map((item) => (
             <button
               key={item.label}
               type="button"
               onClick={item.onClick}
-              className="rounded-sm border border-line bg-panel px-2 py-1 text-fg hover:border-accent"
+              className="btn"
             >
               {item.label}
             </button>

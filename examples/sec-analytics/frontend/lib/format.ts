@@ -73,6 +73,12 @@ export function formatPercent(value: number | null): string {
   return `${withMinus(text, value < 0 && Number(text) !== 0)}%`;
 }
 
+/** A change as a signed percentage: 0.151 → "+15.1%", −0.02 → "−2.0%"; a change that rounds to zero has no sign. */
+export function formatSignedPercent(value: number | null): string {
+  const text = formatPercent(value);
+  return isNumber(value) && value > 0 && text !== "0.0%" ? `+${text}` : text;
+}
+
 /** A decimal ratio as a multiple with two decimals: 0.5 → "0.50×". */
 export function formatTimes(value: number | null): string {
   if (!isNumber(value)) return DASH;

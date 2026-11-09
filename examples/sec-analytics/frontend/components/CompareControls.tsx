@@ -8,8 +8,8 @@ import { COMPARE_METRICS, type CompareState, MAX_METRICS, MONEY_METRICS, YEAR_CH
 /** 1–6 metrics from the comparison set, as toggle buttons. */
 export function MetricPicker({ selected, onToggle }: { selected: readonly string[]; onToggle: (id: string) => void }) {
   return (
-    <div role="group" aria-label="Metrics" className="flex flex-wrap items-center gap-1">
-      <span className="label-caps mr-1 text-muted">Metrics</span>
+    <div role="group" aria-label="Metrics" className="flex flex-wrap items-center gap-1.5">
+      <span className="label-caps mr-1 w-full text-muted sm:w-auto">Metrics</span>
       {COMPARE_METRICS.map((metric) => {
         const on = selected.includes(metric.id);
         return (
@@ -20,7 +20,7 @@ export function MetricPicker({ selected, onToggle }: { selected: readonly string
             data-metric={metric.id}
             disabled={(!on && selected.length >= MAX_METRICS) || (on && selected.length === 1)}
             onClick={() => onToggle(metric.id)}
-            className={`rounded-sm border px-2 py-0.5 text-table disabled:cursor-not-allowed disabled:opacity-50 ${on ? "border-accent bg-accent text-on-accent" : "border-line text-fg hover:border-accent"}`}
+            className="toggle"
           >
             {metric.label}
           </button>
@@ -32,9 +32,9 @@ export function MetricPicker({ selected, onToggle }: { selected: readonly string
 
 export function YearsPicker({ years, onChange }: { years: number; onChange: (years: number) => void }) {
   return (
-    <label className="flex items-center gap-1.5 text-table">
+    <label className="flex items-center gap-2 text-table">
       <span className="label-caps text-muted">Years</span>
-      <select value={years} onChange={(event) => onChange(Number(event.target.value))} className="rounded-sm border border-line bg-bg px-1 py-0.5 text-fg">
+      <select value={years} onChange={(event) => onChange(Number(event.target.value))} className="field py-0.5 tabular-nums">
         {YEAR_CHOICES.map((choice) => (
           <option key={choice} value={choice}>
             {choice}
@@ -70,7 +70,7 @@ export function IndexToggle({
   return (
     <div className="flex flex-wrap items-center gap-x-2 text-table">
       <label className={`inline-flex items-center gap-1.5 ${disabled ? "cursor-not-allowed text-muted" : "cursor-pointer"}`}>
-        <input type="checkbox" data-testid="index-toggle" checked={on && !disabled} disabled={disabled} onChange={(event) => onChange(event.target.checked)} />
+        <input type="checkbox" data-testid="index-toggle" checked={on && !disabled} disabled={disabled} onChange={(event) => onChange(event.target.checked)} className="h-4 w-4 accent-[var(--accent)]" />
         {INDEX_LABEL}
       </label>
       {reason ? (
@@ -117,7 +117,7 @@ export function ExportCsvButton({ state, disabled }: { state: CompareState; disa
         data-testid="export-csv"
         disabled={disabled || status === "working"}
         onClick={download}
-        className="rounded-sm border border-accent px-2 py-0.5 text-table text-fg hover:bg-accent hover:text-on-accent disabled:cursor-not-allowed disabled:opacity-50"
+        className="btn"
       >
         {status === "working" ? "Preparing CSV…" : "Export CSV"}
       </button>

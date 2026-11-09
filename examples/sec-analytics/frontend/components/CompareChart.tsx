@@ -57,7 +57,7 @@ export function CompareChart({ response }: { response: CompareResponse }) {
   const domain: [(min: number) => number, (max: number) => number] = [(min) => Math.min(0, min), (max) => Math.max(0, max)];
 
   const tooltip = (label: string, ciks: string[]) => (
-    <div className="flex max-w-xs flex-col gap-1 border border-line bg-panel-raised px-2 py-1.5 text-table text-fg shadow-lg shadow-black/40">
+    <div className="popover flex max-w-xs flex-col gap-1 px-2.5 py-2 text-table">
       {ciks.map((cik) => (
         <RowTooltip key={cik} response={response} metric={current} cik={cik} label={label} />
       ))}
@@ -85,7 +85,7 @@ export function CompareChart({ response }: { response: CompareResponse }) {
               role="tab"
               aria-selected={id === current}
               onClick={() => setMetric(id)}
-              className={`rounded-sm border px-2 py-0.5 text-table ${id === current ? "border-accent text-fg" : "border-line text-muted hover:text-fg"}`}
+              className={`btn ${id === current ? "border-accent! font-semibold shadow-[inset_0_-2px_0_var(--accent)]" : "text-muted!"}`}
             >
               {metricLabel(id)}
             </button>
@@ -98,7 +98,7 @@ export function CompareChart({ response }: { response: CompareResponse }) {
               type="button"
               aria-pressed={view === choice}
               onClick={() => setView(choice)}
-              className={`rounded-sm border px-2 py-0.5 text-table ${view === choice ? "border-accent bg-accent text-on-accent" : "border-line text-fg"}`}
+              className="toggle"
             >
               {choice === "trend" ? "Trend" : "One year"}
             </button>
@@ -109,7 +109,7 @@ export function CompareChart({ response }: { response: CompareResponse }) {
       <figure data-testid="compare-chart" data-metric={current} data-view={view} className="min-w-0">
         <figcaption className="flex flex-wrap items-baseline gap-x-2 text-table">
           {indexed ? (
-            <span data-testid="chart-indexed-badge" className="label-caps rounded-sm border border-accent px-1 leading-4 text-accent">
+            <span data-testid="chart-indexed-badge" className="tag border-accent! text-accent!">
               INDEXED
             </span>
           ) : null}
@@ -132,13 +132,13 @@ export function CompareChart({ response }: { response: CompareResponse }) {
           <div aria-hidden="true" className="h-[260px] w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={points} margin={{ top: 8, right: 12, bottom: 0, left: 4 }}>
-                <CartesianGrid stroke="var(--border)" strokeDasharray="2 4" vertical={false} />
-                <XAxis dataKey="label" stroke="var(--text-muted)" tick={{ fill: "var(--text-muted)", fontSize: 11 }} tickLine={false} minTickGap={6} />
-                <YAxis stroke="var(--text-muted)" tick={{ fill: "var(--text-muted)", fontSize: 11 }} tickFormatter={(value: number) => axisText(value, current, indexed)} domain={domain} width={64} />
+                <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="label" stroke="var(--border-strong)" tick={{ fill: "var(--text-muted)", fontSize: 11 }} tickLine={false} minTickGap={6} />
+                <YAxis stroke="var(--border-strong)" tickLine={false} axisLine={false} tick={{ fill: "var(--text-muted)", fontSize: 11 }} tickFormatter={(value: number) => axisText(value, current, indexed)} domain={domain} width={64} />
                 <ReferenceLine y={0} stroke="var(--text-muted)" />
                 {indexed ? <ReferenceLine y={100} stroke="var(--border)" strokeDasharray="4 4" /> : null}
-                <Tooltip content={trendTooltip} cursor={{ stroke: "var(--border)" }} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Tooltip content={trendTooltip} cursor={{ stroke: "var(--border-strong)", strokeDasharray: "3 3" }} />
+                <Legend iconType="plainline" wrapperStyle={{ fontSize: 12, color: "var(--text-muted)", paddingTop: 4 }} />
                 {response.companies.map((company, index) => (
                   <Line
                     key={company.cik}
@@ -147,7 +147,8 @@ export function CompareChart({ response }: { response: CompareResponse }) {
                     name={company.ticker || company.cik}
                     stroke={SERIES_COLOURS[index]}
                     strokeWidth={2}
-                    dot={{ r: 2.5, fill: SERIES_COLOURS[index] }}
+                    dot={{ r: 2.5, fill: SERIES_COLOURS[index], strokeWidth: 0 }}
+                    activeDot={{ r: 4.5, stroke: "var(--panel)", strokeWidth: 2 }}
                     connectNulls={false}
                     isAnimationActive={false}
                   />
@@ -159,7 +160,7 @@ export function CompareChart({ response }: { response: CompareResponse }) {
           <div className="flex flex-col gap-1">
             <label className="flex items-center gap-1.5 text-table">
               <span className="label-caps text-muted">Fiscal year</span>
-              <select value={year ?? ""} onChange={(event) => setChosenYear(event.target.value)} className="rounded-sm border border-line bg-bg px-1 py-0.5 text-fg">
+              <select value={year ?? ""} onChange={(event) => setChosenYear(event.target.value)} className="field py-0.5">
                 {points.map((point) => (
                   <option key={point.label} value={point.label}>
                     {point.label}
@@ -171,9 +172,9 @@ export function CompareChart({ response }: { response: CompareResponse }) {
             <div aria-hidden="true" className="h-[240px] w-full min-w-0">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={bars} margin={{ top: 8, right: 12, bottom: 0, left: 4 }}>
-                  <CartesianGrid stroke="var(--border)" strokeDasharray="2 4" vertical={false} />
-                  <XAxis dataKey="ticker" stroke="var(--text-muted)" tick={{ fill: "var(--text-muted)", fontSize: 11 }} tickLine={false} />
-                  <YAxis stroke="var(--text-muted)" tick={{ fill: "var(--text-muted)", fontSize: 11 }} tickFormatter={(value: number) => axisText(value, current, indexed)} domain={domain} width={64} />
+                  <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="ticker" stroke="var(--border-strong)" tick={{ fill: "var(--text-muted)", fontSize: 11 }} tickLine={false} />
+                  <YAxis stroke="var(--border-strong)" tickLine={false} axisLine={false} tick={{ fill: "var(--text-muted)", fontSize: 11 }} tickFormatter={(value: number) => axisText(value, current, indexed)} domain={domain} width={64} />
                   <ReferenceLine y={0} stroke="var(--text-muted)" />
                   <Tooltip content={barTooltip} cursor={{ fill: "var(--panel-raised)" }} />
                   <Bar dataKey="value" maxBarSize={96} isAnimationActive={false}>

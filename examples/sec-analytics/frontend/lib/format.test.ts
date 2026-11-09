@@ -8,6 +8,7 @@ import {
   formatExactMetric,
   formatMetric,
   formatPercent,
+  formatSignedPercent,
   formatTimes,
   unitCaption,
   formatFiscalYear,
@@ -126,5 +127,19 @@ describe("ratios and units (M2)", () => {
   it("gives exact values in tooltips", () => {
     expect(formatExactMetric({ value: 136_056_000_000, unit: "USD" })).toBe("136,056,000,000 USD");
     expect(formatExactMetric({ value: 0.25, unit: "percent" })).toBe("25.0%");
+  });
+});
+
+describe("formatSignedPercent (year-on-year change on the key-figure cards)", () => {
+  it("always shows the sign, so the direction never depends on colour", () => {
+    expect(formatSignedPercent(0.151)).toBe("+15.1%");
+    expect(formatSignedPercent(-0.02)).toBe(`${MINUS}2.0%`);
+  });
+
+  it("shows no sign when the rounded change is zero, and the dash when there is no value", () => {
+    expect(formatSignedPercent(0)).toBe("0.0%");
+    expect(formatSignedPercent(0.0004)).toBe("0.0%");
+    expect(formatSignedPercent(-0.0004)).toBe("0.0%");
+    expect(formatSignedPercent(null)).toBe("—");
   });
 });

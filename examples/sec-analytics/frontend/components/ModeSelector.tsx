@@ -34,7 +34,7 @@ export function ModeSelector() {
           {OPTIONS.map((option) => (
             <label
               key={option.value}
-              className={`cursor-pointer rounded-sm border px-2 py-0.5 text-table has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent ${source === option.value ? "border-accent bg-accent text-on-accent" : "border-line text-fg"}`}
+              className="toggle min-h-7!"
             >
               <input type="radio" name="data-source" value={option.value} checked={source === option.value} onChange={() => setSource(option.value)} className="sr-only" />
               {option.label}

@@ -15,7 +15,7 @@ const LIVE_FAILURES: Record<string, string> = {
 
 const HOME_LINK = (
   <p>
-    Go back to the <Link href="/app">list of demo companies</Link>, or search with <kbd className="rounded-sm border border-line px-1">/</kbd>.
+    Go back to the <Link href="/app">list of demo companies</Link>, or search with <kbd className="kbd">/</kbd>.
   </p>
 );
 

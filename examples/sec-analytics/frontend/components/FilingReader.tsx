@@ -13,8 +13,8 @@ import type { FilingBlock, FilingDocumentResponse } from "@/lib/types";
 
 const BLOCK_CLASS: Record<FilingBlock["kind"], string> = {
   text: "my-2",
-  heading: "mb-2 mt-6 text-title font-semibold text-fg",
-  table_row: "border-b border-line/50 py-0.5 text-table text-fg",
+  heading: "mb-2 mt-8 text-title font-semibold text-fg",
+  table_row: "border-b border-line py-1 text-table text-fg last:border-b-0",
 };
 
 /** One block. Filing text only ever becomes React text nodes here, so nothing in it can run. */
@@ -51,9 +51,11 @@ function ReaderHeader({ cik, data }: { cik: string; data: FilingDocumentResponse
   const { href } = useDataSource();
   const { meta, amends, amended_by: amendedBy } = data;
   return (
-    <section aria-label="About this filing" className="flex flex-col gap-1.5 border border-line bg-panel p-3">
+    <section aria-label="About this filing" className="surface flex flex-col gap-2 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <FormLabel filing={meta} showOriginal />
+        <span className="text-heading">
+          <FormLabel filing={meta} showOriginal />
+        </span>
         <InfoBadge source={data.source} />
       </div>
       <dl className="flex flex-wrap gap-x-5 gap-y-0.5 text-table">
@@ -98,7 +100,7 @@ function ReaderHeader({ cik, data }: { cik: string; data: FilingDocumentResponse
           on {amendedBy.filing_date}. This page shows the original report.
         </p>
       ) : null}
-      <p className="flex flex-wrap gap-3 text-table">
+      <p className="flex flex-wrap gap-4 text-table">
         <span data-testid="reader-source">
           <SourceLink url={data.source_link} />
         </span>
@@ -158,14 +160,14 @@ export function FilingReader({ cik, data }: { cik: string; data: FilingDocumentR
   return (
     <div className="flex flex-col gap-3">
       <ReaderHeader cik={cik} data={data} />
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[17rem_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]">
         <SectionNav status={data.section_status} note={data.note} sections={data.sections} onJump={jumpTo} />
-        <div className="min-w-0 border border-line bg-panel">
+        <div className="surface min-w-0">
           <TextSearch query={query} onQuery={changeQuery} result={result} current={current} pending={query !== deferredQuery} onStep={step} onClear={clear} />
-          <div ref={column} data-testid="filing-reader" className="reader-column px-4 pb-6 pt-2">
+          <div ref={column} data-testid="filing-reader" className="reader-column px-4 pb-8 pt-3 sm:px-8">
             {groups.map((group) =>
               Array.isArray(group) ? (
-                <div key={`table-${group[0].id}`} data-testid="reader-table" className="my-3 border-l-2 border-line pl-2">
+                <div key={`table-${group[0].id}`} data-testid="reader-table" className="my-4 rounded-md border border-line bg-panel-raised px-3 py-2">
                   <span className="label-caps text-muted" aria-hidden="true">
                     table
                   </span>

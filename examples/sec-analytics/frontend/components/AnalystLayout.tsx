@@ -28,9 +28,10 @@ export function AnalystLayout({ heading, scope, children }: Props) {
   };
 
   return (
-    <div className="flex items-start gap-3">
-      <div className="flex min-w-0 flex-1 flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+    <div className="flex items-start gap-4">
+      {/* @container: the page lays itself out by the width it gets, which shrinks when the analyst panel opens. */}
+      <div className="@container flex min-w-0 flex-1 flex-col gap-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           {heading}
           {scope ? (
             <button
@@ -40,7 +41,7 @@ export function AnalystLayout({ heading, scope, children }: Props) {
               aria-expanded={showPanel}
               aria-controls={showPanel ? "analyst-panel" : undefined}
               onClick={() => setOpen((current) => !current)}
-              className={`rounded-sm border px-2.5 py-0.5 text-table font-semibold ${showPanel ? "border-accent bg-accent text-on-accent" : "border-accent text-fg hover:bg-accent hover:text-on-accent"}`}
+              className={`btn min-h-8! px-3! font-semibold ${showPanel ? "btn-primary" : "border-accent!"}`}
             >
               Analyst
             </button>

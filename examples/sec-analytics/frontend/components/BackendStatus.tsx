@@ -33,7 +33,7 @@ export function BackendStatus() {
     void check();
   };
 
-  const tone = state.kind === "ok" ? "border-positive text-positive" : state.kind === "error" ? "border-negative text-negative" : "border-line text-muted";
+  const dot = state.kind === "ok" ? "bg-positive" : state.kind === "error" ? "bg-negative" : "bg-muted";
   const text = state.kind === "ok" ? "Backend OK" : state.kind === "error" ? BACKEND_UNREACHABLE : "Backend: checking…";
 
   return (
@@ -43,12 +43,13 @@ export function BackendStatus() {
         aria-live="polite"
         data-testid="health-status"
         data-state={state.kind}
-        className={`inline-flex items-center rounded-sm border px-1.5 py-px leading-4 ${state.kind === "error" ? "text-table font-medium" : "label-caps"} ${tone}`}
+        className={`inline-flex h-7 items-center gap-1.5 rounded-md border px-2 text-xs ${state.kind === "error" ? "border-negative font-medium text-negative" : "border-line text-muted"}`}
       >
+        <span aria-hidden="true" className={`h-2 w-2 shrink-0 rounded-full ${dot}`} />
         {text}
       </span>
       {state.kind === "error" ? (
-        <button type="button" onClick={recheck} className="label-caps rounded-sm border border-line px-1.5 py-px leading-4 text-fg hover:border-accent">
+        <button type="button" onClick={recheck} className="btn min-h-7! text-xs!">
           Check again
         </button>
       ) : null}

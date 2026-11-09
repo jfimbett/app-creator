@@ -156,10 +156,10 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
         if (open) close();
       }}
       onKeyDown={trapTab}
-      className="m-auto max-h-[calc(100dvh-1rem)] w-[min(46rem,calc(100vw-1rem))] overflow-y-auto border border-line bg-panel p-0 text-fg backdrop:bg-black/70"
+      className="m-auto max-h-[calc(100dvh-1rem)] w-[min(46rem,calc(100vw-1rem))] overflow-y-auto rounded-lg border border-line-strong bg-panel p-0 text-fg shadow-[var(--elev-2)] backdrop:bg-black/60"
     >
       {open ? (
-        <div className="flex flex-col gap-4 p-4">
+        <div className="flex flex-col gap-5 p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h2 id={`${id}-title`} className="text-title font-semibold">
@@ -167,7 +167,7 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
               </h2>
               <AiStatus className="mt-0.5" />
             </div>
-            <button type="button" onClick={close} aria-label="Close AI settings" className="rounded-sm border border-line px-2 py-0.5 text-fg hover:border-accent">
+            <button type="button" onClick={close} aria-label="Close AI settings" className="btn w-7 px-0!">
               ×
             </button>
           </div>
@@ -203,14 +203,14 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
                     saveKey();
                   }
                 }}
-                className="min-w-0 flex-1 rounded-sm border border-line bg-bg px-2 py-1 font-mono text-fg placeholder:font-sans placeholder:text-muted focus:border-accent focus:outline-none"
+                className="field min-w-0 flex-1 font-mono placeholder:font-sans"
               />
               <button
                 type="button"
                 aria-pressed={showKey}
                 aria-controls={`${id}-key`}
                 onClick={() => setShowKey((shown) => !shown)}
-                className="rounded-sm border border-line px-2 py-1 text-table text-fg hover:border-accent"
+                className="btn"
               >
                 {showKey ? "Hide" : "Show"}
               </button>
@@ -218,7 +218,7 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
                 type="button"
                 data-testid="ai-key-save"
                 onClick={saveKey}
-                className="rounded-sm border border-accent bg-accent px-2 py-1 text-table font-semibold text-on-accent hover:opacity-90"
+                className="btn btn-primary"
               >
                 {settings.key ? "Replace key" : "Use this key"}
               </button>
@@ -244,7 +244,7 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
                   {STORAGE_WARNING}
                 </p>
                 {pendingRemember ? (
-                  <button type="button" onClick={keepInTab} className="rounded-sm border border-warning px-2 py-0.5 text-table text-fg hover:bg-panel-raised">
+                  <button type="button" onClick={keepInTab} className="btn border-warning!">
                     Keep in this tab
                   </button>
                 ) : null}
@@ -259,12 +259,12 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
               Connection
             </h3>
             {test.step === "confirm" ? (
-              <div data-testid="ai-charge-confirm" className="flex flex-wrap items-center gap-2 border-l-2 border-l-warning bg-panel-raised px-3 py-2 text-table">
+              <div data-testid="ai-charge-confirm" className="flex flex-wrap items-center gap-2 rounded-md border border-l-[3px] border-line border-l-warning bg-panel-raised px-4 py-3 text-table">
                 <p className="text-warning">{CHARGE_WARNING}.</p>
-                <button type="button" data-testid="ai-test-run" onClick={runTest} className="rounded-sm border border-accent px-2 py-0.5 text-fg hover:bg-accent hover:text-on-accent">
+                <button type="button" data-testid="ai-test-run" onClick={runTest} className="btn border-accent!">
                   Run the test
                 </button>
-                <button type="button" onClick={() => setTest({ step: "idle" })} className="rounded-sm border border-line px-2 py-0.5 text-fg hover:border-accent">
+                <button type="button" onClick={() => setTest({ step: "idle" })} className="btn">
                   Not now
                 </button>
               </div>
@@ -275,7 +275,7 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
                   data-testid="ai-test"
                   disabled={!settings.key || test.step === "running"}
                   onClick={() => setTest({ step: "confirm" })}
-                  className="rounded-sm border border-line px-2 py-0.5 text-fg hover:border-accent disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn"
                 >
                   {test.step === "running" ? "Testing…" : "Test connection"}
                 </button>
@@ -302,17 +302,17 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
 
           <ModelPicker apiKey={settings.key} keyVersion={settings.keyVersion} selected={settings.model} onChoose={(model) => aiKeyStore.setModel(model)} />
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line pt-4">
             <button
               type="button"
               data-testid="ai-clear"
               onClick={clearKey}
               disabled={!settings.key && !settings.model}
-              className="rounded-sm border border-negative px-2 py-1 text-table text-negative hover:bg-panel-raised disabled:cursor-not-allowed disabled:opacity-50"
+              className="btn btn-danger"
             >
               Clear key
             </button>
-            <button type="button" onClick={close} className="rounded-sm border border-line px-3 py-1 text-table text-fg hover:border-accent">
+            <button type="button" onClick={close} className="btn px-4!">
               Done
             </button>
           </div>

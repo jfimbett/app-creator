@@ -37,7 +37,7 @@ function InfoIcon() {
 function Answer({ response }: { response: AiChatResponse }) {
   if (response.refusal) {
     return (
-      <div data-testid="ai-refusal" data-code={response.refusal.code} className="border-l-2 border-l-warning bg-panel-raised px-3 py-2">
+      <div data-testid="ai-refusal" data-code={response.refusal.code} className="rounded-md border border-l-[3px] border-line border-l-warning bg-panel-raised px-4 py-3">
         <p className="flex flex-wrap items-baseline gap-x-2">
           <span className="label-caps text-warning">Not answered</span>
           <span className="text-fg">{response.refusal.message}</span>
@@ -70,7 +70,7 @@ function Answer({ response }: { response: AiChatResponse }) {
           <p className="text-warning">{NOT_IN_SOURCES}</p>
           <ul className="mt-0.5 flex flex-wrap gap-1.5">
             {response.invalid_references.map((reference) => (
-              <li key={reference} className="code-id rounded-sm border border-dashed border-line px-1.5 text-muted line-through">
+              <li key={reference} className="code-id rounded-sm border border-dashed border-line-strong px-1.5 text-muted line-through">
                 [{reference}]
               </li>
             ))}
@@ -175,9 +175,9 @@ export function AnalystPanel({ scope, onClose }: Props) {
           onClose();
         }
       }}
-      className="fixed inset-0 z-40 flex flex-col overflow-hidden bg-panel xl:sticky xl:inset-auto xl:top-14 xl:z-auto xl:h-[calc(100dvh-4.5rem)] xl:self-start xl:w-[400px] xl:shrink-0 xl:border xl:border-line"
+      className="fixed inset-0 z-40 flex flex-col overflow-hidden bg-panel xl:sticky xl:inset-auto xl:top-[4.5rem] xl:z-auto xl:h-[calc(100dvh-5.5rem)] xl:self-start xl:w-[400px] xl:shrink-0 xl:rounded-lg xl:border xl:border-line xl:shadow-[var(--elev-1)]"
     >
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line px-3 py-2">
+      <div className="flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1 border-b border-line px-4 py-2">
         <h2 id={`${id}-title`} ref={heading} tabIndex={-1} className="label-caps text-fg">
           Analyst
         </h2>
@@ -188,29 +188,29 @@ export function AnalystPanel({ scope, onClose }: Props) {
             type="button"
             data-testid="ai-settings-open"
             onClick={() => setSettingsOpen(true)}
-            className="rounded-sm border border-line px-2 py-0.5 text-table text-fg hover:border-accent"
+            className="btn"
           >
             AI settings
           </button>
-          <button type="button" data-testid="analyst-close" aria-label="Close analyst" onClick={onClose} className="rounded-sm border border-line px-2 py-0.5 text-fg hover:border-accent">
+          <button type="button" data-testid="analyst-close" aria-label="Close analyst" onClick={onClose} className="btn w-7 px-0!">
             ×
           </button>
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
         <p data-testid="ai-context" className="font-mono text-table text-muted [overflow-wrap:anywhere]">
           {context.status === "ok" ? context.data.line : context.status === "loading" ? "Context: loading…" : `Context not available: ${context.error.message}`}
         </p>
 
         {!configured ? (
-          <div data-testid="ai-not-configured" className="border-l-2 border-l-line bg-panel-raised px-3 py-2">
+          <div data-testid="ai-not-configured" className="rounded-md border border-l-[3px] border-line border-l-line-strong bg-panel-raised px-4 py-3">
             <p className="font-semibold text-fg">{NOT_CONFIGURED}</p>
             <p className="mt-1 text-muted">The analyst uses your own OpenRouter key. Everything else in the app works without one.</p>
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
-              className="mt-2 rounded-sm border border-line bg-panel px-2 py-1 text-fg hover:border-accent"
+              className="btn mt-3"
             >
               AI settings
             </button>
@@ -240,7 +240,7 @@ export function AnalystPanel({ scope, onClose }: Props) {
                 }
               }}
               aria-describedby={`${id}-count${settings.model ? "" : ` ${id}-need-model`}`}
-              className="resize-y rounded-sm border border-line bg-bg px-2 py-1.5 text-fg placeholder:text-muted focus:border-accent focus:outline-none"
+              className="field resize-y py-1.5"
               placeholder="For example: Why did net margin change?"
             />
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -249,7 +249,7 @@ export function AnalystPanel({ scope, onClose }: Props) {
               </span>
               <div className="flex gap-1.5">
                 {running ? (
-                  <button type="button" data-testid="ai-cancel" onClick={cancel} className="rounded-sm border border-line px-3 py-1 text-table text-fg hover:border-accent">
+                  <button type="button" data-testid="ai-cancel" onClick={cancel} className="btn">
                     Cancel
                   </button>
                 ) : null}
@@ -257,7 +257,7 @@ export function AnalystPanel({ scope, onClose }: Props) {
                   type="submit"
                   data-testid="ai-ask"
                   disabled={!canAsk}
-                  className="rounded-sm border border-accent bg-accent px-3 py-1 text-table font-semibold text-on-accent disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn btn-primary px-4!"
                 >
                   {running ? "Asking…" : "Ask"}
                 </button>
@@ -278,7 +278,7 @@ export function AnalystPanel({ scope, onClose }: Props) {
         <div aria-live="polite" className="flex flex-col gap-2">
           {current.status === "running" ? <StatePanel kind="loading" title="Waiting for the AI (up to 60 s)…" rows={4} /> : null}
           {current.status === "cancelled" ? (
-            <p data-testid="ai-cancelled" role="status" className="border-l-2 border-l-line bg-panel-raised px-3 py-2 text-table">
+            <p data-testid="ai-cancelled" role="status" className="rounded-md border border-l-[3px] border-line border-l-line-strong bg-panel-raised px-4 py-3 text-table">
               <span className="label-caps mr-2 text-muted">Stopped</span>
               {CANCELLED}. Ask again when ready.
             </p>

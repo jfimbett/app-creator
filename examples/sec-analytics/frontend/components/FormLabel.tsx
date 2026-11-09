@@ -6,11 +6,11 @@ export function FormLabel({ filing, showOriginal = false }: { filing: FilingMeta
     <span className="inline-flex flex-wrap items-center gap-1.5">
       <span className="font-semibold tabular-nums">{filing.form}</span>
       {filing.is_amendment ? (
-        <span data-testid="amendment-label" className="label-caps rounded-sm border border-warning px-1 leading-4 text-warning">
+        <span data-testid="amendment-label" className="tag border-warning! text-warning!">
           AMENDMENT
         </span>
       ) : showOriginal ? (
-        <span data-testid="original-label" className="label-caps rounded-sm border border-line px-1 leading-4 text-muted">
+        <span data-testid="original-label" className="tag">
           ORIGINAL
         </span>
       ) : null}
@@ -23,6 +23,7 @@ export function SourceLink({ url, label = "Source" }: { url: string; label?: str
   return (
     <a href={url} target="_blank" rel="noopener noreferrer" className="[overflow-wrap:anywhere]">
       {label}
+      <span aria-hidden="true" className="ml-0.5 text-[0.75em]">↗</span>
       <span className="sr-only"> (opens sec.gov in a new tab)</span>
     </a>
   );

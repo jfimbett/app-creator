@@ -24,7 +24,12 @@ type Answer = { query: string; source: string; results: SearchResult[]; error: A
  * "/" or Ctrl/Cmd-K focus it; ↑/↓ move, Enter opens the highlighted company, Esc closes the list.
  * On the home page the demo-universe note is always visible under the box.
  */
-export function CompanySearch() {
+/** The pages whose own hero holds the company search; the header leaves its search out there (one search per page). */
+export const SEARCH_IN_PAGE = new Set(["/app"]);
+
+/** `size="hero"`: the large search of the home page; the default is the compact header search. */
+export function CompanySearch({ size = "header" }: { size?: "header" | "hero" }) {
+  const hero = size === "hero";
   const router = useRouter();
   const pathname = usePathname();
   const { source, href } = useDataSource();
@@ -108,7 +113,11 @@ export function CompanySearch() {
         Search companies by name, ticker or CIK
       </label>
       <div className="relative">
-        <div className="flex items-center rounded-sm border border-line bg-bg focus-within:border-accent">
+        <div className={`field flex items-center gap-2 py-0! ${hero ? "min-h-12 rounded-lg! px-3!" : "min-h-8 px-2!"}`}>
+          <svg aria-hidden="true" width={hero ? 18 : 14} height={hero ? 18 : 14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="shrink-0 text-muted">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
           <input
             ref={inputRef}
             id={`${listboxId}-input`}
@@ -131,15 +140,15 @@ export function CompanySearch() {
             onFocus={() => trimmed && current && setCombo((state) => comboboxReducer(state, { type: "results", count: results.length }))}
             onBlur={() => setCombo((state) => comboboxReducer(state, { type: "close" }))}
             onKeyDown={onKeyDown}
-            className="min-w-0 flex-1 bg-transparent px-2 py-1 text-fg placeholder:text-muted focus:outline-none"
+            className={`min-w-0 flex-1 bg-transparent py-1 text-fg placeholder:text-muted focus:outline-none ${hero ? "text-title" : ""}`}
           />
-          <kbd aria-hidden="true" className="mr-1.5 rounded-sm border border-line px-1 text-label leading-4 text-muted">
+          <kbd aria-hidden="true" className="kbd text-muted">
             /
           </kbd>
         </div>
 
         {showPopup ? (
-          <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-30 border border-line bg-panel-raised shadow-lg shadow-black/40">
+          <div className="popover absolute left-0 right-0 top-[calc(100%+4px)] z-30 overflow-hidden">
             <ul id={listboxId} role="listbox" aria-label="Matching companies" className="max-h-72 overflow-y-auto py-1">
               {results.map((result, index) => {
                 const active = index === combo.activeIndex;
@@ -170,7 +179,7 @@ export function CompanySearch() {
           </div>
         ) : null}
       </div>
-      <p id={noteId} className={pathname === "/" ? "mt-1 text-table text-muted" : "sr-only"} data-testid="universe-note">
+      <p id={noteId} className={SEARCH_IN_PAGE.has(pathname) ? "mt-2 text-table text-muted" : "sr-only"} data-testid="universe-note">
         {universeNote}
       </p>
       <p role="status" aria-live="polite" className="sr-only">

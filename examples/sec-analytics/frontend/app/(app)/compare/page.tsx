@@ -72,11 +72,11 @@ export default function ComparePage() {
 
   return (
     <AnalystLayout
-      heading={<h1 className="text-heading font-semibold">Compare companies</h1>}
+      heading={<h1 className="text-display font-semibold tracking-tight">Compare companies</h1>}
       scope={ready ? { kind: "comparison", ciks: [...state.ciks], metrics: [...state.metrics] } : null}
     >
 
-      <section aria-label="Comparison settings" className="flex flex-col gap-2 border border-line bg-panel p-3">
+      <section aria-label="Comparison settings" className="surface flex flex-col gap-3 p-4">
         <CompanyChips
           ciks={state.ciks}
           names={names}
@@ -90,7 +90,7 @@ export default function ComparePage() {
           autoFocus={state.ciks.length === 0}
         />
         <MetricPicker selected={state.metrics} onToggle={(id) => update(toggleMetric(state, id))} />
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line pt-3">
           <YearsPicker years={state.years} onChange={(years) => update({ ...state, years })} />
           <IndexToggle
             on={state.index === "first_common_year"}
@@ -125,7 +125,7 @@ export default function ComparePage() {
       ) : data ? (
         <>
           <Panel title="Comparison" badge={<InfoBadge source={data.source} />}>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <CompareWarnings response={data} />
               <CompareTable response={data} />
               <p className="text-table text-muted">

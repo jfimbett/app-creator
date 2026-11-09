@@ -54,7 +54,7 @@ export function InfoBadge({ source }: { source: SourceInfo }) {
 /** Whether a value is taken from a filing or calculated by the app. */
 export function KindBadge({ kind }: { kind: MetricKind }) {
   return (
-    <span data-testid="kind-badge" className="label-caps rounded-sm border border-line px-1 text-[0.625rem] leading-4 text-muted">
+    <span data-testid="kind-badge" className="tag">
       {kind === "derived" ? "DERIVED" : "REPORTED"}
     </span>
   );
@@ -65,7 +65,7 @@ export function SourceBadge(props: SourceBadgeProps) {
     <span
       data-testid="source-badge"
       data-kind={props.kind}
-      className={`label-caps inline-flex max-w-full items-center whitespace-normal rounded-sm border px-1.5 py-px leading-4 [overflow-wrap:anywhere] ${TONE[props.kind]} ${props.className ?? ""}`}
+      className={`label-caps inline-flex max-w-full items-center whitespace-normal rounded-sm border px-1.5 py-0.5 leading-4 [overflow-wrap:anywhere] ${TONE[props.kind]} ${props.className ?? ""}`}
     >
       {sourceBadgeText(props)}
     </span>

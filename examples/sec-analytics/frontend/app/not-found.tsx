@@ -16,7 +16,7 @@ export default function NotFound() {
           title="There is no page at this address"
           message={
             <p>
-              Search for a company with <kbd className="rounded-sm border border-line px-1">/</kbd>, or go back to the{" "}
+              Search for a company with <kbd className="kbd">/</kbd>, or go back to the{" "}
               <Link href="/app">list of demo companies</Link>.
             </p>
           }

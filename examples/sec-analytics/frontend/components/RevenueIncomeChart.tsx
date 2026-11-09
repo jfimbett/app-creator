@@ -28,16 +28,14 @@ function ChartTooltip({ active, payload }: TooltipContentProps) {
   const point = payload?.[0]?.payload as ChartPoint | undefined;
   if (!active || !point) return null;
   return (
-    <div className="border border-line bg-panel-raised px-2 py-1.5 text-table text-fg shadow-lg shadow-black/40">
+    <div className="popover px-2.5 py-2 text-table">
       <p className="font-semibold">{formatFiscalYear(point.label, point.periodEnd)}</p>
       {SERIES.filter((s) => payload.some((entry) => entry.dataKey === s.key)).map((s) => {
         const metric = s.metric(point);
         return (
           <p key={s.key} className="flex justify-between gap-4">
             <span>
-              <span aria-hidden="true" style={{ color: s.color }}>
-                ━{" "}
-              </span>
+              <span aria-hidden="true" className="mr-1.5 inline-block h-0.5 w-3 rounded-full align-middle" style={{ background: s.color }} />
               {s.name}
             </span>
             <span className="num">
@@ -95,11 +93,9 @@ export function RevenueIncomeChart({ points, unit, range, onRangeChange, notes }
               type="button"
               aria-pressed={visible[s.key]}
               onClick={() => setVisible((v) => ({ ...v, [s.key]: !v[s.key] }))}
-              className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-table ${visible[s.key] ? "border-accent text-fg" : "border-line text-muted line-through"}`}
+              className={`btn ${visible[s.key] ? "" : "text-muted! line-through"}`}
             >
-              <span aria-hidden="true" style={{ color: s.color }}>
-                ━
-              </span>
+              <span aria-hidden="true" className="inline-block h-0.5 w-3 rounded-full" style={{ background: visible[s.key] ? s.color : "var(--text-muted)" }} />
               {s.name}
             </button>
           ))}
@@ -109,7 +105,7 @@ export function RevenueIncomeChart({ points, unit, range, onRangeChange, notes }
           {RANGES.map((r) => (
             <label
               key={r.value}
-              className={`cursor-pointer rounded-sm border px-2 py-0.5 text-table has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent ${range === r.value ? "border-accent bg-accent text-on-accent" : "border-line text-fg"}`}
+              className="toggle"
             >
               <input type="radio" name="year-range" value={r.value} checked={range === r.value} onChange={() => onRangeChange(r.value)} className="sr-only" />
               {r.label}
@@ -127,19 +123,21 @@ export function RevenueIncomeChart({ points, unit, range, onRangeChange, notes }
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={points} margin={{ top: 8, right: 12, bottom: 4, left: 4 }}>
-              <CartesianGrid stroke="var(--border)" strokeDasharray="2 4" vertical={false} />
-              <XAxis dataKey="label" stroke="var(--text-muted)" tick={{ fill: "var(--text-muted)", fontSize: 11 }} tickLine={false} minTickGap={12} />
+              <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="label" stroke="var(--border-strong)" tick={{ fill: "var(--text-muted)", fontSize: 11 }} tickLine={false} minTickGap={12} />
               <YAxis
-                stroke="var(--text-muted)"
+                stroke="var(--border-strong)"
                 tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                tickLine={false}
+                axisLine={false}
                 tickFormatter={(value: number) => formatMillions(value)}
                 domain={[(dataMin: number) => Math.min(0, dataMin), "auto"]}
                 width={64}
                 label={{ value: `${unit} millions`, angle: -90, position: "insideLeft", offset: 0, fill: "var(--text-muted)", fontSize: 11, dy: 40 }}
               />
               <ReferenceLine y={0} stroke="var(--text-muted)" />
-              <Tooltip content={ChartTooltip} cursor={{ stroke: "var(--border)" }} />
-              <Legend wrapperStyle={{ fontSize: 12, color: "var(--text)" }} />
+              <Tooltip content={ChartTooltip} cursor={{ stroke: "var(--border-strong)", strokeDasharray: "3 3" }} />
+              <Legend iconType="plainline" wrapperStyle={{ fontSize: 12, color: "var(--text-muted)", paddingTop: 4 }} />
               {SERIES.map((s) => (
                 <Line
                   key={s.key}
@@ -148,8 +146,8 @@ export function RevenueIncomeChart({ points, unit, range, onRangeChange, notes }
                   name={s.name}
                   stroke={s.color}
                   strokeWidth={2}
-                  dot={{ r: 2.5, fill: s.color }}
-                  activeDot={{ r: 4 }}
+                  dot={{ r: 2.5, fill: s.color, strokeWidth: 0 }}
+                  activeDot={{ r: 4.5, stroke: "var(--panel)", strokeWidth: 2 }}
                   connectNulls={false}
                   hide={!visible[s.key]}
                   isAnimationActive={false}
@@ -166,7 +164,7 @@ export function RevenueIncomeChart({ points, unit, range, onRangeChange, notes }
         </p>
       ))}
 
-      <div className="table-scroll max-h-[360px] overflow-y-auto">
+      <div className="table-box max-h-[360px]">
         <table className="data-table">
           <caption className="sr-only">Revenue and net income by fiscal year, {unit} millions</caption>
           <thead>

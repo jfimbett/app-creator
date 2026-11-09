@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { AnalystLayout } from "@/components/AnalystLayout";
+import { CompanyHeading } from "@/components/CompanyHeading";
 import { CompanyProfile } from "@/components/CompanyProfile";
 import { CompanyTabs } from "@/components/CompanyTabs";
 import { KeyFigures } from "@/components/KeyFigures";
@@ -15,7 +16,7 @@ import { InfoBadge } from "@/components/SourceBadge";
 import { StatementTable } from "@/components/StatementTable";
 import { StatePanel } from "@/components/StatePanel";
 import { api } from "@/lib/api";
-import { chartPoints, companyLine, reportingUnit } from "@/lib/display";
+import { chartPoints, reportingUnit } from "@/lib/display";
 import { useDataSource } from "@/lib/source";
 import type { FinancialsResponse, Line } from "@/lib/types";
 import { useApiResource } from "@/lib/useApiResource";
@@ -58,7 +59,8 @@ export default function CompanyPage() {
   if (profile.status === "loading") {
     return (
       <section aria-label="Loading company" className="flex flex-col gap-3">
-        <span className="skeleton h-6! w-72 max-w-full" />
+        <span className="skeleton h-9! w-80 max-w-full" />
+        <span className="skeleton w-64 max-w-full" />
         <StatePanel kind="loading" title="Loading company…" rows={8} />
       </section>
     );
@@ -81,17 +83,17 @@ export default function CompanyPage() {
 
   return (
     <AnalystLayout
-      heading={<h1 className="text-heading font-semibold">{companyLine({ name: company.name, ticker: company.tickers[0] ?? null, cik: company.cik })}</h1>}
+      heading={<CompanyHeading profile={company} cik={company.cik} />}
       scope={{ kind: "company", cik: company.cik }}
     >
       <CompanyTabs cik={company.cik} active="overview" />
 
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,5fr)_minmax(0,8fr)]">
-        <Panel title="Profile" id="profile" className="lg:self-start" badge={<InfoBadge source={company.source} />}>
+      <div className="grid grid-cols-1 gap-4 @5xl:grid-cols-[minmax(0,5fr)_minmax(0,8fr)]">
+        <Panel title="Profile" id="profile" className="@5xl:self-start" badge={<InfoBadge source={company.source} />}>
           <CompanyProfile profile={company} />
         </Panel>
 
-        <div className="flex min-w-0 flex-col gap-3">
+        <div className="flex min-w-0 flex-col gap-4">
           <Panel title="Key figures" id="key-figures-panel" badge={overviewBadge}>
             {overview.status === "loading" ? <StatePanel kind="loading" title="Loading key figures…" rows={2} /> : null}
             {overview.status === "error" ? <LiveErrorPanel error={overview.error} retry={overview.reload} what="key figures" source={source} useDemo={useDemo} /> : null}
@@ -118,9 +120,9 @@ export default function CompanyPage() {
         </div>
       </div>
 
-      <section aria-labelledby="statements-title" className="flex flex-col gap-3">
+      <section aria-labelledby="statements-title" className="mt-2 flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="statements-title" className="text-[0.9375rem] font-semibold">
+          <h2 id="statements-title" className="text-title font-semibold">
             Annual financial summaries
           </h2>
           <fieldset className="flex flex-wrap items-center gap-1 text-table">
@@ -128,7 +130,7 @@ export default function CompanyPage() {
             {YEAR_CHOICES.map((choice) => (
               <label
                 key={choice}
-                className={`cursor-pointer rounded-sm border px-2 py-0.5 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent ${years === choice ? "border-accent bg-accent text-on-accent" : "border-line text-fg"}`}
+                className="toggle min-w-8 tabular-nums"
               >
                 <input type="radio" name="statement-years" value={choice} checked={years === choice} onChange={() => setYears(choice)} className="sr-only" />
                 {choice}

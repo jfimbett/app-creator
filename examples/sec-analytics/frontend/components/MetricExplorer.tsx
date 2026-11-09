@@ -20,7 +20,7 @@ const GROUPS: { title: string; kinds: (metric: MetricInfo) => boolean }[] = [
 function DataTable({ series }: { series: readonly MetricSeries[] }) {
   const periods = series[0]?.points ?? [];
   return (
-    <div className="table-scroll">
+    <div className="table-box max-h-[420px]">
       <table className="data-table" data-testid="explorer-data">
         <caption className="sr-only">The selected metrics by fiscal year</caption>
         <thead>
@@ -75,15 +75,15 @@ export function MetricExplorer({ cik, source, years }: { cik: string; source: Da
     });
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       {catalog.status === "loading" ? <StatePanel kind="loading" title="Loading the metric list…" rows={2} /> : null}
       {catalog.status === "error" ? <StatePanel kind="error" title="Could not load the metric list" message={catalog.error.message} action={{ label: "Try again", onClick: catalog.reload }} /> : null}
       {catalog.status === "ok" ? (
         <div className="flex flex-col gap-2">
           {GROUPS.map((group) => (
             <div key={group.title} role="group" aria-label={group.title}>
-              <p className="label-caps mb-1 text-muted">{group.title}</p>
-              <div className="flex flex-wrap gap-1">
+              <p className="label-caps mb-1.5 text-muted">{group.title}</p>
+              <div className="flex flex-wrap gap-1.5">
                 {catalog.data.metrics.filter(group.kinds).map((metric) => {
                   const on = selected.includes(metric.id);
                   return (
@@ -94,7 +94,7 @@ export function MetricExplorer({ cik, source, years }: { cik: string; source: Da
                       disabled={(!on && selected.length >= MAX_SELECTED) || (on && selected.length === 1)}
                       title={metric.formula ?? metric.concepts.join(" → ")}
                       onClick={() => toggle(metric.id)}
-                      className={`rounded-sm border px-2 py-0.5 text-table disabled:cursor-not-allowed disabled:opacity-50 ${on ? "border-accent bg-accent text-on-accent" : "border-line text-fg hover:border-accent"}`}
+                      className="toggle"
                     >
                       {metric.label}
                     </button>
@@ -113,13 +113,13 @@ export function MetricExplorer({ cik, source, years }: { cik: string; source: Da
       {series.status === "error" ? <StatePanel kind="error" title="Could not load the selected metrics" message={series.error.message} reference={series.error.reference} action={{ label: "Try again", onClick: series.reload }} /> : null}
       {series.status === "ok" ? (
         <>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4">
             {series.data.series.map((item, index) => (
               <MetricChart key={item.metric_id} series={item} showAxis={index === series.data.series.length - 1} />
             ))}
           </div>
           <div>
-            <button type="button" aria-expanded={showData} onClick={() => setShowData((on) => !on)} className="rounded-sm border border-line px-2 py-0.5 text-table hover:border-accent">
+            <button type="button" aria-expanded={showData} onClick={() => setShowData((on) => !on)} className="btn">
               {showData ? "Hide data" : "Show data"}
             </button>
           </div>

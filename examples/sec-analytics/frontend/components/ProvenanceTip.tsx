@@ -149,7 +149,7 @@ export function ProvenanceTip({ metric, children, className }: { metric: MetricV
               style={style}
               onMouseEnter={cancelClose}
               onMouseLeave={closeSoon}
-              className="fixed z-40 overflow-y-auto border border-line bg-panel-raised p-2 text-left text-table leading-5 text-fg shadow-lg shadow-black/40"
+              className="popover fixed z-40 overflow-y-auto p-2.5 text-left text-table leading-5"
             >
               <p className="label-caps text-muted">
                 {metric.kind === "derived" ? "Calculated value" : "Source of this value"} · {formatFiscalYear(metric.fiscal_year_label, metric.period_end)}

@@ -5,13 +5,13 @@ import { useParams } from "next/navigation";
 import { useCallback } from "react";
 
 import { AnalystLayout } from "@/components/AnalystLayout";
+import { CompanyHeading } from "@/components/CompanyHeading";
 import { CompanyTabs } from "@/components/CompanyTabs";
 import { FilingReader } from "@/components/FilingReader";
 import { SourceLink } from "@/components/FormLabel";
 import { LiveErrorPanel } from "@/components/LiveErrorPanel";
 import { StatePanel } from "@/components/StatePanel";
 import { api, type ApiError } from "@/lib/api";
-import { companyLine } from "@/lib/display";
 import { useDataSource } from "@/lib/source";
 import { useApiResource } from "@/lib/useApiResource";
 
@@ -59,14 +59,15 @@ export default function FilingReaderPage() {
   const profile = useApiResource(`profile:${cik}:${source}`, loadProfile);
   const document = useApiResource(`document:${cik}:${accession}:${source}`, loadDocument);
 
-  const company = profile.status === "ok" ? companyLine({ name: profile.data.name, ticker: profile.data.tickers[0] ?? null, cik: profile.data.cik }) : `Company ${cik}`;
   const listHref = href(`/companies/${cik}/filings`);
 
   return (
-    <AnalystLayout heading={<h1 className="text-heading font-semibold">{company}</h1>} scope={{ kind: "filing", cik, accession }}>
+    <AnalystLayout heading={<CompanyHeading profile={profile.status === "ok" ? profile.data : null} cik={cik} />} scope={{ kind: "filing", cik, accession }}>
       <CompanyTabs cik={cik} active="filings" />
       <p className="text-table">
-        <Link href={listHref}>← Filing list</Link>
+        <Link href={listHref} className="inline-flex items-center gap-1">
+          <span aria-hidden="true">←</span> Filing list
+        </Link>
       </p>
       {document.status === "loading" ? <StatePanel kind="loading" title="Loading the filing text…" rows={12} /> : null}
       {document.status === "error" ? (
