@@ -2,7 +2,7 @@
 
 **Repository:** <https://github.com/jfimbett/app-creator>
 
-**`main` contains M3 functionality** (tag `m3`), as of 2026-11-09. M3 was finished and verified on Windows 11 after the classroom freeze.
+**`main` contains M4 functionality** (tag `m4`), as of 2026-11-09, on the instructor's machine. **Until those commits are pushed, the GitHub copy of `main` contains M3.** M3 and M4 were verified on Windows 11.
 The old branch `wip/m3-filing-intelligence-unverified` is kept only as history; use `m3` instead.
 
 ## Versions
@@ -13,10 +13,11 @@ The old branch `wip/m3-filing-intelligence-unverified` is kept only as history; 
 | M1 Foundation | dark shell, keyboard search, profile, annual revenue and net income from recorded SEC data | `milestone/01-foundation` | `m1` | verified |
 | M2 Financial intelligence | Demo/Live choice, statement summaries, ratios, metric explorer, source details | `milestone/02-financial-intelligence` | `m2` | verified |
 | M3 Filing intelligence | Filings tab: latest 10-K/10-Q, 10-year history with amendments, a reader with sections, search and sec.gov links | `milestone/03-filing-intelligence` | `m3` | verified (Windows 11) |
-| M4, M5 | comparison, AI analyst | none | none | not built; only their briefs exist |
+| M4 Comparative analysis | Compare screen: 2–4 companies by their own fiscal years, indexing, charts, CSV export | `milestone/04-comparative-analysis` | `m4` | verified (Windows 11) |
+| M5 | AI analyst | none | none | not built; only its brief exists |
 
 "Verified" means a checkout passed `npm ci`, `npm run setup` and `npm run verify`: on macOS for M1 and M2, on Windows 11 for M3. Cline and GitHub CI are untested.
-Some milestone documents mention `m4` or `m5` tags: those tags do not exist yet.
+Some milestone documents mention an `m5` tag: it does not exist yet.
 
 ## What you need installed
 
@@ -98,7 +99,7 @@ npm ci
 npm run setup
 ```
 
-Then give the assistant [`milestones/02-financial-intelligence/PROMPT.md`](milestones/02-financial-intelligence/PROMPT.md). To build M3 yourself, start from `m2` with [the M3 brief](milestones/03-filing-intelligence/PROMPT.md); to build M4, start from `m3`.
+Then give the assistant [`milestones/02-financial-intelligence/PROMPT.md`](milestones/02-financial-intelligence/PROMPT.md). To build M3 yourself, start from `m2` with [the M3 brief](milestones/03-filing-intelligence/PROMPT.md); to build M4, start from `m3`; to build M5, start from `m4`.
 Your result will differ from the tag: replaying a prompt does not reproduce the same code. The tag is the reference.
 
 The briefs are **not** all the instructions that were actually used. See [the prompt index](milestones/PROMPT-INDEX.md).
@@ -135,11 +136,17 @@ Open Apple and scroll through the income statement, balance sheet and cash-flow 
 
 **Limitations.** Summaries are not the complete filed statements. Some concepts are unmapped and show as missing, such as Microsoft's and Alphabet's D&A. Foreign 20-F filers have no statements. Values may reflect later restatements, so they are not point-in-time.
 
-### M3 (`main`, or `git switch --detach m3`)
+### M3 (`git switch --detach m3`)
 
 Open Apple and choose the **Filings** tab. Point out `Latest in snapshot (as of 2026-11-03)`: in the demo, "latest" always names the snapshot. Click **Read** on the 10-K, click **Item 7** in the section list, then type `revenue` in the search box and step through the matches with the arrows. Click **Source** to open the same document on sec.gov. Then open Alphabet → Filings and find the 2019 `10-K/A`, labelled as an amendment. Untick "Include amendments" to hide it. Under `npm run dev` with a contact set, switch to Live and open NVIDIA's latest 10-K.
 
 **Limitations.** Sections are detected automatically from Item headings and may be imperfect. When none are found, the reader says so and shows the full text. Only the primary document is shown, not the exhibits. The demo has the documents of the latest 10-K and 10-Q of the three companies; other filings open on sec.gov.
+
+### M4 (`main`, or `git switch --detach m4`)
+
+Click **Compare** in the header. Add `aapl`, `msft` and `googl` in the box. Point out the line "AAPL: FY ends 09-26 · MSFT: FY ends 06-30 · GOOGL: FY ends 12-31" and the warning "Fiscal years are not aligned": every value shows its own period end under it. Tick **Index = 100 at first common fiscal year**: revenue becomes `INDEXED` from FY2017 (Apple 208.9 and Microsoft 343.6 in FY2026), while net margin says "not indexed: ratio". Switch the chart between **Trend** and **One year**. Click **Export CSV** and open the file: one line per value, with its SEC concept and accession. Copy the URL into a new tab: the same comparison appears. Under `npm run dev` with a contact set, switch to Live and add NVIDIA as a fourth company.
+
+**Limitations.** No calendar alignment and no currency conversion, by design. One index base year is used for all selected amounts, so adding FCF can move it later. The demo has three companies, so the four-company limit needs Live mode.
 
 ## Prompts and records
 

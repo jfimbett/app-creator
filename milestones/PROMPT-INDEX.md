@@ -68,6 +68,18 @@ text search and sec.gov links, and recorded documents for offline use. [Mileston
 | [m3-03-classroom-freeze](../runs/m3/m3-03-classroom-freeze/PROMPT.md) | stopped M3; chose M2 for class; published this repository | **gap:** [marker](../runs/m3/m3-03-classroom-freeze/RESPONSE.md) | none |
 | [m3-04-finish-main-session](../runs/m3/m3-04-finish-main-session/PROMPT.md) | finished M3: Windows test fix, browser journeys, screen fixes, live check, independent security and test reviews and their fixes, gate | **gap:** [marker](../runs/m3/m3-04-finish-main-session/RESPONSE.md) | [result](../runs/m3/m3-04-finish-main-session/RESULT.json) |
 
-## M4 and M5: not started
+## M4 Comparative analysis: tag `m4`, branch `milestone/04-comparative-analysis`
 
-Only their briefs exist: [M4](04-comparative-analysis/PROMPT.md), [M5](05-ai-financial-analyst/PROMPT.md).
+Built, reviewed and verified on 2026-11-09 in one main session (m4-01). Changes: the Compare screen and `/api/compare`,
+`/api/compare.csv` with indexing, fiscal-year and currency warnings, charts and CSV export. [Milestone README](04-comparative-analysis/README.md).
+
+- Brief: [04-comparative-analysis/PROMPT.md](04-comparative-analysis/PROMPT.md)
+- Follow-ups: [04-comparative-analysis/FOLLOWUPS.md](04-comparative-analysis/FOLLOWUPS.md)
+
+| Step (prompt) | What it did | Response | Result |
+|---|---|---|---|
+| [m4-01-implement-main-session](../runs/m4/m4-01-implement-main-session/PROMPT.md) | built M4, live check, independent security and test reviews and their fixes, gate | **gap:** [marker](../runs/m4/m4-01-implement-main-session/RESPONSE.md) | [result](../runs/m4/m4-01-implement-main-session/RESULT.json) |
+
+## M5: not started
+
+Only its brief exists: [M5](05-ai-financial-analyst/PROMPT.md).

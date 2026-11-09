@@ -52,9 +52,9 @@ Paths are relative to `examples/sec-analytics/` (written `fe/` for the frontend 
 
 | # | Slice | Criteria | Owner | May touch | Must not touch | Skills | Status |
 |---|---|---|---|---|---|---|---|
-| 4.1 | `logic/compare.py` (comparability warnings, indexing), `logic/csv_export.py`, `/api/compare`, `/api/compare.csv` | M4-AC2–M4-AC7, CALC11, M4-E1–M4-E3 | backend-engineer | `be/app/`, `be/tests/` | `fe/` | test-and-check, build-feature | todo |
-| 4.2 | Compare screen: company chips (2–4), metric selector, table, grouped bars and lines, index toggle, Export CSV | M4-AC1–M4-AC5, V1–V3 | frontend-engineer (with design-lead) | `fe/` | `be/` | design-interface | todo |
-| 4.3 | E2E, reviews, README, checkpoint | all M4 | test-engineer, reviewers | `fe/e2e/`, `milestones/04-comparative-analysis/README.md` | – | review-changes, orchestrate-steps | todo |
+| 4.1 | `logic/compare.py` (comparability warnings, indexing), `logic/csv_export.py`, `/api/compare`, `/api/compare.csv` | M4-AC2–M4-AC7, CALC11, M4-E1–M4-E3 | backend-engineer | `be/app/`, `be/tests/` | `fe/` | test-and-check, build-feature | done (2026-11-09) |
+| 4.2 | Compare screen: company chips (2–4), metric selector, table, grouped bars and lines, index toggle, Export CSV | M4-AC1–M4-AC5, V1–V3 | frontend-engineer (with design-lead) | `fe/` | `be/` | design-interface | done (2026-11-09) |
+| 4.3 | E2E, reviews, README, checkpoint | all M4 | test-engineer, reviewers | `fe/e2e/`, `milestones/04-comparative-analysis/README.md` | – | review-changes, orchestrate-steps | done (2026-11-09) |
 
 ## M5 — AI analyst (from `m4` → `m5`)
 
@@ -77,6 +77,7 @@ Status values: `todo`, `in progress`, `done (<date>, commit <short hash>)`, `blo
 | 2026-11-04 | 1.5–1.6 | classroom recovery; M1 journeys, visible backend-down message, documents (runs/recovery/R01, runs/m1/m1-16) | see the m1-16 record | independent reviews not run |
 | 2026-11-04 | 3.1–3.3 (partial) | filing API, sanitizer, sections, screens (runs/m3/m3-02); stopped by the classroom freeze | pytest 431 passed; no browser check | unverified |
 | 2026-11-09 | 3.1–3.4 | finished M3 on Windows 11 (runs/m3/m3-04): Windows test-guard fix, six M3 browser journeys, phone and error-message fixes, live NVIDIA check, independent security and test reviews with fixes (nested-table parsing, download time and unzip limits, date-independent tests, stronger E1/E4/AC4/AC7/search tests) | `npm run verify` exit 0 (see m3-04 RESULT.json) | minor review items below |
+| 2026-11-09 | 4.1–4.3 | M4 in one main session (runs/m4/m4-01): comparison and CSV API with indexing, Compare screen, 13 browser journeys, live 4-company check, independent security and test reviews with fixes | `npm run verify` exit 0 (see m4-01 RESULT.json) | minor items below |
 
 ## Known problems and open questions
 
@@ -92,3 +93,4 @@ Status values: `todo`, `in progress`, `done (<date>, commit <short hash>)`, `blo
 - M1 and M2 were reviewed only in the same session as it was finished; the planned independent reviews were replaced at the owner's request (2026-11-04); M2 used adversarial live checks and read-only checks instead.
 - With three demo companies, the four-company comparison is shown only in tests and live mode (Q19).
 - **M3 review items left open (minor, 2026-11-09):** no component test for the "Amended by" link on the latest card (the recorded data has no amended latest report; the API test covers the data); untested sanitizer paths (`visibility:hidden`, `!important`, a `.txt` file whose HTML starts after 2 KB; a block that is only a year such as "2025" is dropped as a page number); the section rule that keeps short leading items when there is no contents list.
+- **M4 items left open (minor, 2026-11-09):** a company with two annual periods carrying the same fiscal year label (a 52/53-week year ending on 1 January and on 31 December of one year) would show one of them in the table; not seen in the fixtures or live checks. The fifth-company refusal and the currency warning are shown in the browser only with mocked data (the demo has three USD companies).

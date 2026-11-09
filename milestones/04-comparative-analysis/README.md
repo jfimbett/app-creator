@@ -37,4 +37,20 @@ replaying a prompt does not reproduce the same code. The tag is the reference ve
 
 ## Results
 
-Filled in after the checkpoint.
+**Added.** A **Compare** link in the header opens `/compare`. Add 2–4 companies as chips (a fifth is refused with "Compare 2–4
+companies"; a repeat is ignored), pick 1–6 metrics and 5–10 years. A table shows one line per company and metric, one column per
+fiscal year label, and under every value that company's own period end; the fiscal year-ends are listed and "Fiscal years are
+not aligned" appears when they differ. "Index = 100 at first common fiscal year" rebases revenue, operating cash flow and FCF
+(labelled `INDEXED`, with the base year and each company's base period end); ratios say "not indexed: ratio". Charts: a trend
+line per company and bars for one fiscal year. Different reporting currencies get a warning and no shared money axis. Export CSV
+downloads exactly the rows of the table, with provenance. The whole state is in the URL.
+
+**Checked.** `npm run verify` offline (pytest, Vitest, lint, types, build, Playwright including 13 M4 journeys and screenshots at
+1440, 1366 and 390 px), the screenshots looked at, a known answer worked by hand (FX16: Apple 208.88, Microsoft 343.62 at base
+FY2017) and re-derived by an independent reviewer, a live 4-company comparison (AAPL, MSFT, GOOGL, NVDA), and independent
+security and test reviews whose findings were fixed. Exact results:
+[runs/m4/m4-01-implement-main-session/RESULT.json](../../runs/m4/m4-01-implement-main-session/RESULT.json).
+
+**Limitations.** Companies are never aligned to calendar years and currencies are never converted, by design. One index base
+year serves all selected amount metrics, so adding a metric with a shorter history can move the base later. Offline, only three
+companies (all USD) exist, so the fifth-company refusal and the currency warning are shown with mocked data in the tests.

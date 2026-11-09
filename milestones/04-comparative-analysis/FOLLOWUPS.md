@@ -5,4 +5,13 @@ was dispatched (a repair, a correction or an extra instruction). Each one is app
 before it is dispatched**, together with its date, sender, receiver and the step record in `runs/` that it belongs
 to. Entries are never edited or removed afterwards. PROMPT.md itself stays unchanged.
 
-No follow-ups yet.
+## Follow-up 1 (2026-11-09): start M4
+
+Typed by the instructor in the top-level session, right after M3 was reported done. Recorded in
+[runs/m4/m4-01-implement-main-session/PROMPT.md](../../runs/m4/m4-01-implement-main-session/PROMPT.md) before any
+implementation work; appended here at the checkpoint. It started the milestone with the brief unchanged; it did not change
+the brief's content.
+
+```text
+ok push and start working on m4
+```

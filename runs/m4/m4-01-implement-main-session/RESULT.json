@@ -1,0 +1,36 @@
+{
+ "step": "m4/m4-01-implement-main-session",
+ "agent": "top-level session (Opus 5.5), plus two read-only review subagents (security-reviewer, test-reviewer)",
+ "status": "completed; M4 gate passed",
+ "machine": "Windows 11, Node 24.13.0, Python 3.13.9 in examples/sec-analytics/backend/.venv",
+ "start_commit": "6f6ab1d (main; tag m3 b7cb4a1 plus one documentation commit)",
+ "commits": {
+  "1fa4869": "feat(m4): comparison and CSV export API with indexing and warnings",
+  "b665b58": "feat(m4): Compare screen with chips, metrics, indexing, charts and CSV export",
+  "3a8a612": "fix(m4): review findings; comparison rules documented",
+  "checkpoint": "the commit that adds this file; tagged m4"
+ },
+ "observed": {
+  "baseline_npm_run_verify": "first attempt exit 1 because a new test file was written while it ran (the assistant's mistake); re-run with the new files set aside: exit 0 (.logs/verify-baseline2.log, not committed)",
+  "known_answers": "FX16 worked by hand from the fixture JSON before its test (Apple 208.88, Microsoft 343.62, base FY2017); CALC11 synthetic 100/125 and 100/80; FX16 re-derived independently by the test review",
+  "final_npm_run_verify": "exit 0 (.logs/verify-final.log, not committed): toolkit checks, ruff, pytest 489 passed, eslint, tsc, Vitest 123 passed, production build, Playwright 43 passed (30 M1-M3 + 13 M4)",
+  "visual_inspection": "screenshots looked at by the assistant: empty Compare, 3-company table and trend chart, indexed view (1440 px); table, trend and indexed at 1366 and 390 px; one-year bars; live 4-company view",
+  "live_sec": "2026-11-09, npm run dev with the owner's local SEC_USER_AGENT (value not read or printed): AAPL, MSFT, GOOGL and NVDA compared with revenue, net margin and FCF, indexed; 120 data points in 9 s through the throttled client; browser requests only to 127.0.0.1; base FY2022 because NVIDIA's FCF before FY2022 is unavailable",
+  "independent_reviews": {
+   "security": "pass with minor issues: 2 medium (CSV formula guard: leading whitespace, fullwidth signs; embedded line breaks untested), 3 low (long ciks list parsed in full; demo wording of a not-found message; fiscal_year_end column question). Fixed: both mediums and the ciks limit with tests. Not changed: the not-found wording (in live mode the data source raises its own message), and fiscal_year_end, which follows the brief's §8 default.",
+   "tests": "pass with minor issues: 2 major (untested 'base must have a value' and 'shared base' rules), 7 minor. Fixed with tests: both majors, zero base, CSV number format, strict years, cut-link message, E1 toggle on screen, CSV value line, a weak assertion. Left open (plan.md): duplicate fiscal year labels in one company; mocked-only browser checks for the fifth company and currencies."
+  },
+  "found_while_verifying": [
+   "390 px sideways scroll caused by screen-reader-only labels escaping the table's scroll box",
+   "a latent race in Playwright route mocks: an M2 test failed 1 in 16 runs before M4, 7 in 16 after; fixed in all specs (20 of 20 after)",
+   "this Windows machine cancels Chromium downloads into the Documents folder; the CSV browser test reads the exported bytes in the page instead"
+  ]
+ },
+ "not_run": [
+  "GitHub CI",
+  "Cline",
+  "macOS",
+  "the owner's own look at the screens"
+ ],
+ "published": false
+}
