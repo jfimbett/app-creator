@@ -137,6 +137,17 @@ export function FilingReader({ cik, data }: { cik: string; data: FilingDocumentR
     target?.focus({ preventScroll: true });
   }, []);
 
+  // A link to "#block-<n>" (an analyst passage chip) opens the reader at that block once the text is shown.
+  useEffect(() => {
+    const jumpToHash = () => {
+      const match = /^#block-(\d+)$/.exec(window.location.hash);
+      if (match) jumpTo(Number(match[1]));
+    };
+    jumpToHash();
+    window.addEventListener("hashchange", jumpToHash);
+    return () => window.removeEventListener("hashchange", jumpToHash);
+  }, [jumpTo]);
+
   /** The current match is passed only to its own block, so other blocks skip rendering. */
   const currentFor = (blockId: number): number | null => {
     const entry = byBlock.get(blockId);

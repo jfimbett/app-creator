@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback } from "react";
 
+import { AnalystLayout } from "@/components/AnalystLayout";
 import { CompanyTabs } from "@/components/CompanyTabs";
 import { FilingReader } from "@/components/FilingReader";
 import { SourceLink } from "@/components/FormLabel";
@@ -62,8 +63,7 @@ export default function FilingReaderPage() {
   const listHref = href(`/companies/${cik}/filings`);
 
   return (
-    <div className="flex flex-col gap-3">
-      <h1 className="text-heading font-semibold">{company}</h1>
+    <AnalystLayout heading={<h1 className="text-heading font-semibold">{company}</h1>} scope={{ kind: "filing", cik, accession }}>
       <CompanyTabs cik={cik} active="filings" />
       <p className="text-table">
         <Link href={listHref}>← Filing list</Link>
@@ -77,6 +77,6 @@ export default function FilingReaderPage() {
         )
       ) : null}
       {document.status === "ok" ? <FilingReader key={document.data.meta.accession} cik={cik} data={document.data} /> : null}
-    </div>
+    </AnalystLayout>
   );
 }

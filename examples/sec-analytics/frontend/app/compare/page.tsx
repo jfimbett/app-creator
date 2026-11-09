@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
+import { AnalystLayout } from "@/components/AnalystLayout";
 import { CompanyChips } from "@/components/CompanyChips";
 import { CompareChart } from "@/components/CompareChart";
 import { ExportCsvButton, IndexToggle, MetricPicker, YearsPicker } from "@/components/CompareControls";
@@ -70,8 +71,10 @@ export default function ComparePage() {
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      <h1 className="text-heading font-semibold">Compare companies</h1>
+    <AnalystLayout
+      heading={<h1 className="text-heading font-semibold">Compare companies</h1>}
+      scope={ready ? { kind: "comparison", ciks: [...state.ciks], metrics: [...state.metrics] } : null}
+    >
 
       <section aria-label="Comparison settings" className="flex flex-col gap-2 border border-line bg-panel p-3">
         <CompanyChips
@@ -136,6 +139,6 @@ export default function ComparePage() {
           </Panel>
         </>
       ) : null}
-    </div>
+    </AnalystLayout>
   );
 }

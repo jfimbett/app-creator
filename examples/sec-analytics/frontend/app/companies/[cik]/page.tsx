@@ -3,6 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+import { AnalystLayout } from "@/components/AnalystLayout";
 import { CompanyProfile } from "@/components/CompanyProfile";
 import { CompanyTabs } from "@/components/CompanyTabs";
 import { KeyFigures } from "@/components/KeyFigures";
@@ -79,8 +80,10 @@ export default function CompanyPage() {
   const overviewBadge = overview.status === "ok" ? <InfoBadge source={overview.data.source} /> : null;
 
   return (
-    <div className="flex flex-col gap-3">
-      <h1 className="text-heading font-semibold">{companyLine({ name: company.name, ticker: company.tickers[0] ?? null, cik: company.cik })}</h1>
+    <AnalystLayout
+      heading={<h1 className="text-heading font-semibold">{companyLine({ name: company.name, ticker: company.tickers[0] ?? null, cik: company.cik })}</h1>}
+      scope={{ kind: "company", cik: company.cik }}
+    >
       <CompanyTabs cik={company.cik} active="overview" />
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,5fr)_minmax(0,8fr)]">
@@ -174,6 +177,6 @@ export default function CompanyPage() {
       <Panel title="Metric explorer" id="explorer" badge={financials.status === "ok" ? <InfoBadge source={financials.data.source} /> : null}>
         <MetricExplorer cik={company.cik} source={source} years={years} />
       </Panel>
-    </div>
+    </AnalystLayout>
   );
 }

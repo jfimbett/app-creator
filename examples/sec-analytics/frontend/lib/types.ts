@@ -300,3 +300,76 @@ export interface CompareResponse {
   index_available: boolean;
   source: SourceInfo;
 }
+
+// ------------------------------------------------------------------ M5 AI analyst (/api/ai/*)
+// The OpenRouter key is never part of these shapes: the browser sends it only in the X-OpenRouter-Key header.
+
+/** One model from GET /api/ai/models. Prices are USD per million tokens as decimal strings, or null. */
+export interface AiModel {
+  id: string;
+  name: string;
+  context_length: number | null;
+  prompt_usd_per_million: string | null;
+  completion_usd_per_million: string | null;
+  /** "YYYY-MM-DD" when OpenRouter has announced the model's retirement. */
+  expiration_date: string | null;
+}
+
+export interface AiModelsResponse {
+  models: AiModel[];
+  fetched_at: string;
+}
+
+/** POST /api/ai/test-connection */
+export interface AiConnectionResponse {
+  ok: boolean;
+  label: string | null;
+  limit_remaining_usd: number | null;
+  message: string;
+}
+
+/** What the analyst may use: one company, one filing, or the current comparison. */
+export type AiScope =
+  | { kind: "company"; cik: string }
+  | { kind: "filing"; cik: string; accession: string }
+  | { kind: "comparison"; ciks: string[]; metrics: string[] };
+
+/** POST /api/ai/context, and the `context` of a chat answer: the line is built by the server. */
+export interface AiContext {
+  line: string;
+  facts: number;
+  passages: number;
+  chars: number;
+}
+
+export interface AiCitation {
+  source_id: string;
+  valid: boolean;
+  kind: "fact" | "passage";
+  label: string;
+  period: string;
+  date: string | null;
+  /** An app path, e.g. /companies/0000320193 or …/filings/<accession>#block-12. */
+  link: string;
+}
+
+export interface AiChatRequest {
+  model: string;
+  scope: AiScope;
+  question: string;
+  source: DataSourceChoice;
+}
+
+/** POST /api/ai/chat. A refusal is a 200 with `refusal` set and an empty answer. */
+export interface AiChatResponse {
+  answer: string;
+  citations: AiCitation[];
+  invalid_references: string[];
+  citation_note: string | null;
+  refusal: { code: string; message: string } | null;
+  context: AiContext;
+  model: string;
+  usage: { prompt_tokens: number; completion_tokens: number; cost: number | null } | null;
+  finish_reason: string | null;
+  notice: string;
+}

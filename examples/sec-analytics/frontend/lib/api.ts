@@ -40,11 +40,11 @@ export class ApiError extends Error {
   }
 }
 
-function clientError(status: number | null, code: string, message: string): ApiError {
+export function clientError(status: number | null, code: string, message: string): ApiError {
   return new ApiError(status, { error: { code, message, details: null, reference: null } });
 }
 
-function isEnvelope(body: unknown): body is ErrorEnvelope {
+export function isEnvelope(body: unknown): body is ErrorEnvelope {
   if (typeof body !== "object" || body === null) return false;
   const error = (body as { error?: unknown }).error;
   return (
@@ -55,7 +55,7 @@ function isEnvelope(body: unknown): body is ErrorEnvelope {
   );
 }
 
-async function readJson(response: Response): Promise<unknown> {
+export async function readJson(response: Response): Promise<unknown> {
   try {
     return await response.json();
   } catch {
@@ -63,7 +63,7 @@ async function readJson(response: Response): Promise<unknown> {
   }
 }
 
-type Fetcher = (input: string, init?: RequestInit) => Promise<Response>;
+export type Fetcher = (input: string, init?: RequestInit) => Promise<Response>;
 
 export interface RequestOptions {
   signal?: AbortSignal;
