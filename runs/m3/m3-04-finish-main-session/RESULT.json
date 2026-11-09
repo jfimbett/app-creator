@@ -1,0 +1,31 @@
+{
+ "step": "m3/m3-04-finish-main-session",
+ "agent": "top-level session (Opus 5.5), plus two read-only review subagents (security-reviewer, test-reviewer)",
+ "status": "completed; M3 gate passed",
+ "machine": "Windows 11, Node 24.13.0, Python 3.13.9 in examples/sec-analytics/backend/.venv",
+ "start_commit": "6b8db12 (wip/m3-filing-intelligence-unverified), merged with main 8052ad4 as e452316",
+ "commits": {
+  "796478c": "test(m3): offline-network guard allows loopback so it works on Windows",
+  "9bbc85a": "test(m3): browser journey for filings, reader, search and fallbacks",
+  "review fixes": "fix(m3): bound nested-table parsing and document downloads; stronger tests (the commit after 9bbc85a)",
+  "checkpoint": "the commit that adds this file; tagged m3"
+ },
+ "observed": {
+  "first_npm_run_verify": "exit 1: two offline tests failed on Windows only (the guard blocked the event loop's own 127.0.0.1 socket pair); fixed in 796478c",
+  "final_npm_run_verify": "exit 0 (.logs/verify-final.log, not committed): toolkit checks, ruff, pytest 444 passed, eslint, tsc, Vitest 103 passed, production build, Playwright 30 passed (24 M1/M2 + 6 M3)",
+  "visual_inspection": "screenshots looked at by the assistant: Filings list, reader, search, Item 7 jump, unrecorded document, invalid accession, Microsoft list (1440 px); Filings list and reader (390 px); live NVIDIA list and reader",
+  "live_sec": "2026-11-09 11:28 UTC, npm run dev with the owner's local SEC_USER_AGENT (value not read or printed): NVIDIA (CIK 1045810) filing list, 40 rows of 10-K/10-Q, latest 10-K 0001045810-26-000021 and 10-Q 0001045810-26-000075; the 10-K opened in the browser with 23 detected sections, search 'data center' 1 of 73; second view labelled cached; the browser made requests only to 127.0.0.1",
+  "independent_reviews": {
+   "security": "1 medium (nested tables: quadratic parsing), 2 low (no total download time limit; unzip without an output cap). All fixed with tests.",
+   "tests": "2 major (tests depending on the real date; weak amendment pairing test), 10 minor. Fixed: both majors and 6 minors. Left open, recorded in milestones/plan.md: amended-by link component test, some sanitizer paths, one section rule."
+  },
+  "independent_expected_values": "Microsoft 10-Q section list traced to the filing's own INDEX, read from the raw recorded HTML with a regex, not app code"
+ },
+ "not_run": [
+  "GitHub CI",
+  "Cline",
+  "macOS re-run of the final M3 code",
+  "the owner's own look at the screens"
+ ],
+ "published": false
+}

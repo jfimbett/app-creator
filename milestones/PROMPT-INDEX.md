@@ -52,9 +52,11 @@ Planned steps m1-11 to m1-15 were replaced by m1-16 at the instructor's request,
 
 Evidence in the same folder: `verify-clean-worktree.log`, `live-evidence.log`, `review-checks.log`. No independent review ran; M2 used adversarial live checks and read-only checks.
 
-## M3 Filing intelligence: **not completed, no tag**
+## M3 Filing intelligence: tag `m3`, branch `milestone/03-filing-intelligence`
 
-Stopped by the classroom freeze before its gate. The partial work is on branch [`wip/m3-filing-intelligence-unverified`](https://github.com/jfimbett/app-creator/tree/wip/m3-filing-intelligence-unverified); see its [WIP-STATUS.md](https://github.com/jfimbett/app-creator/blob/wip/m3-filing-intelligence-unverified/WIP-STATUS.md).
+Partly built on 2026-11-04 (m3-02), stopped by the classroom freeze (m3-03), then finished, reviewed and verified on 2026-11-09 (m3-04).
+Changes: a Filings tab with the latest 10-K and 10-Q, a 10-year history with amendment labels, a sanitized reader with detected sections,
+text search and sec.gov links, and recorded documents for offline use. [Milestone README](03-filing-intelligence/README.md).
 
 - Brief: [03-filing-intelligence/PROMPT.md](03-filing-intelligence/PROMPT.md)
 - Follow-ups: [03-filing-intelligence/FOLLOWUPS.md](03-filing-intelligence/FOLLOWUPS.md)
@@ -64,6 +66,7 @@ Stopped by the classroom freeze before its gate. The partial work is on branch [
 | [m3-01-implement-main-session](../runs/m3/m3-01-implement-main-session/PROMPT.md) | earlier instruction, saved but never executed | none | none |
 | [m3-02-implement-main-session](../runs/m3/m3-02-implement-main-session/PROMPT.md) | partial implementation; **not verified** | **gap:** [marker](../runs/m3/m3-02-implement-main-session/RESPONSE.md) | [result](../runs/m3/m3-02-implement-main-session/RESULT.json) |
 | [m3-03-classroom-freeze](../runs/m3/m3-03-classroom-freeze/PROMPT.md) | stopped M3; chose M2 for class; published this repository | **gap:** [marker](../runs/m3/m3-03-classroom-freeze/RESPONSE.md) | none |
+| [m3-04-finish-main-session](../runs/m3/m3-04-finish-main-session/PROMPT.md) | finished M3: Windows test fix, browser journeys, screen fixes, live check, independent security and test reviews and their fixes, gate | **gap:** [marker](../runs/m3/m3-04-finish-main-session/RESPONSE.md) | [result](../runs/m3/m3-04-finish-main-session/RESULT.json) |
 
 ## M4 and M5: not started
 

@@ -4,7 +4,18 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 
 ## Current phase
 
-**Classroom freeze (2026-11-04): M2 is the classroom version; M3 is unfinished and unverified. Stop here and wait for the instructor.**
+**M3 complete (2026-11-09): tag `m3`, branch `milestone/03-filing-intelligence`; local `main` fast-forwarded to M3. Nothing pushed. M4 and M5 not started. Wait for the instructor.**
+
+## M3 completion (2026-11-09, newest; overrides the sections below where they differ)
+
+- Instruction: `runs/m3/m3-04-finish-main-session/PROMPT.md` ("continue m3 … work autonomously"). Results: its `RESULT.json`.
+- Machine: Windows 11 (earlier work was on macOS). Worktree `.worktrees/m3`, local branch `work/m3-finish`, started from `wip/m3-filing-intelligence-unverified` merged with `main`.
+- Done: Windows fix for the offline-network test guard; six M3 Playwright journeys; screens looked at (1440 and 390 px); two screen fixes; one live SEC retrieval (NVIDIA filing list and 10-K, read and searched in the browser); independent security and test reviews (subagents), with their findings fixed and tested.
+- **Not pushed.** GitHub still shows `main` = M2 and has no `m3` tag. Pushing `main`, `milestone/03-filing-intelligence` and `m3` is publication and waits for the instructor.
+- The published branch `wip/m3-filing-intelligence-unverified` is superseded by `m3`; deleting it on GitHub is the instructor's decision.
+- No classroom app is running on this machine.
+
+**Still deferred:** M4, M5; Cline and CI checks; permission hardening; the remaining final documents listed below.
 
 ## After the classroom freeze (newest; overrides the handoff below where they differ)
 

@@ -211,3 +211,13 @@ Use the actual launch scripts and ports; do not copy unverified commands from ea
 
 Update PROGRESS.md with deferred work. Then STOP. Do not start another implementation or verification cycle.
 ```
+
+## Follow-up 4 (2026-11-09): finish M3
+
+Typed by the instructor in a new session on Windows 11, after the assistant had reported the project status. Recorded in
+[runs/m3/m3-04-finish-main-session/PROMPT.md](../../runs/m3/m3-04-finish-main-session/PROMPT.md) before any implementation
+work. It is appended here afterwards, at the checkpoint.
+
+```text
+continue m3 as you think is better, work autonomously only let me know when m3 is done
+```

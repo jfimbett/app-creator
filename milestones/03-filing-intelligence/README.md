@@ -37,4 +37,20 @@ replaying a prompt does not reproduce the same code. The tag is the reference ve
 
 ## Results
 
-Filled in after the checkpoint.
+**Added.** A Filings tab for each company: the latest 10-K and 10-Q (labelled `Latest in snapshot (as of <date>)` in demo,
+`Latest on EDGAR (retrieved …)` in live mode), a 10-year history of 10-K, 10-Q and their amendments with form, filing date,
+period and accession, and filters for annual, quarterly and amendments. An amendment never replaces the original as "latest";
+both link to each other. A reader shows the filing's own text, sanitized on the server into plain text blocks, with automatically
+detected Item sections (a rail on desktop, a select on a phone), a labelled full-text fallback when no sections are found, text
+search with highlighted matches, a count and next/previous, and links to the exact document and filing index on sec.gov. Demo
+mode carries the unmodified latest 10-K and 10-Q of Apple, Microsoft and Alphabet; other filings link to sec.gov only.
+
+**Checked.** `npm run verify` offline (pytest, Vitest, lint, types, production build, Playwright including the six M3 journeys
+in `frontend/e2e/m3-filings.spec.ts` at 1440 and 390 px), screenshots looked at, one live retrieval (NVIDIA's filing list and
+latest 10-K read and searched in the browser) and independent security and test reviews, whose findings were fixed (bounded
+nested-table parsing, download time and unzip limits, stronger tests). Exact results:
+[runs/m3/m3-04-finish-main-session/RESULT.json](../../runs/m3/m3-04-finish-main-session/RESULT.json).
+
+**Limitations.** Section detection is a heuristic over Item headings; it is labelled "may be imperfect". Exhibits are not shown,
+only the primary document. Very long documents are cut at a block limit with a link to the rest on sec.gov. Demo mode has
+documents for six filings only. Older filings (before about 2001) may be plain text with no sections.

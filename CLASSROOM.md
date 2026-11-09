@@ -2,8 +2,9 @@
 
 **Repository:** <https://github.com/jfimbett/app-creator>
 
-**`main` currently contains M2 functionality.** Since tag `m2`, `main` has added only records and documentation, with no application changes.
-M3 is unfinished and unverified. It is kept separately on branch `wip/m3-filing-intelligence-unverified`.
+**`main` contains M3 functionality** (tag `m3`), as of 2026-11-09. M3 was finished and verified on Windows 11 after the classroom freeze.
+The old branch `wip/m3-filing-intelligence-unverified` is kept only as history; use `m3` instead.
+**Until the instructor pushes these commits, the GitHub copy of `main` still contains M2.**
 
 ## Versions
 
@@ -12,11 +13,11 @@ M3 is unfinished and unverified. It is kept separately on branch `wip/m3-filing-
 | Template | the toolkit, with no app yet | `template` | `template-v1` | verified |
 | M1 Foundation | dark shell, keyboard search, profile, annual revenue and net income from recorded SEC data | `milestone/01-foundation` | `m1` | verified |
 | M2 Financial intelligence | Demo/Live choice, statement summaries, ratios, metric explorer, source details | `milestone/02-financial-intelligence` | `m2` | verified |
-| M3 Filing intelligence | filing history, reader, search, sections | `wip/m3-filing-intelligence-unverified` | **none** | **unfinished: screens never opened in a browser** ([status](https://github.com/jfimbett/app-creator/blob/wip/m3-filing-intelligence-unverified/WIP-STATUS.md)) |
+| M3 Filing intelligence | Filings tab: latest 10-K/10-Q, 10-year history with amendments, a reader with sections, search and sec.gov links | `milestone/03-filing-intelligence` | `m3` | verified (Windows 11) |
 | M4, M5 | comparison, AI analyst | none | none | not built; only their briefs exist |
 
-"Verified" means a clean checkout passed `npm ci`, `npm run setup` and `npm run verify` on macOS. Windows, Cline and GitHub CI are untested.
-Some milestone documents mention `m3`, `m4` or `m5` tags: those tags do not exist yet.
+"Verified" means a checkout passed `npm ci`, `npm run setup` and `npm run verify`: on macOS for M1 and M2, on Windows 11 for M3. Cline and GitHub CI are untested.
+Some milestone documents mention `m4` or `m5` tags: those tags do not exist yet.
 
 ## What you need installed
 
@@ -98,7 +99,7 @@ npm ci
 npm run setup
 ```
 
-Then give the assistant [`milestones/02-financial-intelligence/PROMPT.md`](milestones/02-financial-intelligence/PROMPT.md). To build M3 yourself, start from `m2` with [the M3 brief](milestones/03-filing-intelligence/PROMPT.md).
+Then give the assistant [`milestones/02-financial-intelligence/PROMPT.md`](milestones/02-financial-intelligence/PROMPT.md). To build M3 yourself, start from `m2` with [the M3 brief](milestones/03-filing-intelligence/PROMPT.md); to build M4, start from `m3`.
 Your result will differ from the tag: replaying a prompt does not reproduce the same code. The tag is the reference.
 
 The briefs are **not** all the instructions that were actually used. See [the prompt index](milestones/PROMPT-INDEX.md).
@@ -129,15 +130,17 @@ Press `/`, type `aapl` and choose Apple. Point out the profile with its SEC iden
 
 **Limitations.** Three recorded companies only, annual figures only, and no live mode.
 
-### M2 (`main`, or `git switch --detach m2`)
+### M2 (`git switch --detach m2`)
 
 Open Apple and scroll through the income statement, balance sheet and cash-flow summaries. Change "Years shown". Hover over a ratio to see its formula and inputs. Use the metric explorer to chart a metric. Under `npm run dev` with a contact set, switch to Live and search `NVDA`.
 
 **Limitations.** Summaries are not the complete filed statements. Some concepts are unmapped and show as missing, such as Microsoft's and Alphabet's D&A. Foreign 20-F filers have no statements. Values may reflect later restatements, so they are not point-in-time.
 
-### M3 (unfinished; do not treat it as a release)
+### M3 (`main`, or `git switch --detach m3`)
 
-To look at the code, stop the app and use `git switch --detach origin/wip/m3-filing-intelligence-unverified`. Its backend tests passed, but its screens have never been opened in a browser, so expect problems. See [WIP-STATUS.md on that branch](https://github.com/jfimbett/app-creator/blob/wip/m3-filing-intelligence-unverified/WIP-STATUS.md).
+Open Apple and choose the **Filings** tab. Point out `Latest in snapshot (as of 2026-11-03)`: in the demo, "latest" always names the snapshot. Click **Read** on the 10-K, click **Item 7** in the section list, then type `revenue` in the search box and step through the matches with the arrows. Click **Source** to open the same document on sec.gov. Then open Alphabet → Filings and find the 2019 `10-K/A`, labelled as an amendment. Untick "Include amendments" to hide it. Under `npm run dev` with a contact set, switch to Live and open NVIDIA's latest 10-K.
+
+**Limitations.** Sections are detected automatically from Item headings and may be imperfect. When none are found, the reader says so and shows the full text. Only the primary document is shown, not the exhibits. The demo has the documents of the latest 10-K and 10-Q of the three companies; other filings open on sec.gov.
 
 ## Prompts and records
 
