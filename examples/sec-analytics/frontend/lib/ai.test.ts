@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { ApiError } from "./api";
-import { aiErrorText, createAiApi, filterModels, formatUsdPerMillion, isValidModelId, linkWithSource, usageLine } from "./ai";
+import { aiErrorText, createAiApi, filterModels, formatUsdPerMillion, isValidModelId, linkWithSource, NOTICE, noticeText, usageLine } from "./ai";
 import type { AiModel, AiScope } from "./types";
 
 const KEY = "test-key-not-real-0000";
@@ -92,6 +92,22 @@ describe("AI display helpers", () => {
     expect(linkWithSource("/companies/0000320193#block-1", "demo")).toBe("/companies/0000320193#block-1");
   });
 
+  it("accepts only app-internal source links; anything else gets no link", () => {
+    for (const bad of ["//evil.example", "//evil.example/companies", "javascript:alert(1)", "https://x", "/companies/1?x=1", "/companies/1#top", "/a b", "", "companies/1"]) {
+      expect(linkWithSource(bad, "demo"), bad).toBeNull();
+      expect(linkWithSource(bad, "live"), bad).toBeNull();
+    }
+    expect(linkWithSource("/companies/0000320193/filings/0000320193-26-000026#block-12", "demo")).toBe("/companies/0000320193/filings/0000320193-26-000026#block-12");
+  });
+
+  it("always has a notice, falling back to the fixed text", () => {
+    expect(NOTICE).toBe("Source links are checked; the claims themselves may still be wrong.");
+    expect(noticeText("")).toBe(NOTICE);
+    expect(noticeText("   ")).toBe(NOTICE);
+    expect(noticeText(undefined)).toBe(NOTICE);
+    expect(noticeText("Custom notice.")).toBe("Custom notice.");
+  });
+
   it("shows prices per million tokens, free, or that pricing is not available", () => {
     expect(formatUsdPerMillion("0.15")).toBe("$0.15");
     expect(formatUsdPerMillion("2.500000")).toBe("$2.50");
@@ -106,6 +122,9 @@ describe("AI display helpers", () => {
     expect(filterModels(list, "").map((m) => m.id)).toEqual(["alpha/two", "beta/x", "zeta/one"]);
     expect(filterModels(list, "FAST").map((m) => m.id)).toEqual(["beta/x"]);
     expect(filterModels(list, " zeta ").map((m) => m.id)).toEqual(["zeta/one"]);
+    // Ids that a manual entry could not use are not offered either.
+    const odd = [model("ok/id", "Fine"), model("bad id", "Space"), model("<script>", "Tag"), model("", "Empty")];
+    expect(filterModels(odd, "").map((m) => m.id)).toEqual(["ok/id"]);
   });
 
   it("writes the usage line, with cost only when given", () => {

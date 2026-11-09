@@ -33,9 +33,10 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
   const dialog = useRef<HTMLDialogElement>(null);
   const keyInput = useRef<HTMLInputElement>(null);
   const settings = useAiSettings();
-  const [draft, setDraft] = useState("");
   const [showKey, setShowKey] = useState(false);
   const [draftRemember, setDraftRemember] = useState(false);
+  /** "Remember" ticked for a key that is already saved: nothing is stored until the person confirms. */
+  const [pendingRemember, setPendingRemember] = useState(false);
   const [keyError, setKeyError] = useState<string | null>(null);
   const [test, setTest] = useState<Test>({ step: "idle" });
   const testController = useRef<AbortController | null>(null);
@@ -52,10 +53,26 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
 
   useEffect(() => () => testController.current?.abort(), []);
 
-  const remember = settings.key ? settings.remember : draftRemember;
+  const remember = settings.key ? settings.remember || pendingRemember : draftRemember;
 
+  const changeRemember = (checked: boolean) => {
+    if (!settings.key) setDraftRemember(checked);
+    else if (checked) setPendingRemember(!settings.remember);
+    else {
+      setPendingRemember(false);
+      aiKeyStore.setRemember(false); // removing the stored copy needs no confirmation
+    }
+  };
+
+  const keepInTab = () => {
+    setPendingRemember(false);
+    aiKeyStore.setRemember(true);
+  };
+
+  /** The typed key is read from the field only here (the field is uncontrolled, so React never mirrors it). */
   const saveKey = () => {
-    const value = draft.trim();
+    testController.current?.abort(); // a test of the previous key must not report on the new one
+    const value = (keyInput.current?.value ?? "").trim();
     if (!value) {
       setKeyError("Enter your OpenRouter key first");
       return;
@@ -66,23 +83,29 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
     }
     setKeyError(null);
     aiKeyStore.setKey(value, { remember });
-    setDraft("");
+    if (keyInput.current) keyInput.current.value = "";
+    setPendingRemember(false);
     setShowKey(false);
     setTest({ step: "idle" });
   };
 
   const runTest = async () => {
     if (!settings.key) return;
+    testController.current?.abort();
     const controller = new AbortController();
     testController.current = controller;
+    const version = settings.keyVersion;
+    // An answer for a key that has since been replaced or cleared is ignored.
+    const stale = () => controller.signal.aborted || aiKeyStore.getSnapshot().keyVersion !== version;
     setTest({ step: "running" });
     try {
       const result = await aiApi.testConnection(settings.key, { signal: controller.signal });
+      if (stale()) return;
       if (result.ok) aiKeyStore.setConnected(result.label);
       else aiKeyStore.setError(result.message);
       setTest({ step: "done", result });
     } catch (error) {
-      if (controller.signal.aborted) return;
+      if (stale()) return;
       const message = error instanceof ApiError ? aiErrorText(error) : "The connection test failed.";
       aiKeyStore.setError(message);
       setTest({ step: "failed", message });
@@ -92,10 +115,17 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
   const clearKey = () => {
     testController.current?.abort();
     aiKeyStore.clear();
-    setDraft("");
+    if (keyInput.current) keyInput.current.value = "";
     setDraftRemember(false);
+    setPendingRemember(false);
     setKeyError(null);
     setTest({ step: "idle" });
+  };
+
+  /** Closing drops an unconfirmed "Remember" choice; nothing was stored for it. */
+  const close = () => {
+    setPendingRemember(false);
+    onClose();
   };
 
   const trapTab = (event: React.KeyboardEvent<HTMLDialogElement>) => {
@@ -120,10 +150,10 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
       data-testid="ai-settings"
       onCancel={(event) => {
         event.preventDefault();
-        onClose();
+        close();
       }}
       onClose={() => {
-        if (open) onClose();
+        if (open) close();
       }}
       onKeyDown={trapTab}
       className="m-auto max-h-[calc(100dvh-1rem)] w-[min(46rem,calc(100vw-1rem))] overflow-y-auto border border-line bg-panel p-0 text-fg backdrop:bg-black/70"
@@ -137,7 +167,7 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
               </h2>
               <AiStatus className="mt-0.5" />
             </div>
-            <button type="button" onClick={onClose} aria-label="Close AI settings" className="rounded-sm border border-line px-2 py-0.5 text-fg hover:border-accent">
+            <button type="button" onClick={close} aria-label="Close AI settings" className="rounded-sm border border-line px-2 py-0.5 text-fg hover:border-accent">
               ×
             </button>
           </div>
@@ -163,11 +193,10 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
                 autoCorrect="off"
                 spellCheck={false}
                 maxLength={500}
-                value={draft}
+                defaultValue=""
                 placeholder={settings.key ? "Key set; type a new key to replace it" : "Paste your key"}
                 aria-describedby={`${id}-help${keyError ? ` ${id}-key-error` : ""}`}
                 aria-invalid={keyError ? true : undefined}
-                onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") {
                     event.preventDefault();
@@ -204,15 +233,22 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
                 type="checkbox"
                 data-testid="ai-remember"
                 checked={remember}
-                onChange={(event) => (settings.key ? aiKeyStore.setRemember(event.target.checked) : setDraftRemember(event.target.checked))}
+                onChange={(event) => changeRemember(event.target.checked)}
               />
               Remember for this tab (sessionStorage)
             </label>
             {remember ? (
-              <p data-testid="ai-storage-warning" className="text-table text-warning">
-                <span className="label-caps mr-1.5">Warning</span>
-                {STORAGE_WARNING}
-              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p data-testid="ai-storage-warning" className="text-table text-warning">
+                  <span className="label-caps mr-1.5">Warning</span>
+                  {STORAGE_WARNING}
+                </p>
+                {pendingRemember ? (
+                  <button type="button" onClick={keepInTab} className="rounded-sm border border-warning px-2 py-0.5 text-table text-fg hover:bg-panel-raised">
+                    Keep in this tab
+                  </button>
+                ) : null}
+              </div>
             ) : (
               <p className="text-table text-muted">The key is kept in this page&apos;s memory only and is forgotten on reload.</p>
             )}
@@ -276,7 +312,7 @@ export function AiSettingsDialog({ open, onClose }: { open: boolean; onClose: ()
             >
               Clear key
             </button>
-            <button type="button" onClick={onClose} className="rounded-sm border border-line px-3 py-1 text-table text-fg hover:border-accent">
+            <button type="button" onClick={close} className="rounded-sm border border-line px-3 py-1 text-table text-fg hover:border-accent">
               Done
             </button>
           </div>

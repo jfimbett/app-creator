@@ -67,10 +67,18 @@ describe("AI key holder (M5-AC2)", () => {
     expect(aiStatusLine(state)).toBe("AI not configured");
   });
 
-  it("ignores a damaged stored value", () => {
-    window.sessionStorage.setItem(AI_STORAGE_KEY, "{not json");
-    setItem.mockClear();
-    expect(newStore().getSnapshot().key).toBeNull();
+  it("ignores and removes a damaged stored value", () => {
+    for (const damaged of ["{not json", "[]", "null", JSON.stringify({ key: 5 }), JSON.stringify({ model: "x" })]) {
+      window.sessionStorage.setItem(AI_STORAGE_KEY, damaged);
+      expect(newStore().getSnapshot().key, damaged).toBeNull();
+      expect(window.sessionStorage.getItem(AI_STORAGE_KEY), damaged).toBeNull();
+    }
+  });
+
+  it("drops a restored model id that is not a valid id", () => {
+    window.sessionStorage.setItem(AI_STORAGE_KEY, JSON.stringify({ key: KEY, model: "bad id <x>" }));
+    const restored = newStore().getSnapshot();
+    expect([restored.key, restored.model]).toEqual([KEY, null]);
   });
 
   it("notifies subscribers and gives a stable snapshot between changes", () => {

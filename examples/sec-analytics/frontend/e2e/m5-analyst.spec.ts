@@ -27,6 +27,8 @@ const MODELS = {
     { id: "example/zeta-large", name: "Zeta Large (SYNTHETIC)", context_length: null, prompt_usd_per_million: null, completion_usd_per_million: null, expiration_date: null },
     { id: "example/alpha-small", name: "Alpha Small (SYNTHETIC)", context_length: 131072, prompt_usd_per_million: "0.15", completion_usd_per_million: "0.6", expiration_date: null },
     { id: "example/beta-free:free", name: "Beta Free (SYNTHETIC)", context_length: 32768, prompt_usd_per_million: "0", completion_usd_per_million: "0", expiration_date: "2026-12-31" },
+    // Not a valid model id: never offered in the table.
+    { id: "bad id <x>", name: "Invalid id (SYNTHETIC)", context_length: null, prompt_usd_per_million: null, completion_usd_per_million: null, expiration_date: null },
   ],
   fetched_at: "2026-11-09T10:00:00Z",
 };
@@ -231,6 +233,9 @@ test("settings: masked key, sessionStorage off by default with its warning, noth
   await remember.uncheck();
 
   await input.fill(KEY);
+  // Typed but not saved: the key is never mirrored into a value attribute or the page's HTML.
+  expect(await input.getAttribute("value")).not.toContain(KEY);
+  expect(await page.content()).not.toContain(KEY);
   await settings.getByRole("button", { name: "Show" }).click();
   await expect(input).toHaveAttribute("type", "text");
   await settings.getByRole("button", { name: "Hide" }).click();
@@ -243,6 +248,19 @@ test("settings: masked key, sessionStorage off by default with its warning, noth
   expect(await page.evaluate(() => Object.keys(sessionStorage))).toEqual([]);
   expect(await page.evaluate(() => document.cookie)).toBe("");
   expect(await page.content()).not.toContain(KEY);
+
+  // With a key already saved, ticking "Remember" only shows the warning; nothing is written until confirmed.
+  await remember.check();
+  await expect(settings.getByTestId("ai-storage-warning")).toHaveText(/Scripts on this page can read browser storage; this is not secure storage/);
+  expect(await page.evaluate(() => Object.keys(sessionStorage))).toEqual([]);
+  await expect(settings.getByTestId("ai-status")).toHaveText("Key set (memory only)");
+  await settings.getByRole("button", { name: "Keep in this tab" }).click();
+  await expect(settings.getByTestId("ai-status")).toHaveText("Key set (this tab)");
+  expect(await page.evaluate(() => Object.keys(sessionStorage))).toEqual(["sec-analytics.ai"]);
+  await remember.uncheck(); // turning it off applies at once: the stored copy is removed
+  await expect(settings.getByTestId("ai-status")).toHaveText("Key set (memory only)");
+  expect(await page.evaluate(() => Object.keys(sessionStorage))).toEqual([]);
+  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
 
   // Esc closes the dialog and returns focus to the button that opened it.
   await page.keyboard.press("Escape");
@@ -357,9 +375,14 @@ test("Apple Overview → Analyst → ask: answer as text with two linked source 
 
 test("no valid source, a refusal and a cut answer are shown as such (mocked backend)", async ({ page }) => {
   const replies = [
-    { ...ANSWER, answer: "SYNTHETIC TEST DATA (mocked reply) without references.", citations: [], invalid_references: [], citation_note: "No valid sources cited" },
+    { ...ANSWER, answer: "SYNTHETIC TEST DATA (mocked reply) without references.", citations: [], invalid_references: [], citation_note: "No valid sources cited", notice: "" },
     { ...ANSWER, answer: "", citations: [], invalid_references: [], refusal: { code: "out_of_scope", message: "This analyst only explains the loaded SEC data; it does not forecast prices or give investment advice" }, usage: null },
-    { ...ANSWER, finish_reason: "length" },
+    {
+      ...ANSWER,
+      finish_reason: "length",
+      // A chip whose link is not an app path is shown as plain text, never as a link.
+      citations: [...ANSWER.citations, { ...ANSWER.citations[0], source_id: "F3", link: "//evil.example/companies" }],
+    },
   ];
   await mockAi(page, (route) => route.fulfill({ json: replies.shift() }));
   await page.goto(APPLE);
@@ -378,6 +401,11 @@ test("no valid source, a refusal and a cut answer are shown as such (mocked back
   await ask(page, "Why did net margin change?");
   await expect(panel(page).getByTestId("ai-cut")).toContainText("Answer cut at the output limit");
   await expect(panel(page).getByTestId("ai-answer")).toContainText("Net margin rose");
+  const unsafe = panel(page).locator('[data-testid="source-chip"][data-source-id="F3"]');
+  await expect(unsafe).toBeVisible();
+  expect(await unsafe.evaluate((element) => element.tagName)).toBe("SPAN");
+  await expect(unsafe).not.toHaveAttribute("href", /.*/);
+  await expect(panel(page).locator('a[href*="evil.example"]')).toHaveCount(0);
 });
 
 test("the context line names the scope on the company, reader and Compare screens (M5-AC6, mocked backend)", async ({ page }) => {
@@ -459,6 +487,68 @@ test("mocked 401, 402, 404, 429, timeout and busy answers show the plain message
     if (next.code === "ai_key_invalid") await expect(panel(page).getByTestId("ai-status")).toHaveText("Key rejected");
   }
   await expect(panel(page)).not.toContainText(KEY);
+});
+
+test("a connection test for a replaced key cannot mark the new key connected (mocked backend)", async ({ page }) => {
+  await mockAi(page);
+  let release: () => void = () => undefined;
+  const held = new Promise<void>((resolve) => (release = resolve));
+  await page.route("**/api/ai/test-connection", async (route) => {
+    await held;
+    await route.fulfill({ json: { ok: true, label: "key-A (SYNTHETIC)", limit_remaining_usd: 1, message: "Key accepted" } }).catch(() => undefined);
+  });
+  await page.goto(APPLE);
+  await openAnalyst(page);
+  await saveKey(page);
+  const settings = dialog(page);
+  await settings.getByTestId("ai-test").click();
+  await settings.getByTestId("ai-test-run").click();
+  await expect(settings.getByTestId("ai-test")).toHaveText("Testing…");
+  // Replace the key while the test for the first key is still running, then let the old answer arrive.
+  await settings.getByTestId("ai-key-input").fill("test-key-not-real-1111");
+  await settings.getByTestId("ai-key-save").click();
+  release();
+  await page.waitForTimeout(500);
+  await expect(settings.getByTestId("ai-status")).toHaveText("Key set (memory only)");
+  await expect(settings.getByTestId("ai-test-result")).toHaveCount(0);
+});
+
+test("a running question is stopped when the key is cleared or the scope changes, and its answer never shows (mocked backend)", async ({ page }) => {
+  const failed: string[] = [];
+  page.on("requestfailed", (request) => {
+    if (request.url().endsWith("/api/ai/chat")) failed.push(request.url());
+  });
+  await mockAi(page, async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await route.fulfill({ json: ANSWER }).catch(() => undefined);
+  });
+  await page.goto(APPLE);
+  await openAnalyst(page);
+  await configure(page);
+
+  // Clear key while the question runs.
+  await ask(page);
+  await expect(panel(page).getByTestId("ai-cancel")).toBeVisible();
+  await panel(page).getByTestId("ai-settings-open").click();
+  await dialog(page).getByTestId("ai-clear").click();
+  await dialog(page).getByRole("button", { name: "Done" }).click();
+  await page.waitForTimeout(2000);
+  await expect(panel(page)).toContainText(NOT_CONFIGURED);
+  await expect(panel(page).getByTestId("ai-answer")).toHaveCount(0);
+  expect(failed).toHaveLength(1);
+
+  // A new key, then a scope change (Compare metrics) while the question runs.
+  await page.goto(COMPARE_TWO);
+  await openAnalyst(page);
+  await configure(page);
+  await ask(page);
+  await expect(panel(page).getByTestId("ai-cancel")).toBeVisible();
+  await page.locator('button[data-metric="fcf"]').click();
+  await expect(panel(page).getByTestId("ai-context")).toHaveText("Context: AAPL, MSFT facts for revenue, net margin, fcf");
+  await page.waitForTimeout(2000);
+  await expect(panel(page).getByTestId("ai-answer")).toHaveCount(0);
+  await expect(panel(page).getByTestId("ai-ask")).toBeEnabled();
+  expect(failed).toHaveLength(2);
 });
 
 for (const size of widths) {

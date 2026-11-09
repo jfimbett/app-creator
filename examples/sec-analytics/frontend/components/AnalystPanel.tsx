@@ -7,7 +7,7 @@ import { AiStatus } from "@/components/AiStatus";
 import { SourceChips } from "@/components/SourceChips";
 import { StatePanel } from "@/components/StatePanel";
 import { ApiError } from "@/lib/api";
-import { aiApi, aiErrorText, aiNextStep, CANCELLED, LENGTH_CUT, NOT_IN_SOURCES, QUESTION_MAX, usageLine } from "@/lib/ai";
+import { aiApi, aiErrorText, aiNextStep, CANCELLED, LENGTH_CUT, NOT_IN_SOURCES, noticeText, QUESTION_MAX, usageLine } from "@/lib/ai";
 import { aiKeyStore, useAiSettings } from "@/lib/ai-key";
 import { useDataSource } from "@/lib/source";
 import type { AiChatResponse, AiScope } from "@/lib/types";
@@ -79,7 +79,7 @@ function Answer({ response }: { response: AiChatResponse }) {
       ) : null}
       <p data-testid="ai-notice" className="flex gap-1.5 text-table text-muted">
         <InfoIcon />
-        <span>{response.notice}</span>
+        <span>{noticeText(response.notice)}</span>
       </p>
       <p data-testid="ai-usage" className="text-label text-muted [overflow-wrap:anywhere]">
         Model <span className="code-id">{response.model}</span>
@@ -102,7 +102,7 @@ export function AnalystPanel({ scope, onClose }: Props) {
   const { source } = useDataSource();
   const [question, setQuestion] = useState("");
   const [run, setRun] = useState<Run>({ status: "idle" });
-  /** The scope and source the last question was asked for; its answer is hidden once the page's scope changes. */
+  /** The scope, source and key the last question was asked with; its answer is hidden once any of them changes. */
   const [askedFor, setAskedFor] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const controller = useRef<AbortController | null>(null);
@@ -113,14 +113,20 @@ export function AnalystPanel({ scope, onClose }: Props) {
   const loadContext = useCallback((signal: AbortSignal) => aiApi.context(JSON.parse(scopeKey) as AiScope, source, { signal }), [scopeKey, source]);
   const contextKey = `${scopeKey}:${source}`;
   const context = useApiResource(`ai-context:${contextKey}`, loadContext);
+  const runKey = `${contextKey}#${settings.keyVersion}`;
 
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
-    return () => controller.current?.abort();
   }, []);
 
+  // A running question is stopped when the scope or source changes, the key is replaced or cleared, or the panel closes.
+  useEffect(() => {
+    const inFlight = controller;
+    return () => inFlight.current?.abort();
+  }, [runKey]);
+
   const running = run.status === "running";
-  const current = askedFor === contextKey || running ? run : ({ status: "idle" } as Run);
+  const current = askedFor === runKey ? run : ({ status: "idle" } as Run);
   const trimmed = question.trim();
   const configured = Boolean(settings.key);
   const canAsk = configured && Boolean(settings.model) && !running && trimmed.length >= 1 && question.length <= QUESTION_MAX;
@@ -129,7 +135,7 @@ export function AnalystPanel({ scope, onClose }: Props) {
     if (!canAsk || !settings.key || !settings.model) return;
     const request = new AbortController();
     controller.current = request;
-    setAskedFor(contextKey);
+    setAskedFor(runKey);
     setRun({ status: "running" });
     try {
       const response = await aiApi.chat(settings.key, { model: settings.model, scope, question: trimmed, source }, { signal: request.signal });

@@ -8,6 +8,8 @@
 
 import { useSyncExternalStore } from "react";
 
+import { isValidModelId } from "./ai";
+
 export const AI_STORAGE_KEY = "sec-analytics.ai";
 
 export interface AiSettings {
@@ -33,13 +35,26 @@ export function aiStatusLine(settings: Omit<AiSettings, "keyVersion">): string {
   return settings.remember ? "Key set (this tab)" : "Key set (memory only)";
 }
 
+function parseStored(raw: string): Pick<AiSettings, "key" | "model"> | null {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
+    const { key, model } = parsed as { key?: unknown; model?: unknown };
+    if (typeof key !== "string" || !key) return null;
+    return { key, model: typeof model === "string" && isValidModelId(model) ? model : null };
+  } catch {
+    return null;
+  }
+}
+
+/** The copy kept for this tab, if any. A damaged entry is removed rather than left behind. */
 function readStored(storage: Storage | null): Pick<AiSettings, "key" | "model"> | null {
   try {
     const raw = storage?.getItem(AI_STORAGE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as { key?: unknown; model?: unknown };
-    if (typeof parsed.key !== "string" || !parsed.key) return null;
-    return { key: parsed.key, model: typeof parsed.model === "string" && parsed.model ? parsed.model : null };
+    const stored = parseStored(raw);
+    if (!stored) storage?.removeItem(AI_STORAGE_KEY);
+    return stored;
   } catch {
     return null;
   }

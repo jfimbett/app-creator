@@ -11,6 +11,15 @@ export const MODEL_ID_PATTERN = /^[A-Za-z0-9._:/-]{1,200}$/;
 export const CANCELLED = "Cancelled";
 export const LENGTH_CUT = "Answer cut at the output limit";
 export const NOT_IN_SOURCES = "Reference not in the supplied sources";
+export const NOTICE = "Source links are checked; the claims themselves may still be wrong.";
+
+/** The notice under every answer; the fixed text when the server sent none. */
+export function noticeText(notice: string | null | undefined): string {
+  return notice && notice.trim() ? notice : NOTICE;
+}
+
+/** An app path such as /companies/0000320193 or …/filings/<accession>#block-12: no scheme, host, query or other anchor. */
+const APP_LINK = /^\/(?!\/)[A-Za-z0-9/_\-.]*(#block-\d+)?$/;
 
 export function isValidModelId(id: string): boolean {
   return MODEL_ID_PATTERN.test(id);
@@ -58,13 +67,17 @@ export function createAiApi(fetcher: Fetcher = (input, init) => fetch(input, ini
 
 export const aiApi = createAiApi();
 
-/** An app link from a source chip, keeping ?source=live (before any #block anchor). */
-export function linkWithSource(link: string, source: DataSourceChoice): string {
+/**
+ * The link of a source chip, keeping ?source=live (before any #block anchor), or null when the link is not an
+ * app-internal path; such a chip is shown as plain text.
+ */
+export function linkWithSource(link: string, source: DataSourceChoice): string | null {
+  if (!APP_LINK.test(link)) return null;
   if (source !== "live") return link;
   const hashAt = link.indexOf("#");
   const path = hashAt === -1 ? link : link.slice(0, hashAt);
   const hash = hashAt === -1 ? "" : link.slice(hashAt);
-  return `${path}${path.includes("?") ? "&" : "?"}source=live${hash}`;
+  return `${path}?source=live${hash}`;
 }
 
 /** A price in USD per million tokens, as sent by the backend (a decimal string); display only. */
@@ -81,10 +94,11 @@ export function formatContextLength(tokens: number | null): string {
   return tokens === null ? "—" : `${tokens.toLocaleString("en-US")} tokens`;
 }
 
-/** The model list for the table: sorted by id, filtered by a case-insensitive match on id or name. */
+/** The model list for the table: valid ids only, sorted by id, filtered by a case-insensitive match on id or name. */
 export function filterModels(models: readonly AiModel[], query: string): AiModel[] {
   const needle = query.trim().toLowerCase();
   return models
+    .filter((model) => isValidModelId(model.id))
     .filter((model) => !needle || model.id.toLowerCase().includes(needle) || model.name.toLowerCase().includes(needle))
     .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 }
