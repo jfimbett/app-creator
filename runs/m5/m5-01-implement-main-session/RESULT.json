@@ -1,0 +1,33 @@
+{
+ "step": "m5/m5-01-implement-main-session",
+ "agent": "top-level session (Opus 5.5); frontend by a frontend-engineer subagent briefed in the session; three read-only reviewer subagents (backend security, backend tests, frontend security)",
+ "status": "completed; M5 gate passed with a mocked AI service; live AI not verified (N1)",
+ "machine": "Windows 11, Node 24.13.0, Python 3.13.9 in examples/sec-analytics/backend/.venv",
+ "start_commit": "40b0ea0 (main; tag m4 d82ab2a plus one documentation commit)",
+ "commits": {
+  "9f3699a": "feat(m5): grounding logic (retrieval, prompt, citations, scope)",
+  "79f6021": "feat(m5): OpenRouter client and AI analyst API",
+  "c46dd92": "docs(m5): AI analyst rules, student key guide and API contract",
+  "b0e5117": "fix(m5): security review findings on the AI boundary",
+  "0f6841b": "fix(m5): test review findings in the scope check, citations and retrieval",
+  "093956f": "feat(m5): Analyst panel, AI settings and source chips (frontend, by the subagent)",
+  "3ad7433": "fix(m5): frontend security review findings (by the subagent)",
+  "checkpoint": "the commit that adds this file; tagged m5"
+ },
+ "observed": {
+  "baseline_npm_run_verify": "exit 0 before any change (.logs/verify-baseline.log, not committed)",
+  "final_npm_run_verify": "exit 0 with no key (.logs/verify-final.log, not committed): toolkit checks, ruff, pytest 623 passed, eslint, tsc, Vitest 145 passed, production build, Playwright 56 passed (43 M1-M4 + 13 M5, AI calls mocked)",
+  "mocked_integration": "passed: OpenRouter mocked with respx (documented response shapes, SYNTHETIC, fake key test-key-not-real-0000) in pytest; /api/ai/* mocked with page.route in Playwright",
+  "live_ai": "not verified (N1): no authorized limited test key was configured; no key was asked for, .env was not read, no OpenRouter call was made",
+  "cancel_through_proxy": "observed working twice (before and after the Host check): the real app with a slow fake AI client behind next dev; aborting the browser request cancelled the upstream task in about 0.2 s and the slot went from 1 to 0, through the proxy and directly",
+  "real_context_lines": "checked by hand with no key on the running demo: 'Context: AAPL facts FY2022–FY2026 + 10-K passages', 'Context: AAPL 10-K 0000320193-26-000026 passages + AAPL facts', 'Context: AAPL, MSFT facts for revenue, net margin'; only /api/ai/context was called",
+  "visual_inspection": "screenshots looked at by the assistant: answer panel (1440, 390), settings dialog (1440), not-configured state (1366); no key visible; the subagent also looked at its screenshots at all three widths",
+  "independent_reviews": {
+   "backend_security": "pass with minor issues: 1 major (malformed replies crashed with a 500), 7 minor (unbounded Retry-After; SEC loads before refusal; chunked body read in full; slot-leak path; tracebacks unredacted; no Host check; lookalike delimiters). All fixed with tests.",
+   "backend_tests": "fail with 1 blocker (scope pre-check refused normal questions against a live-sized ticker list), 5 major, 3 minor. Fixed with tests; accepted: a lower-case one-word company name is not refused (the model still sees only loaded data).",
+   "frontend_security": "pass with minor issues: 1 major (a replaced key could show Connected), 7 minor. All fixed with tests by the subagent; spot-checked in the session."
+  }
+ },
+ "not_run": ["live AI (N1)", "live SEC with the AI panel", "GitHub CI", "Cline", "macOS", "the owner's own look at the screens"],
+ "published": false
+}

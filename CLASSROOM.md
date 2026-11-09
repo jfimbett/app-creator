@@ -2,7 +2,7 @@
 
 **Repository:** <https://github.com/jfimbett/app-creator>
 
-**`main` contains M4 functionality** (tag `m4`), as of 2026-11-09. M3 and M4 were verified on Windows 11.
+**`main` contains M5 functionality** (tag `m5`), as of 2026-11-09, on the instructor's machine. **Until those commits are pushed, the GitHub copy of `main` contains M4.** M3–M5 were verified on Windows 11; the M5 AI analyst was verified with a mocked AI service only (live AI not verified, N1).
 The old branch `wip/m3-filing-intelligence-unverified` is kept only as history; use `m3` instead.
 
 ## Versions
@@ -14,10 +14,9 @@ The old branch `wip/m3-filing-intelligence-unverified` is kept only as history; 
 | M2 Financial intelligence | Demo/Live choice, statement summaries, ratios, metric explorer, source details | `milestone/02-financial-intelligence` | `m2` | verified |
 | M3 Filing intelligence | Filings tab: latest 10-K/10-Q, 10-year history with amendments, a reader with sections, search and sec.gov links | `milestone/03-filing-intelligence` | `m3` | verified (Windows 11) |
 | M4 Comparative analysis | Compare screen: 2–4 companies by their own fiscal years, indexing, charts, CSV export | `milestone/04-comparative-analysis` | `m4` | verified (Windows 11) |
-| M5 | AI analyst | none | none | not built; only its brief exists |
+| M5 AI financial analyst | Analyst panel on company, filing and Compare screens with your own OpenRouter key; grounded answers with checked source chips | `milestone/05-ai-financial-analyst` | `m5` | verified with a mocked AI service (Windows 11); live AI not verified (N1) |
 
 "Verified" means a checkout passed `npm ci`, `npm run setup` and `npm run verify`: on macOS for M1 and M2, on Windows 11 for M3. Cline and GitHub CI are untested.
-Some milestone documents mention an `m5` tag: it does not exist yet.
 
 ## What you need installed
 
@@ -142,11 +141,17 @@ Open Apple and choose the **Filings** tab. Point out `Latest in snapshot (as of 
 
 **Limitations.** Sections are detected automatically from Item headings and may be imperfect. When none are found, the reader says so and shows the full text. Only the primary document is shown, not the exhibits. The demo has the documents of the latest 10-K and 10-Q of the three companies; other filings open on sec.gov.
 
-### M4 (`main`, or `git switch --detach m4`)
+### M4 (`git switch --detach m4`)
 
 Click **Compare** in the header. Add `aapl`, `msft` and `googl` in the box. Point out the line "AAPL: FY ends 09-26 · MSFT: FY ends 06-30 · GOOGL: FY ends 12-31" and the warning "Fiscal years are not aligned": every value shows its own period end under it. Tick **Index = 100 at first common fiscal year**: revenue becomes `INDEXED` from FY2017 (Apple 208.9 and Microsoft 343.6 in FY2026), while net margin says "not indexed: ratio". Switch the chart between **Trend** and **One year**. Click **Export CSV** and open the file: one line per value, with its SEC concept and accession. Copy the URL into a new tab: the same comparison appears. Under `npm run dev` with a contact set, switch to Live and add NVIDIA as a fourth company.
 
 **Limitations.** No calendar alignment and no currency conversion, by design. One index base year is used for all selected amounts, so adding FCF can move it later. The demo has three companies, so the four-company limit needs Live mode.
+
+### M5 (`main`, or `git switch --detach m5`)
+
+Open Apple and click **Analyst**. Without a key, point out "AI not configured: add your own OpenRouter key", the context line ("Context: AAPL facts FY2022–FY2026 + 10-K passages") and that everything else still works. With a limited key from the instructor: **AI settings** → paste the key (masked, memory only; the sessionStorage option warns that page scripts can read it) → choose a model from the list (prices per million tokens; none is preselected) → optionally "Test connection" (it warns about a small charge first). Ask "Why did net margin change?": the answer is plain text with numbered source chips; click a passage chip to open the 10-K at that block. Point out the notice: a valid chip shows the source exists, not that the sentence is true. Ask "Should I buy MSFT?" to see the refusal, which happens before any model call. Students follow [the student guide in the example README](examples/sec-analytics/README.md#optional-ai-analyst-m5).
+
+**Limitations.** Live AI was not verified in this build (no authorized test key, N1): the tests use a mocked AI service. Each question costs credits on the person's own key. Answers can still be wrong. Do not expose the app to a network: it is a local teaching app, not an AI proxy.
 
 ## Prompts and records
 

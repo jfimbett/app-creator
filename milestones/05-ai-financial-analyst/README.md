@@ -39,4 +39,24 @@ replaying a prompt does not reproduce the same code. The tag is the reference ve
 
 ## Results
 
-Filled in after the checkpoint.
+**Added.** An **Analyst** button on the company page, the filing reader and Compare opens a panel (beside the page on wide
+screens, full screen on a phone). Without a key it says "AI not configured: add your own OpenRouter key" and the rest of the
+app works as before. **AI settings** takes the person's own OpenRouter key (masked; memory only, or this tab after a warned
+opt-in; never localStorage), lists models with prices per million tokens and expiry dates (none preselected; a manual id is
+allowed), warns "This may incur a small charge" before the connection test, and clears the key. A question gets a plain-text
+answer with numbered source chips for the app's own facts and filing passages, invalid references listed, and the notice
+"Source links are checked; the claims themselves may still be wrong." The backend keeps the key only for the one upstream
+call, refuses foreign origins and hosts, limits size, context and concurrency, never retries, cancels on Cancel, and refuses
+price, valuation, advice and unloaded-company questions before any model call.
+
+**Checked.** `npm run verify` with no key (pytest with a mocked OpenRouter, Vitest, lint, types, build, Playwright including 13
+M5 journeys with a mocked backend and screenshots at 1440, 1366 and 390 px), the screenshots looked at, the real context line
+on all three screens with no key, cancel through the Next.js proxy with a slow fake client, and independent security
+(backend and frontend) and test reviews whose findings were fixed. Exact results:
+[runs/m5/m5-01-implement-main-session/RESULT.json](../../runs/m5/m5-01-implement-main-session/RESULT.json).
+
+**Live AI: not verified (N1).** No authorized, limited test key was available, so no real model was called. M5-AC9 stays
+`blocked: N1` until the owner runs one connection test and one chat with such a key.
+
+**Limitations.** Answers can be wrong even when every source chip is valid. The context is the latest five fiscal years and at
+most 8 passages. The scope pre-check is deliberately simple: it misses a one-word company name written in lower case.

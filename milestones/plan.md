@@ -60,10 +60,10 @@ Paths are relative to `examples/sec-analytics/` (written `fe/` for the frontend 
 
 | # | Slice | Criteria | Owner | May touch | Must not touch | Skills | Status |
 |---|---|---|---|---|---|---|---|
-| 5.1 | `clients/openrouter.py` (models, key info, chat; errors; timeout; no retries), log redaction, Origin check, limits; `/api/ai/models`, `/api/ai/test-connection` | M5-AC3, M5-AC7, M5-E5, M5-E6 | backend-engineer | `be/app/`, `be/tests/` | `fe/` | integrate-api, test-and-check | todo |
-| 5.2 | `logic/retrieval.py`, `scope.py`, `prompting.py`, `citations.py`; `/api/ai/chat` with mocked upstream | M5-AC4, M5-AC5, M5-E1–M5-E4 | backend-engineer | `be/app/`, `be/tests/` | `fe/` | test-and-check | todo |
-| 5.3 | AI settings (masked key, memory, sessionStorage opt-in, model list, test, clear) and the analyst panel on company, filing and comparison screens; cancel | M5-AC1–M5-AC4, M5-AC6, M5-AC8, V1–V3 | frontend-engineer (with design-lead) | `fe/` | `be/` | design-interface, build-feature | todo |
-| 5.4 | E2E with a mocked backend, security review (key handling), README stating "live AI: not verified" unless N1 is lifted, checkpoint | all M5; M5-AC9 stays `blocked: N1` | test-engineer, reviewers | `fe/e2e/`, `milestones/05-ai-financial-analyst/README.md` | – | review-changes, orchestrate-steps | todo |
+| 5.1 | `clients/openrouter.py` (models, key info, chat; errors; timeout; no retries), log redaction, Origin check, limits; `/api/ai/models`, `/api/ai/test-connection` | M5-AC3, M5-AC7, M5-E5, M5-E6 | backend-engineer | `be/app/`, `be/tests/` | `fe/` | integrate-api, test-and-check | done (2026-11-09) |
+| 5.2 | `logic/retrieval.py`, `scope.py`, `prompting.py`, `citations.py`; `/api/ai/chat` with mocked upstream | M5-AC4, M5-AC5, M5-E1–M5-E4 | backend-engineer | `be/app/`, `be/tests/` | `fe/` | test-and-check | done (2026-11-09) |
+| 5.3 | AI settings (masked key, memory, sessionStorage opt-in, model list, test, clear) and the analyst panel on company, filing and comparison screens; cancel | M5-AC1–M5-AC4, M5-AC6, M5-AC8, V1–V3 | frontend-engineer (with design-lead) | `fe/` | `be/` | design-interface, build-feature | done (2026-11-09) |
+| 5.4 | E2E with a mocked backend, security review (key handling), README stating "live AI: not verified" unless N1 is lifted, checkpoint | all M5; M5-AC9 stays `blocked: N1` | test-engineer, reviewers | `fe/e2e/`, `milestones/05-ai-financial-analyst/README.md` | – | review-changes, orchestrate-steps | done (2026-11-09); M5-AC9 `blocked: N1` |
 
 Status values: `todo`, `in progress`, `done (<date>, commit <short hash>)`, `blocked: <reason>`.
 
@@ -78,6 +78,7 @@ Status values: `todo`, `in progress`, `done (<date>, commit <short hash>)`, `blo
 | 2026-11-04 | 3.1–3.3 (partial) | filing API, sanitizer, sections, screens (runs/m3/m3-02); stopped by the classroom freeze | pytest 431 passed; no browser check | unverified |
 | 2026-11-09 | 3.1–3.4 | finished M3 on Windows 11 (runs/m3/m3-04): Windows test-guard fix, six M3 browser journeys, phone and error-message fixes, live NVIDIA check, independent security and test reviews with fixes (nested-table parsing, download time and unzip limits, date-independent tests, stronger E1/E4/AC4/AC7/search tests) | `npm run verify` exit 0 (see m3-04 RESULT.json) | minor review items below |
 | 2026-11-09 | 4.1–4.3 | M4 in one main session (runs/m4/m4-01): comparison and CSV API with indexing, Compare screen, 13 browser journeys, live 4-company check, independent security and test reviews with fixes | `npm run verify` exit 0 (see m4-01 RESULT.json) | minor items below |
+| 2026-11-09 | 5.1–5.4 | M5 in the main session (runs/m5/m5-01), frontend by a frontend-engineer subagent: OpenRouter client and AI API, grounding (retrieval, prompt, citations, scope pre-check), Analyst panel and settings, 13 browser journeys with a mocked backend; independent security (backend, frontend) and test reviews with fixes | `npm run verify` exit 0 with no key (see m5-01 RESULT.json); live AI not verified (N1) | M5-AC9 blocked: N1; minor items below |
 
 ## Known problems and open questions
 
@@ -94,3 +95,4 @@ Status values: `todo`, `in progress`, `done (<date>, commit <short hash>)`, `blo
 - With three demo companies, the four-company comparison is shown only in tests and live mode (Q19).
 - **M3 review items left open (minor, 2026-11-09):** no component test for the "Amended by" link on the latest card (the recorded data has no amended latest report; the API test covers the data); untested sanitizer paths (`visibility:hidden`, `!important`, a `.txt` file whose HTML starts after 2 KB; a block that is only a year such as "2025" is dropped as a page number); the section rule that keeps short leading items when there is no contents list.
 - **M4 items left open (minor, 2026-11-09):** a company with two annual periods carrying the same fiscal year label (a 52/53-week year ending on 1 January and on 31 December of one year) would show one of them in the table; not seen in the fixtures or live checks. The fifth-company refusal and the currency warning are shown in the browser only with mocked data (the demo has three USD companies).
+- **M5 items (2026-11-09):** live AI is not verified (N1: no authorized limited test key). The scope pre-check misses a one-word company name written in lower case ("what about microsoft?"); the model then still sees only the loaded data. Abbreviation tickers such as GM, ON or ALL are never treated as company mentions.

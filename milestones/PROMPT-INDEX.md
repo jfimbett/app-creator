@@ -80,6 +80,18 @@ Built, reviewed and verified on 2026-11-09 in one main session (m4-01). Changes:
 |---|---|---|---|
 | [m4-01-implement-main-session](../runs/m4/m4-01-implement-main-session/PROMPT.md) | built M4, live check, independent security and test reviews and their fixes, gate | **gap:** [marker](../runs/m4/m4-01-implement-main-session/RESPONSE.md) | [result](../runs/m4/m4-01-implement-main-session/RESULT.json) |
 
-## M5: not started
+## M5 AI financial analyst: tag `m5`, branch `milestone/05-ai-financial-analyst`
 
-Only its brief exists: [M5](05-ai-financial-analyst/PROMPT.md).
+Built, reviewed and verified on 2026-11-09 (m5-01) with a mocked AI service; live AI not verified (N1). The frontend was built
+by a frontend-engineer subagent briefed in the same session (its brief and final report are in the step record's notes).
+Changes: the OpenRouter boundary, grounded chat with checked citations, the Analyst panel and AI settings.
+[Milestone README](05-ai-financial-analyst/README.md).
+
+- Brief: [05-ai-financial-analyst/PROMPT.md](05-ai-financial-analyst/PROMPT.md)
+- Follow-ups: [05-ai-financial-analyst/FOLLOWUPS.md](05-ai-financial-analyst/FOLLOWUPS.md)
+
+| Step (prompt) | What it did | Response | Result |
+|---|---|---|---|
+| [m5-01-implement-main-session](../runs/m5/m5-01-implement-main-session/PROMPT.md) | built M5 (backend in the session, frontend by a subagent), reviews and fixes, gate | **gap:** [marker](../runs/m5/m5-01-implement-main-session/RESPONSE.md) | [result](../runs/m5/m5-01-implement-main-session/RESULT.json) |
+
+All five milestones now have tags.
