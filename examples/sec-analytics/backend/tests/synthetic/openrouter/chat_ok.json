@@ -1,0 +1,9 @@
+{
+  "_synthetic": "SYNTHETIC: invented for tests, not a real model answer. Shape from docs/research/openrouter.md §2.",
+  "id": "gen-invented-1",
+  "model": "example/zeta-model",
+  "object": "chat.completion",
+  "choices": [{"finish_reason": "stop", "native_finish_reason": "stop",
+               "message": {"role": "assistant", "content": "Net margin rose to 27.60% in FY2026 [F2]. The 10-K points to product mix [P1]."}}],
+  "usage": {"prompt_tokens": 5120, "completion_tokens": 42, "total_tokens": 5162, "cost": 0.0131}
+}

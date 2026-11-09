@@ -3,7 +3,8 @@
 Pure functions: no network, files or clock. Same input → same context.
 
 - **Facts** are the app's own computed values (`MetricValue`, reported or derived, with
-  provenance), never numbers re-derived here. Only values with status "ok". Order: the metric
+  provenance), never numbers re-derived here, from each company's latest five fiscal years.
+  Only values with status "ok". Order: the metric
   priority list (or the comparison's metrics in their order), then newest fiscal year first,
   then company order. At most 60.
 - **Passages** are sanitized filing blocks, grouped into chunks of at most 3,000 characters
@@ -26,6 +27,9 @@ from app.logic.sanitize import Block
 from app.models.common import MetricValue
 
 MAX_FACTS = 60
+# The latest five fiscal years of each company, so the 60 facts cover about 12 metrics instead of
+# 3 metrics over 20 years.
+FACT_YEARS = 5
 MAX_PASSAGES = 8
 MAX_CONTEXT_CHARS = 24_000
 MAX_PASSAGE_CHARS = 3_000
@@ -194,7 +198,7 @@ def select_facts(sources: list[FactSource], metric_ids: list[str] | None) -> lis
         newest_first = [
             [
                 v
-                for v in reversed(list(source.series.get(metric_id, [])))
+                for v in reversed(list(source.series.get(metric_id, []))[-FACT_YEARS:])
                 if v.status == "ok" and v.value is not None
             ]
             for source in sources

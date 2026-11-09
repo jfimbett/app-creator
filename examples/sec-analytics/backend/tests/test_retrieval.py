@@ -95,6 +95,12 @@ def test_passages_are_ranked_by_question_terms() -> None:
     assert "supply" in top or "iphone" in top
 
 
+def test_facts_come_from_the_latest_five_fiscal_years() -> None:
+    facts = retrieval.build_context([apple_facts_source()], None, None, "x").facts
+    assert {f.fiscal_year_label for f in facts} == {f"FY{y}" for y in range(2022, 2027)}
+    assert len({f.metric_id for f in facts}) >= 10
+
+
 def test_comparison_facts_cover_only_the_selected_metrics() -> None:
     source = apple_facts_source()
     facts = retrieval.build_context([source], ["revenue", "net_margin"], None, "x").facts

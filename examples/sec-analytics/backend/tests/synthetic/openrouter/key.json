@@ -1,0 +1,5 @@
+{
+  "_synthetic": "SYNTHETIC: invented for tests, not real OpenRouter data. Shape from docs/research/openrouter.md §4.",
+  "data": {"label": "group-7 (invented)", "limit": 5, "limit_remaining": 4.25, "usage": 0.75,
+           "is_free_tier": false}
+}

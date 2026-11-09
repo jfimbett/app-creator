@@ -1,0 +1,12 @@
+{
+  "_synthetic": "SYNTHETIC: invented for tests, not real OpenRouter data. Shape from docs/research/openrouter.md §3.",
+  "data": [
+    {"id": "example/zeta-model", "name": "Zeta (invented)", "context_length": 128000,
+     "pricing": {"prompt": "0.0000025", "completion": "0.00001", "request": "0"},
+     "expiration_date": null},
+    {"id": "example/alpha-free:free", "name": "Alpha free (invented)", "context_length": 32768,
+     "pricing": {"prompt": "0", "completion": "0"}, "expiration_date": "2026-12-31"},
+    {"id": "example/no-pricing", "name": "No pricing (invented)", "context_length": null}
+  ],
+  "total_count": 3
+}

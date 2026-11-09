@@ -7,11 +7,13 @@ network; live requests go to SEC only when a request asks for `source=live` (see
 
 from fastapi import FastAPI
 
-from app.api import companies, compare, filings, financials, meta
+from app.api import ai, companies, compare, filings, financials, meta
+from app.clients.openrouter import OpenRouterClient
 from app.clients.sec import SecClient
 from app.data.fixtures import FixtureError, FixtureStore
 from app.data.source import DataSource
 from app.errors import install_error_handlers
+from app.logging_setup import install_log_redaction
 from app.settings import Settings, SettingsError, load_settings
 
 APP_NAME = "SEC Analytics"
@@ -33,6 +35,10 @@ def create_app(settings: Settings | None = None, sec_client: SecClient | None = 
     application.state.settings = settings
     application.state.store = store
     application.state.data = DataSource(settings, store, sec_client)
+    # The AI analyst (M5): a client that holds no key, and at most 2 chats at once.
+    application.state.ai_client = OpenRouterClient()
+    application.state.ai_slots = ai.ChatSlots(ai.MAX_CONCURRENT_CHATS)
+    install_log_redaction()
     install_error_handlers(application)
 
     @application.get("/api/health")
@@ -45,6 +51,7 @@ def create_app(settings: Settings | None = None, sec_client: SecClient | None = 
     application.include_router(financials.router)
     application.include_router(filings.router)
     application.include_router(compare.router)
+    application.include_router(ai.router)
     return application
 
 
