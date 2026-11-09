@@ -55,3 +55,35 @@ cd examples/sec-analytics/backend
 
 **Classroom note.** SEC's fair-access limit applies across everyone sharing one public address, so a class uses Demo by
 default. Do not have every student recapture or use Live at once.
+
+## Optional AI analyst (M5)
+
+The company page, the filing reader and Compare have an **Analyst** button. It answers questions about the data on screen
+using a model you choose on [OpenRouter](https://openrouter.ai), and cites its sources as numbered chips. Everything else
+in the app works without it.
+
+**Your own key.** Open Analyst → **AI settings** and paste your own OpenRouter key. Use a key with a **credit limit**; your
+instructor may give you a limited key for your group. This is separate from any model your coding assistant (Claude Code
+or Cline) uses: nothing here reads or changes their settings, and their settings do not give this app a key.
+
+**Where the key is kept.** By default only in the page's memory: a reload forgets it. If you tick "Remember for this tab
+(sessionStorage)", it stays until you close the tab. Scripts on this page can read browser storage, so this is **not
+secure storage**. The key is never written to localStorage, cookies, the URL or any file, and the backend never stores
+or logs it: it forwards it for that one request.
+
+**Costs.** Questions are paid from your key's credit at the model's price, shown per million tokens in the model list.
+"Test connection" asks OpenRouter about your key and may incur a small charge. The app never retries a failed call, so a
+failure does not cost twice. There is no default model: you choose one.
+
+**What the answer is.** The model sees only the app's own numbers (the latest five fiscal years) and passages of the
+filing, with ids like `[F2]` and `[P1]`. The app checks that every cited id was really supplied. **A valid source chip
+means the source exists, not that the sentence is true**: read the source. The analyst refuses price forecasts,
+valuations, investment advice and companies that are not open.
+
+**For instructors: one limited key per student or group.** In the OpenRouter dashboard, create a key per student or group
+with a credit limit and an expiry; or create them with the management API (`POST /api/v1/keys` with `limit`,
+`limit_reset` and `expires_at`, using a separate management key, which cannot call models). Never hand out one
+unrestricted shared key. Extra keys do not raise the rate limits of free models.
+
+**Local only.** The AI endpoints accept requests only from this app's own pages on 127.0.0.1 or localhost. This is a local
+teaching app, not a public AI proxy: do not expose the backend to a network.

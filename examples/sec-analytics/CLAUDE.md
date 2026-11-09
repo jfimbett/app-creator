@@ -105,6 +105,29 @@ known answers `FX…`), [plan.md](../../milestones/plan.md) (slices, progress, k
 5. **Live comparisons** fetch Company Facts and submissions per company, one after another through the throttled client
    (a 4-company comparison takes several seconds the first time), and never fall back to demo data by themselves.
 
+## AI analyst (from M5)
+
+1. **The key is the person's own.** The browser keeps it in memory (sessionStorage only after an explicit, warned opt-in;
+   never localStorage, cookies, URLs or files) and sends it only in the `X-OpenRouter-Key` header to this backend, which
+   uses it for one upstream call and drops it. The server holds no AI key, no default model and no `OPENROUTER_*`
+   setting. Never log, print, store or echo a key; tests use the fake `test-key-not-real-0000`.
+2. **One boundary.** `backend/app/clients/openrouter.py` is the only code that calls OpenRouter, at a fixed base URL, with
+   a 60 s timeout and **no automatic retries** (a retry spends credits twice). Errors are mapped by status and
+   `error.metadata`, never by message text, and `body.error` is checked even on a 200. `/api/ai/*` refuses foreign
+   origins (403 `forbidden_origin`), bodies over 64 KB and a third concurrent chat; Cancel cancels the upstream call.
+3. **Grounding.** The model sees only the app's own computed facts (latest five fiscal years, at most 60) and sanitized
+   filing passages (at most 8; about 24,000 characters in all), with server-assigned ids `F#`/`P#`. Filing text goes
+   only into a delimited data block in the user message, never into the system message. The model is told to quote
+   the supplied numbers, not to calculate; the app never reads numbers back from an answer.
+4. **Citations** are checked against the supplied ids; others are listed as "Reference not in the supplied sources".
+   A valid link shows the source exists, not that the claim is true: the notice "Source links are checked; the claims
+   themselves may still be wrong." stays under every answer.
+5. **Scope pre-check** (`logic/scope.py`) refuses price forecasts, valuations, investment advice and companies that are
+   not loaded before any model call. Keep its term lists small and tested for false positives.
+6. **Live AI needs money and a secret.** Never ask anyone for a key and never run a live AI call unless the owner says,
+   in the session, that an authorized limited test key is configured for it (then one connection test and one chat,
+   reported separately). Otherwise report "live AI: not verified (N1)".
+
 ## Never
 
 - Market prices, market capitalisation, valuation metrics (P/E, EV/EBITDA and the like), currency conversion or

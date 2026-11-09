@@ -96,3 +96,5 @@ rules") and `backend/app/logic/`. Fixtures cannot show every filer's tagging, so
 - Aligning companies to calendar years, converting currencies, indexing a ratio, or indexing in the frontend (M4: one rule, in
   `logic/compare.py`; see the example's `CLAUDE.md` "Comparison, indexing and CSV").
 - Writing 0 for a missing value in a CSV, or a text cell that starts with `=`, `+`, `-` or `@` without the leading `'`.
+- Letting the AI analyst see numbers the app did not compute, putting filing text in the system message, or treating a
+  valid source chip as proof that the sentence is true (M5: see the example's `CLAUDE.md` "AI analyst").

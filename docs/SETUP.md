@@ -58,6 +58,21 @@ BASE_URL=http://127.0.0.1:3000 PLAYWRIGHT_BROWSERS_PATH=../../../.cache/ms-playw
   npx playwright test --config playwright.live.config.ts
 ```
 
+## SEC Analytics: optional AI analyst
+
+The analyst (from milestone M5) is optional; the rest of the app needs no key.
+
+- **Use your own OpenRouter key with a credit limit.** Your instructor may give you a separate limited key for your
+  group. Paste it in the app under Analyst → AI settings, never into a chat, a file or a commit.
+- **Storage:** memory only by default (a reload forgets it). "Remember for this tab (sessionStorage)" keeps it until the
+  tab closes; scripts on the page can read it, so it is not secure storage. The app never uses localStorage, cookies or
+  files for the key, and the backend never stores or logs it.
+- **Cost:** answers are paid from the key's credit. "Test connection" may incur a small charge. There is no default model.
+- **Instructors:** issue separate limited-credit keys per student or group (a credit limit and an expiry on each, in the
+  OpenRouter dashboard or with its management API). Never share one unrestricted key.
+- **Separate from your coding assistant:** this key and model are unrelated to Claude Code's or Cline's model or provider
+  settings, and the app does not read or change those.
+
 ## Troubleshooting
 
 | What you see | What to do |
