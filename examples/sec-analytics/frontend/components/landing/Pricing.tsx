@@ -16,13 +16,14 @@ export function Pricing() {
             key={tier.name}
             className={`relative flex flex-col rounded-lg border bg-bg p-6 ${tier.highlighted ? "border-accent shadow-pop ring-1 ring-accent" : "border-line shadow-card"}`}
           >
-            {tier.highlighted ? <p className="label-caps absolute -top-3 left-6 rounded-full bg-accent px-2.5 py-0.5 text-on-accent">Illustrative</p> : null}
+            {tier.highlighted ? <p className="label-caps absolute -top-3 left-6 rounded-full bg-accent px-2.5 py-0.5 text-on-accent">For groups</p> : null}
             <h3 className="text-title font-semibold text-fg">{tier.name}</h3>
             <p className="mt-1 text-muted">{tier.summary}</p>
             <p className="mt-5 flex items-baseline gap-2">
               <span className="num text-display font-semibold text-fg">{tier.price}</span>
               <span className="text-muted">{tier.period}</span>
             </p>
+            <p className="text-xs font-semibold text-warning">Illustrative price</p>
             <ul className="mt-5 flex flex-1 flex-col gap-2">
               {tier.features.map((feature) => (
                 <li key={feature} className="flex gap-2 text-fg">

@@ -8,8 +8,7 @@ export const HEADLINE = "Understand public companies from their SEC filings";
 export const SUBHEADLINE =
   "Search a company, read ten years of figures with the filing each number came from, open the 10-K itself, and compare up to four companies side by side.";
 
-export const DISCLAIMER =
-  "SEC Analytics is not affiliated with or endorsed by the U.S. Securities and Exchange Commission. It uses public SEC EDGAR data and is not investment advice.";
+export { DISCLAIMER } from "./site";
 
 export const REVIEWS_LABEL = "Fictional testimonials written for this teaching demo.";
 export const PRICING_NOTE = "Prices are illustrative. This teaching app has no accounts and takes no payments.";
@@ -147,7 +146,7 @@ export const PRICING_TIERS: PricingTier[] = [
     period: "per term",
     summary: "For a course with an instructor.",
     features: ["Everything in Team", "Instructor features (illustrative)", "Recorded demo snapshot for offline lessons"],
-    cta: { label: "Read the FAQ", href: "#faq" },
+    cta: { label: "Try it with a class", href: "/app" },
   },
 ];
 
@@ -193,6 +192,6 @@ export const FAQ = [
   {
     question: "Does it store my data?",
     answer:
-      "There are no accounts. The app remembers only your colour theme in this browser. The AI key stays in memory unless you opt in to keep it for the tab, and it is never written to disk by the app.",
+      "There are no accounts. The app keeps your colour theme in this browser's localStorage. The AI key stays in the page's memory; if you choose to keep it for the tab, it goes into this tab's sessionStorage and is removed when you turn that off or close the tab. It is never put in localStorage, cookies or URLs.",
   },
 ] as const;

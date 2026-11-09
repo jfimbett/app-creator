@@ -53,9 +53,9 @@ function ReaderHeader({ cik, data }: { cik: string; data: FilingDocumentResponse
   return (
     <section aria-label="About this filing" className="surface flex flex-col gap-2 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-heading">
+        <h2 className="text-heading font-semibold">
           <FormLabel filing={meta} showOriginal />
-        </span>
+        </h2>
         <InfoBadge source={data.source} />
       </div>
       <dl className="flex flex-wrap gap-x-5 gap-y-0.5 text-table">

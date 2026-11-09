@@ -79,6 +79,16 @@ export function formatSignedPercent(value: number | null): string {
   return isNumber(value) && value > 0 && text !== "0.0%" ? `+${text}` : text;
 }
 
+/**
+ * The direction a change is shown with, decided from the rounded percent that is displayed, so an arrow never
+ * disagrees with its number: 0.0004 shows "0.0%" and is "flat".
+ */
+export function changeDirection(value: number): "up" | "down" | "flat" {
+  const text = formatPercent(value);
+  if (text === "0.0%" || text === "-0.0%" || text === "−0.0%") return "flat";
+  return value > 0 ? "up" : "down";
+}
+
 /** A decimal ratio as a multiple with two decimals: 0.5 → "0.50×". */
 export function formatTimes(value: number | null): string {
   if (!isNumber(value)) return DASH;

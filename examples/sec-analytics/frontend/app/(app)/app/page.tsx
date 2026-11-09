@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback } from "react";
 
 import { CompanySearch } from "@/components/CompanySearch";
@@ -16,7 +15,7 @@ import { useApiResource } from "@/lib/useApiResource";
 const HINTS = [
   { title: "Overview", text: "The SEC profile, key figures, revenue and net income by fiscal year, and statement summaries with the source of every value." },
   { title: "Filings", text: "The 10-K and 10-Q history, and a reader for annual reports with a section list and text search." },
-  { title: "Compare", text: "Two to four companies side by side, each on its own fiscal years, with a CSV export.", link: "/compare" },
+  { title: "Compare", text: "Two to four companies side by side, each on its own fiscal years, with a CSV export." },
   { title: "Analyst", text: "Questions about the loaded figures and filings, answered with your own OpenRouter key and checked source links." },
 ] as const;
 
@@ -83,7 +82,7 @@ export default function Home() {
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {HINTS.map((hint) => (
             <li key={hint.title} className="flex flex-col gap-1 border-l-2 border-accent pl-3">
-              <h3 className="font-semibold">{"link" in hint ? <Link href={href(hint.link)}>{hint.title}</Link> : hint.title}</h3>
+              <h3 className="font-semibold">{hint.title}</h3>
               <p className="text-table text-muted">{hint.text}</p>
             </li>
           ))}

@@ -43,7 +43,7 @@ export function Hero() {
             </div>
             <ThemedShot
               stem="app"
-              priority
+              eager
               width={1440}
               height={900}
               sizes="(min-width: 1024px) 1024px, 100vw"

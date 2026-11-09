@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  changeDirection,
   MINUS,
   NOT_REPORTED,
   formatDate,
@@ -141,5 +142,18 @@ describe("formatSignedPercent (year-on-year change on the key-figure cards)", ()
     expect(formatSignedPercent(0.0004)).toBe("0.0%");
     expect(formatSignedPercent(-0.0004)).toBe("0.0%");
     expect(formatSignedPercent(null)).toBe("—");
+  });
+});
+
+describe("changeDirection (M6 key-figure change line)", () => {
+  it.each([
+    [0.151, "up"],
+    [-0.02, "down"],
+    [0, "flat"],
+    [0.0004, "flat"],
+    [-0.0004, "flat"],
+    [0.0005, "up"],
+  ] as const)("%s is %s, matching the shown percent", (value, expected) => {
+    expect(changeDirection(value)).toBe(expected);
   });
 });

@@ -6,7 +6,7 @@ import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: APP_NAME,
+  title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
   description: `${APP_NAME}: company profiles and annual figures from SEC EDGAR data`,
 };
 

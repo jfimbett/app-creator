@@ -24,6 +24,24 @@ describe("contrastRatio (WCAG 2.x relative luminance)", () => {
   });
 });
 
+describe("parseThemeTokens", () => {
+  const ok = ':root { --bg: #000000; --x: var(--bg); } :root[data-theme="light"] { --bg: #ffffff; }';
+
+  it("reads both blocks, resolves var() and lets light inherit dark", () => {
+    const t = parseThemeTokens(ok);
+    expect(t.dark.x).toBe("#000000");
+    expect(t.light.bg).toBe("#ffffff");
+  });
+
+  it("ignores a :root block inside a comment", () => {
+    expect(parseThemeTokens("/* :root { --bg: #123456; } */ " + ok).dark.bg).toBe("#000000");
+  });
+
+  it("refuses a second :root block instead of reading the wrong one", () => {
+    expect(() => parseThemeTokens(":root { --bg: #111111; } " + ok)).toThrow(/exactly one/);
+  });
+});
+
 // Token values are read from globals.css itself, so the test checks what the app really ships.
 const css = readFileSync(join(__dirname, "..", "app", "globals.css"), "utf8");
 const themes = parseThemeTokens(css);

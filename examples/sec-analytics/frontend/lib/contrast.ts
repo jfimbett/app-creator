@@ -44,12 +44,15 @@ export function contrastRatio(a: string, b: string): number {
 /**
  * Reads the custom properties of `:root { … }` (dark) and `:root[data-theme="light"] { … }` (light) from
  * globals.css. Light inherits every dark value it does not override, as in the browser. A value that is
- * `var(--other)` is resolved to the other token's value.
+ * `var(--other)` is resolved to the other token's value. Comments are ignored, and each block must appear exactly
+ * once, so the test can never silently read the wrong one.
  */
-export function parseThemeTokens(css: string): Record<"dark" | "light", Record<string, string>> {
+export function parseThemeTokens(source: string): Record<"dark" | "light", Record<string, string>> {
+  const css = source.replace(/\/\*[\s\S]*?\*\//g, "");
   const block = (selector: RegExp) => {
-    const match = selector.exec(css);
-    if (!match) throw new Error(`Block not found: ${selector}`);
+    const matches = [...css.matchAll(new RegExp(selector.source, "g"))];
+    if (matches.length !== 1) throw new Error(`Expected exactly one block for ${selector}, found ${matches.length}`);
+    const match = matches[0];
     const out: Record<string, string> = {};
     for (const [, name, value] of match[1].matchAll(/--([\w-]+)\s*:\s*([^;]+);/g)) out[name] = value.trim();
     return out;

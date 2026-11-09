@@ -118,3 +118,23 @@ test("landing at 390 px: the menu opens, closes with Esc and returns focus; no s
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
+
+test("app footer: the same SEC disclaimer and a link back to the landing page (M6-AC6)", async ({ page }) => {
+  await page.goto("/app");
+  await expect(page.getByTestId("app-disclaimer")).toContainText(DISCLAIMER);
+  await page.getByRole("contentinfo").getByRole("link", { name: "About SEC Analytics" }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+});
+
+test("app home in Live mode loads no company data before a company is opened (no prefetching from SEC)", async ({ page }) => {
+  const companyCalls: string[] = [];
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname.startsWith("/api/companies/")) companyCalls.push(request.url());
+  });
+  await page.goto("/app?source=live");
+  await expect(page.getByRole("link", { name: /AAPL/ }).first()).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Open the company to load its live figures.").first()).toBeVisible();
+  await page.waitForTimeout(1_000);
+  expect(companyCalls).toEqual([]);
+});

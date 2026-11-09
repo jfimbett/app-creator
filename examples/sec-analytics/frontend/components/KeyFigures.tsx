@@ -1,7 +1,7 @@
 import { KindBadge } from "@/components/SourceBadge";
 import { ValueCell } from "@/components/ValueCell";
 import { findFigure } from "@/lib/display";
-import { formatFiscalYear, formatSignedPercent, unitCaption } from "@/lib/format";
+import { changeDirection, formatFiscalYear, formatSignedPercent, unitCaption } from "@/lib/format";
 import type { MetricValue } from "@/lib/types";
 
 const FIGURES = [
@@ -21,7 +21,7 @@ const FIGURES = [
  */
 function Change({ change, period, showValue }: { change: MetricValue | null; period: string; showValue: boolean }) {
   if (!change || change.status !== "ok" || change.value === null || change.period_end !== period) return null;
-  const direction = change.value > 0 ? "up" : change.value < 0 ? "down" : "flat";
+  const direction = changeDirection(change.value);
   const tone = direction === "up" ? "text-positive" : direction === "down" ? "text-negative" : "text-muted";
   const arrow = direction === "up" ? "▲" : direction === "down" ? "▼" : "▶";
   return (

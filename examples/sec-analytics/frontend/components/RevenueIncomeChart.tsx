@@ -137,7 +137,7 @@ export function RevenueIncomeChart({ points, unit, range, onRangeChange, notes }
               />
               <ReferenceLine y={0} stroke="var(--text-muted)" />
               <Tooltip content={ChartTooltip} cursor={{ stroke: "var(--border-strong)", strokeDasharray: "3 3" }} />
-              <Legend iconType="plainline" wrapperStyle={{ fontSize: 12, color: "var(--text-muted)", paddingTop: 4 }} />
+              <Legend iconType="plainline" itemSorter={null} wrapperStyle={{ fontSize: 12, color: "var(--text-muted)", paddingTop: 4 }} />
               {SERIES.map((s) => (
                 <Line
                   key={s.key}

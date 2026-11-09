@@ -14,7 +14,7 @@ const DESCRIPTION =
   "Ten years of figures with their sources, the filings themselves, comparisons of up to four companies and an optional AI analyst. Uses public SEC EDGAR data; a teaching app.";
 
 export const metadata: Metadata = {
-  title: TITLE,
+  title: { absolute: TITLE },
   description: DESCRIPTION,
   openGraph: { title: TITLE, description: DESCRIPTION, type: "website" },
 };

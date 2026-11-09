@@ -16,6 +16,7 @@ export function LandingHeader() {
   const [open, setOpen] = useState(false);
   const menuId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -25,12 +26,22 @@ export function LandingHeader() {
         buttonRef.current?.focus();
       }
     };
+    // A click or focus outside the header closes the menu too.
+    const onOutside = (event: Event) => {
+      if (headerRef.current && event.target instanceof Node && !headerRef.current.contains(event.target)) setOpen(false);
+    };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onOutside);
+    document.addEventListener("focusin", onOutside);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onOutside);
+      document.removeEventListener("focusin", onOutside);
+    };
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/75">
+    <header ref={headerRef} className="sticky top-0 z-20 border-b border-line bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/75">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2 text-fg no-underline hover:no-underline" aria-label="SEC Analytics, top of the page">
           <BrandMark />

@@ -20,7 +20,7 @@ export function StatementTable({ caption, lines, periods }: { caption: string; l
   }, [columns]);
 
   return (
-    <div ref={box} className="table-scroll">
+    <div ref={box} className="table-box max-h-[70vh]">
       <table className="data-table" data-testid="statement-table">
         <caption className="sr-only">{caption}</caption>
         <thead>

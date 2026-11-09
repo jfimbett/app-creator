@@ -198,7 +198,7 @@ test("different currencies: warning and no shared money axis (M4-AC4, mocked bac
   await expect(page.locator('[data-testid="compare-warning"][data-code="currencies_differ"]')).toHaveText(/Different reporting currencies \(USD, EUR\): not converted/);
   await expect(page.getByTestId("chart-blocked")).toBeVisible();
   await expect(page.locator('[data-testid="compare-line"][data-metric="revenue"]').nth(1)).toContainText("EUR millions");
-  await page.getByRole("tab", { name: "Net margin" }).click();
+  await page.getByRole("group", { name: "Chart metric" }).getByRole("button", { name: "Net margin" }).click();
   await expect(page.getByTestId("chart-blocked")).toHaveCount(0);
   await expect(page.getByTestId("compare-chart").locator(".recharts-line")).toHaveCount(2);
 });

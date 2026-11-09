@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, type TooltipContentProps, XAxis, YAxis } from "recharts";
 
 import { metricLabel, MONEY_METRICS, PERCENT_METRICS } from "@/lib/compare-state";
-import { barDefaultLabel, cellText, chartPoints, indexLabel, rowAt, rowUnitCaption, SERIES_COLOURS, sharedAxisBlocked } from "@/lib/compare-view";
+import { barDefaultLabel, cellText, chartPoints, indexLabel, rowAt, rowUnitCaption, SERIES_COLOURS, SERIES_DASHES, sharedAxisBlocked } from "@/lib/compare-view";
 import { formatMillions, formatPercent, formatPeriod, formatTimes } from "@/lib/format";
 import type { CompareResponse } from "@/lib/types";
 
@@ -77,13 +77,12 @@ export function CompareChart({ response }: { response: CompareResponse }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div role="tablist" aria-label="Chart metric" className="flex flex-wrap gap-1">
+        <div role="group" aria-label="Chart metric" className="flex flex-wrap gap-1">
           {response.metrics.map((id) => (
             <button
               key={id}
               type="button"
-              role="tab"
-              aria-selected={id === current}
+              aria-pressed={id === current}
               onClick={() => setMetric(id)}
               className={`btn ${id === current ? "border-accent! font-semibold shadow-[inset_0_-2px_0_var(--accent)]" : "text-muted!"}`}
             >
@@ -138,7 +137,7 @@ export function CompareChart({ response }: { response: CompareResponse }) {
                 <ReferenceLine y={0} stroke="var(--text-muted)" />
                 {indexed ? <ReferenceLine y={100} stroke="var(--border)" strokeDasharray="4 4" /> : null}
                 <Tooltip content={trendTooltip} cursor={{ stroke: "var(--border-strong)", strokeDasharray: "3 3" }} />
-                <Legend iconType="plainline" wrapperStyle={{ fontSize: 12, color: "var(--text-muted)", paddingTop: 4 }} />
+                <Legend iconType="plainline" itemSorter={null} wrapperStyle={{ fontSize: 12, color: "var(--text-muted)", paddingTop: 4 }} />
                 {response.companies.map((company, index) => (
                   <Line
                     key={company.cik}
@@ -146,6 +145,7 @@ export function CompareChart({ response }: { response: CompareResponse }) {
                     dataKey={company.cik}
                     name={company.ticker || company.cik}
                     stroke={SERIES_COLOURS[index]}
+                    strokeDasharray={SERIES_DASHES[index]}
                     strokeWidth={2}
                     dot={{ r: 2.5, fill: SERIES_COLOURS[index], strokeWidth: 0 }}
                     activeDot={{ r: 4.5, stroke: "var(--panel)", strokeWidth: 2 }}

@@ -111,3 +111,6 @@ export function sharedAxisBlocked(response: CompareResponse, metric: string): bo
 
 /** Series colours (theme tokens in globals.css), always paired with the ticker so colour is never the only cue. */
 export const SERIES_COLOURS = ["var(--series-1)", "var(--series-2)", "var(--series-3)", "var(--series-4)"] as const;
+
+/** Line patterns per series (solid, dashed, dotted, dash-dot), so lines differ by more than colour (M6 UX review). */
+export const SERIES_DASHES = [undefined, "7 4", "2 3", "10 3 2 3"] as const;

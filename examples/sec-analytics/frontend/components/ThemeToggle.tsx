@@ -2,14 +2,20 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
-import { applyTheme, currentTheme, THEME_EVENT, type Theme, writeTheme } from "@/lib/theme";
+import { applyTheme, currentTheme, readTheme, THEME_EVENT, THEME_STORAGE_KEY, type Theme, writeTheme } from "@/lib/theme";
 
 function subscribe(onChange: () => void) {
+  // Another tab changed the theme: show it here too.
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== THEME_STORAGE_KEY) return;
+    applyTheme(readTheme());
+    onChange();
+  };
   window.addEventListener(THEME_EVENT, onChange);
-  window.addEventListener("storage", onChange);
+  window.addEventListener("storage", onStorage);
   return () => {
     window.removeEventListener(THEME_EVENT, onChange);
-    window.removeEventListener("storage", onChange);
+    window.removeEventListener("storage", onStorage);
   };
 }
 

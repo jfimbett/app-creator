@@ -9,7 +9,10 @@ export const THEME_STORAGE_KEY = "sec-analytics.theme";
 /** Fired on window when the theme changes, so every toggle on the page shows the same state. */
 export const THEME_EVENT = "sec-analytics:theme";
 
-/** The stored theme, or "dark" when nothing valid is stored or storage cannot be read. */
+/**
+ * The stored theme, or "dark" when nothing valid is stored or storage cannot be read. The readable reference for
+ * THEME_INIT_SCRIPT below (same rule; lib/theme.test.ts checks both), also used when another tab changes the theme.
+ */
 export function readTheme(): Theme {
   try {
     return window.localStorage.getItem(THEME_STORAGE_KEY) === "light" ? "light" : "dark";
