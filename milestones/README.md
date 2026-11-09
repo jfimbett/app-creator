@@ -17,6 +17,8 @@ Ref chain: `template-v1` → `m1` → `m2` → `m3` → `m4` → `m5`. Each tag 
 `milestone/01-foundation`, … `milestone/05-ai-financial-analyst`). Each milestone folder holds its build brief
 (`PROMPT.md`), its follow-up prompts (`FOLLOWUPS.md`) and a README.
 
+**Status (2026-11-04).** Only `template-v1`, `m1` and `m2` exist. M3 is unfinished, on branch `wip/m3-filing-intelligence-unverified`. M4 and M5 are not built, so the `m3`, `m4` and `m5` commands in these documents do not work yet. See [CLASSROOM.md](../CLASSROOM.md) and the [prompt index](PROMPT-INDEX.md).
+
 ## Shared planning documents
 
 All five milestones are planned in four documents, agreed on 2026-11-03 under the instructor's delegation:

@@ -4,8 +4,23 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 
 ## Current phase
 
-**M2 is complete and verified. M3 is next and has not been started.** Execution mode (instructor, 2026-11-04): one milestone at a
-time, in the main session, then stop and report. Wait for the instructor's instruction before implementing.
+**Classroom freeze (2026-11-04): M2 is the classroom version; M3 is unfinished and unverified. Stop here and wait for the instructor.**
+
+## After the classroom freeze (newest; overrides the handoff below where they differ)
+
+- **`main` contains M2 functionality** plus records and documents only. Student guide: `CLASSROOM.md`. Prompt index: `milestones/PROMPT-INDEX.md`. Freeze instruction: `runs/m3/m3-03-classroom-freeze/PROMPT.md`.
+- **M3 partial work:** branch `wip/m3-filing-intelligence-unverified`, status in its `WIP-STATUS.md`. No `m3` tag and no `milestone/03-filing-intelligence` branch exist. Local worktree: `.worktrees/m3`. The local branch `work/m3` is the old starting point and is not published.
+- **Remote:** `origin` is https://github.com/jfimbett/app-creator (public, created at the instructor's request). No cloud deployment. New commits use the GitHub noreply address, passed per commit; older commits keep the author email, as the instructor authorized. Git configuration was not changed.
+- **Classroom app:** still the M2 process on 3200/8200 from the main checkout; it was not restarted.
+
+**Deferred**
+
+1. Finish M3: run `npm run setup` and `npm run verify` on the WIP branch, write `e2e/m3-filings.spec.ts`, inspect the screens, run the live journey, update the documents and statuses, then pass the gate and create `milestone/03-filing-intelligence` and `m3` at the verified commit.
+2. M4 and M5.
+3. Independent reviews; Windows, Cline and CI checks. GitHub CI results have not been assessed as evidence.
+4. Permission hardening. `CLAUDE.md` still says "every other command asks", which does not match the instructor's settings.
+5. Remaining final documents: ARCHITECTURE, TEACHING-GUIDE, CHANGELOG, FINAL-VERIFICATION, PROMPT-EXECUTION-LOG, SOURCES.
+6. Decide whether to set the noreply address in the repository's git configuration.
 
 ## Handoff for a new session (written 2026-11-04, before a context clear)
 
@@ -148,7 +163,7 @@ overwrite the file or run `git restore` on it. `check-toolkit` checks deny rules
 
 ## Publication status
 
-Not started.
+Published 2026-11-04 to https://github.com/jfimbett/app-creator after a secret and privacy review of the published refs. See "After the classroom freeze".
 
 ## Failures / blockers log
 

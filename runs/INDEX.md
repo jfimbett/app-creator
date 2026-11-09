@@ -43,3 +43,9 @@ Append-only. One line per dispatched step.
 ## M2
 
 - 2026-11-04 · **m2/m2-01-implement-main-session** · top-level session · completed · [prompt](m2/m2-01-implement-main-session/PROMPT.md) · [response marker](m2/m2-01-implement-main-session/RESPONSE.md) · [result](m2/m2-01-implement-main-session/RESULT.json)
+
+## M3 (not completed)
+
+- 2026-11-04 · **m3/m3-01-implement-main-session** · top-level session · saved, never executed · [prompt](m3/m3-01-implement-main-session/PROMPT.md)
+- 2026-11-04 · **m3/m3-02-implement-main-session** · top-level session · stopped by the freeze, not verified; code on `wip/m3-filing-intelligence-unverified` · [prompt](m3/m3-02-implement-main-session/PROMPT.md) · [response marker](m3/m3-02-implement-main-session/RESPONSE.md) · [result](m3/m3-02-implement-main-session/RESULT.json)
+- 2026-11-04 · **m3/m3-03-classroom-freeze** · top-level session · M2 kept for class, repository published · [prompt](m3/m3-03-classroom-freeze/PROMPT.md) · [response marker](m3/m3-03-classroom-freeze/RESPONSE.md)
