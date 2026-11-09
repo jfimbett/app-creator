@@ -24,6 +24,7 @@ from __future__ import annotations
 import re
 import threading
 import time
+import zlib
 from collections.abc import Callable
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
@@ -35,6 +36,9 @@ import httpx
 from app.logic.cik import normalize_cik
 
 TIMEOUT_SECONDS = 20.0
+# httpx's timeout limits each read, so a server that drips bytes could hold the one request slot for
+# ever; a whole document download must finish within this time (security review 2026-11-09).
+DOWNLOAD_DEADLINE_SECONDS = 60.0
 DEFAULT_REQUESTS_PER_SECOND = 1.0
 MAX_RETRIES = 2
 DEFAULT_BACKOFF_SECONDS = (2.0, 4.0)
@@ -278,15 +282,50 @@ class SecClient:
     def _get_bounded(
         self, url: str, headers: dict[str, str], max_bytes: int
     ) -> httpx.Response:
-        """A GET that stops reading once the decoded body passes `max_bytes`."""
+        """A GET that stops once the decoded body passes `max_bytes` or the download takes too long.
+
+        The body is read raw and unzipped here with an output cap, so one small compressed piece
+        cannot expand to a large amount of memory before the size check runs.
+        """
+        started = self._clock()
         with self._http.stream("GET", url, headers=headers) as streamed:
+            encoding = streamed.headers.get("content-encoding", "identity").strip().lower()
+            if encoding in {"", "identity"}:
+                unzip = None
+            elif encoding == "gzip":
+                unzip = zlib.decompressobj(16 + zlib.MAX_WBITS)
+            elif encoding == "deflate":
+                unzip = zlib.decompressobj()
+            else:
+                raise SecUnavailable(f"SEC sent an unexpected encoding ({encoding[:20]})")
             pieces: list[bytes] = []
             size = 0
-            for piece in streamed.iter_bytes():
-                size += len(piece)
+
+            def keep(data: bytes) -> None:
+                nonlocal size
+                size += len(data)
                 if size > max_bytes:
                     raise SecDocumentTooLarge(f"The document is larger than {max_bytes} bytes")
-                pieces.append(piece)
+                pieces.append(data)
+
+            try:
+                for raw in streamed.iter_raw():
+                    if self._clock() - started > DOWNLOAD_DEADLINE_SECONDS:
+                        raise SecUnavailable(
+                            f"SEC sent the document too slowly (over "
+                            f"{DOWNLOAD_DEADLINE_SECONDS:.0f} seconds)"
+                        )
+                    if unzip is None:
+                        keep(raw)
+                        continue
+                    data = unzip.decompress(raw, max_bytes - size + 1)
+                    keep(data)
+                    while unzip.unconsumed_tail:
+                        keep(unzip.decompress(unzip.unconsumed_tail, max_bytes - size + 1))
+                if unzip is not None:
+                    keep(unzip.flush())
+            except zlib.error as exc:
+                raise SecUnavailable("SEC sent a damaged compressed document") from exc
             # The body is already decoded, so the rebuilt response must not decode it again.
             kept = [
                 (name, value)

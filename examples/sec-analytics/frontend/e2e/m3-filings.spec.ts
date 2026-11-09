@@ -20,6 +20,23 @@ function recordHosts(page: Page) {
 }
 
 
+/** M3-E4: in demo mode, app text that says "latest" names the snapshot (the filing's own text is excluded). */
+async function expectLatestAlwaysNamesTheSnapshot(page: Page) {
+  const texts = await page.evaluate(() => {
+    const found: string[] = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const text = node.textContent ?? "";
+      const parent = node.parentElement;
+      if (!parent || parent.closest('[data-testid="filing-reader"], script, style, noscript, template')) continue;
+      if (/latest/i.test(text)) found.push(text.trim());
+    }
+    return found;
+  });
+  expect(texts.length).toBeGreaterThan(0);
+  for (const text of texts) expect(text).toMatch(/Latest in snapshot \(as of 2026-11-03\)|not necessarily the latest/i);
+}
+
 test("Filings tab shows the latest 10-K and 10-Q in the snapshot (M3-AC1, M3-E4)", async ({ page }) => {
   const assertLocalOnly = recordHosts(page);
   await page.goto(APPLE);
@@ -36,8 +53,7 @@ test("Filings tab shows the latest 10-K and 10-Q in the snapshot (M3-AC1, M3-E4)
   await expect(quarterly).toContainText("2026-07-31");
   await expect(quarterly).toContainText("2026-06-27");
   await expect(quarterly).toContainText("0000320193-26-000020");
-  // Never "Latest" alone in demo mode.
-  await expect(page.getByText(/^Latest$/)).toHaveCount(0);
+  await expectLatestAlwaysNamesTheSnapshot(page);
   assertLocalOnly();
 });
 
@@ -75,6 +91,7 @@ test("reader shows sanitized text, sections, search and the exact source link (M
     await expect(rail.getByText(item, { exact: true })).toBeVisible();
   }
   await expect(page.getByTestId("reader-scope")).toContainText("Not necessarily the latest report on EDGAR");
+  await expectLatestAlwaysNamesTheSnapshot(page);
 
   // M3-E2: no active content from the filing reaches the page.
   expect(await reader.locator("script, iframe, object, embed, form, style").count()).toBe(0);
@@ -84,7 +101,7 @@ test("reader shows sanitized text, sections, search and the exact source link (M
   await rail.getByText("Item 7", { exact: true }).click();
   const item7 = reader.getByText(/^Item 7\.\s+Management.s Discussion and Analysis/).last();
   await expect(item7).toBeInViewport();
-  await expect(reader.locator("p, div").filter({ hasText: /^The following discussion should be read in conjunction/ }).first()).toBeAttached();
+  await expect(reader.locator("p, div").filter({ hasText: /^The following discussion should be read in conjunction/ }).first()).toBeInViewport();
 
   // M3-AC5: highlighted matches, a count, next and previous.
   await page.getByTestId("filing-search").fill("revenue");

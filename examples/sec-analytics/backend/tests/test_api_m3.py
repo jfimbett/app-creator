@@ -6,6 +6,7 @@ they show this app's handling, never SEC's real answers. No test here reaches th
 
 import gzip
 import json
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import httpx
@@ -14,8 +15,10 @@ import respx
 from fastapi.testclient import TestClient
 from pydantic import SecretStr
 
+from app.api import filings as filings_api
 from app.clients.sec import SecClient, submissions_url
 from app.data import source as source_module
+from app.data.source import DataSource
 from app.main import create_app
 from app.settings import Settings
 
@@ -51,14 +54,24 @@ def demo() -> TestClient:
     return TestClient(create_app(Settings(data_mode="fixtures")))
 
 
+# Live tests run on a fixed day, so the 10-year window and "older page needed" stay the same
+# whatever the real date is (test review 2026-11-09: they would have failed from 2030).
+TODAY = date(2026, 11, 9)
+
+
 @pytest.fixture
-def live(tmp_path, respx_mock):
+def live(tmp_path, respx_mock, monkeypatch):
     wait = NoWait()
-    client = SecClient(FAKE_UA, clock=wait.clock, sleep=wait.sleep)
+    monkeypatch.setattr(filings_api, "_today", lambda: TODAY)
+    noon = datetime(2026, 11, 9, 12, 0, tzinfo=timezone.utc)
+    client = SecClient(FAKE_UA, clock=wait.clock, sleep=wait.sleep, wall_clock=lambda: noon)
     settings = Settings(
         data_mode="live", sec_user_agent=SecretStr(FAKE_UA), sec_cache_dir=tmp_path / "cache"
     )
-    return TestClient(create_app(settings, sec_client=client))
+    app = create_app(settings, sec_client=client)
+    # Retrieval times (and so the window's reference day) come from this clock, not the real one.
+    app.state.data = DataSource(settings, app.state.store, client, clock=lambda: noon)
+    return TestClient(app)
 
 
 @pytest.fixture
@@ -471,3 +484,26 @@ def test_mocked_amended_original_links_both_ways(live, respx_mock) -> None:
     assert body["meta"]["is_amendment"] is True
     assert body["amends"]["accession"] == "0000000999-26-000001"
     assert body["amended_by"] is None
+
+
+def test_ac7_document_without_items_is_full_text_with_the_fallback_note(live, respx_mock) -> None:
+    mock_submissions(respx_mock)
+    respx_mock.get(DOC_URL).mock(
+        return_value=httpx.Response(200, content=(DOCS / "no_items.html").read_bytes())
+    )
+    body = live.get(
+        f"/api/companies/{EXAMPLE}/filings/0000000999-26-000002", params={"source": "live"}
+    ).json()
+    assert body["section_status"] == "not_detected"
+    assert body["note"] == "Section boundaries not detected; showing full text"
+    assert body["sections"] == []
+    assert all(block["section_id"] is None for block in body["blocks"])
+    assert len(body["blocks"]) >= 2
+
+
+def test_api_years_parameter_narrows_the_window(demo) -> None:
+    body = demo.get(f"/api/companies/{APPLE}/filings", params={"years": 3}).json()
+    assert body["history"], "Apple has filings in the last three years of the snapshot"
+    assert min(row["filing_date"] for row in body["history"]) >= "2023-11-03"
+    full = demo.get(f"/api/companies/{APPLE}/filings").json()
+    assert min(row["filing_date"] for row in full["history"]) < "2023-11-03"

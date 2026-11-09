@@ -101,3 +101,19 @@ def test_format_chosen_by_name_and_html_sniffing() -> None:
     assert to_blocks(b"<html><p>a b</p></html>", "x.txt").blocks[0].text == "a b"
     assert to_blocks(b"<p>a b</p>", "x.htm").blocks[0].text == "a b"
     assert to_blocks(b"a <p> b", "x.txt").blocks[0].text == "a <p> b"
+
+
+def test_deeply_nested_tables_do_not_stall() -> None:
+    # Security review 2026-11-09: each table re-read everything below it (time grew with depth²).
+    depth = 20_000
+    raw = (b"<table><tr><td>" * depth) + b"inner text" + (b"</td></tr></table>" * depth)
+    started = time.monotonic()
+    assert [b.text for b in html_to_blocks(raw).blocks] == ["inner text"]
+    assert time.monotonic() - started < 5
+
+
+def test_nested_tables_without_closing_tags_do_not_stall() -> None:
+    raw = (b"<table><tr><td>" * 20_000) + b"inner text"
+    started = time.monotonic()
+    assert [b.text for b in html_to_blocks(raw).blocks] == ["inner text"]
+    assert time.monotonic() - started < 5

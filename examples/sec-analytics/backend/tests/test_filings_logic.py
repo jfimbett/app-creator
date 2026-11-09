@@ -160,3 +160,35 @@ def test_e5_bad_accessions_are_rejected(accession) -> None:
 def test_e5_bad_document_names_are_rejected(name) -> None:
     with pytest.raises(archive.InvalidArchivePart):
         archive.document_url("320193", "0000320193-26-000026", name)
+
+
+def test_e1_pairing_never_crosses_forms() -> None:
+    # Test review 2026-11-09: the 10-K/A for 2025-09-30 must not pair with the 10-Q of that date.
+    ten_k_a = next(r for r in rows() if r.accession == "0000000999-26-000003")
+    assert ten_k_a.form == "10-K/A"
+    assert filings.amends(ten_k_a, rows()) is None
+    table = {
+        "accessionNumber": ["0000000999-26-000009", "0000000999-26-000008"],
+        "filingDate": ["2026-04-01", "2026-02-01"],
+        "reportDate": ["2025-12-31", "2025-12-31"],
+        "form": ["10-K/A", "10-Q"],
+        "primaryDocument": ["a.htm", "q.htm"],
+    }
+    found = filings.merge_rows(filings.parse_rows(table, CIK))
+    ten_q = next(r for r in found if r.form == "10-Q")
+    assert filings.amended_by(ten_q, found) is None
+    assert filings.select_latest(found, "label").quarterly_amended_by is None
+
+
+def test_window_includes_its_first_day_and_excludes_the_day_before() -> None:
+    table = {
+        "accessionNumber": ["0000000999-16-000002", "0000000999-16-000001"],
+        "filingDate": ["2016-11-03", "2016-11-02"],
+        "reportDate": ["2016-09-30", "2016-09-30"],
+        "form": ["10-Q", "10-Q"],
+        "primaryDocument": ["b.htm", "a.htm"],
+    }
+    found = filings.parse_rows(table, CIK)
+    start = filings.window_start(date(2026, 11, 3), 10)
+    assert [r.accession for r in filings.in_window(found, start)] == ["0000000999-16-000002"]
+    assert filings.window_start(date(2026, 11, 3), 3) == date(2023, 11, 3)

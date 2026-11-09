@@ -25,6 +25,34 @@ describe("findMatches (M3-AC5)", () => {
     expect(findMatches(blocks, query).matches).toHaveLength(1);
   });
 
+  // Test review 2026-11-09: each pattern character must be escaped, not only the ones above.
+  it.each(["a|b", "^Re", "x*", "1+1", "a?", "{2}", "Re$"])("matches %s only as written", (query) => {
+    const text = [{ id: 0, text: "a b ab Re 1 11 x xx x* {2} a? 1+1 a|b ^Re Re$" }];
+    const { matches } = findMatches(text, query);
+    expect(matches.length).toBeGreaterThan(0);
+    for (const m of matches) expect(text[0].text.slice(m.start, m.end)).toBe(query);
+  });
+
+  it("does not overlap matches", () => {
+    expect(findMatches([{ id: 0, text: "aaaa" }], "aa").matches.map((m) => m.start)).toEqual([0, 2]);
+  });
+
+  it("is not capped at exactly 1,000 and caps across blocks", () => {
+    const exact = findMatches([{ id: 0, text: "ab ".repeat(MAX_MATCHES) }], "ab");
+    expect(exact.matches).toHaveLength(MAX_MATCHES);
+    expect(exact.capped).toBe(false);
+    const split = findMatches(
+      [
+        { id: 0, text: "ab ".repeat(600) },
+        { id: 1, text: "ab ".repeat(600) },
+      ],
+      "ab",
+    );
+    expect(split.matches).toHaveLength(MAX_MATCHES);
+    expect(split.capped).toBe(true);
+    expect(split.matches.at(-1)!.blockId).toBe(1);
+  });
+
   it("does not throw on an invalid pattern", () => {
     expect(findMatches(blocks, "((").matches).toEqual([]);
     expect(findMatches(blocks, "\\").matches).toEqual([]);

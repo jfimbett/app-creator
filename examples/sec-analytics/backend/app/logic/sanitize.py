@@ -190,10 +190,39 @@ class _Collector:
         self.blocks.append(Block(kind, text))
 
 
+def _tables_holding_tables(soup: BeautifulSoup) -> set[int]:
+    """Ids of the tables that contain another table, found in one pass.
+
+    Such a table is page layout. Knowing it up front means `_table_rows` never reads a table that
+    holds tables, so each part of the document is read once, however deeply tables are nested
+    (security review 2026-11-09: re-reading every level made time grow with depth squared).
+    """
+    holding: set[int] = set()
+    open_tables: list[Tag] = []
+    stack: list[tuple[Tag, object]] = [(soup, iter(soup.children))]
+    while stack:
+        parent, children = stack[-1]
+        node = next(children, None)
+        if node is None:
+            stack.pop()
+            if parent.name == "table":
+                open_tables.pop()
+            continue
+        if not isinstance(node, Tag):
+            continue
+        if node.name == "table":
+            if open_tables:
+                holding.add(id(open_tables[-1]))
+            open_tables.append(node)
+        stack.append((node, iter(node.children)))
+    return holding
+
+
 def _walk(soup: BeautifulSoup) -> SanitizedDocument:
     """Depth-first walk with an explicit stack, so a very deep document cannot overflow it."""
     out = _Collector()
     buffer: list[str] = []
+    layout_tables = _tables_holding_tables(soup)
 
     def flush(kind: BlockKind = "text") -> None:
         text = _clean("".join(buffer))
@@ -220,7 +249,7 @@ def _walk(soup: BeautifulSoup) -> SanitizedDocument:
             continue
         if node.name in _BLOCK_TAGS:
             flush()
-        if node.name == "table":
+        if node.name == "table" and id(node) not in layout_tables:
             rows = _table_rows(node)
             if rows is not None:
                 for row in rows:

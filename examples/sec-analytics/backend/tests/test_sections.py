@@ -176,7 +176,9 @@ def test_running_page_headers_are_not_sections() -> None:
 
 
 def test_recorded_microsoft_10q_keeps_part_order_despite_its_running_headers() -> None:
-    # Authentic document: each page starts with "PART I" / "Item 1" (checked by reading the blocks).
+    # Authentic document: each page starts with "PART I" / "Item 1". Expected list: the filing's
+    # own INDEX (Part I items 1-4; Part II items 1, 1A, 2, 5, 6), read from the raw HTML
+    # on 2026-11-09 with a tag-stripping regex, not with app code.
     path = "0000789019/0001193125-26-436133/msft-20260930.htm.gz"
     found = detect_sections(recorded(path), "10-Q").sections
     assert [s.id for s in found] == [
