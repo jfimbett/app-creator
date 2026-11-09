@@ -1,7 +1,7 @@
 {
  "step": "m6/m6-02-publish-main-session",
  "agent": "top-level session (Opus 5.5)",
- "status": "in progress: records and branch documentation committed; push pending (updated after the push)",
+ "status": "completed: main, milestone/06-polish-and-launch and tag m6 pushed",
  "start_commit": "5b9d905 (main)",
  "done_before_push": {
   "follow_ups": "milestones/06-polish-and-launch/FOLLOWUPS.md follow-ups 2-4 (no sound and hydration error; no voice and stop the server; commit and push)",
@@ -18,5 +18,6 @@
  "not_pushed": [
   "local work/* branches"
  ],
- "published": false
+ "published": true,
+ "pushed": "main 274572c..942ac84, new branch milestone/06-polish-and-launch at 942ac84, new tag m6 at 942ac84 (2026-11-09)"
 }

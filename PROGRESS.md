@@ -4,7 +4,7 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 
 ## Current phase
 
-**M6 complete (not pushed), 2026-11-09. All six milestones are built. Live AI not verified (N1).**
+**M6 complete and pushed (2026-11-09). All six milestones are built. Live AI not verified (N1).**
 
 ## M6 completion (2026-11-09, newest)
 
@@ -12,7 +12,7 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 - Worktree `.worktrees/m6`, branch `work/m6`, from `main` b1ff390 (tag `m5` plus documentation commits; b1ff390 adds the brief).
 - Slice commits on `work/m6`: 27ea8a8, 9171eb7, f4d083d, 0b7a0ee, 0835f76, 17465ac; then the checkpoint commit that adds this entry.
 - Locally: `work/m6` merged into `main` (fast-forward). After the report: music remixed (follow-up 2), video kept without voice (follow-up 3); the never-published tag `m6` and branch `milestone/06-polish-and-launch` moved to the m6-02 record commit, which includes the louder video and the branch documentation.
-- Push requested 2026-11-09 (`runs/m6/m6-02-publish-main-session`).
+- **Pushed 2026-11-09** at the instructor's request: `main`, `milestone/06-polish-and-launch` and tag `m6` (`runs/m6/m6-02-publish-main-session`).
 - Video: `examples/sec-analytics/brag-output/brag.mp4` (22.5 s). The owner's look at both themes and the video is pending.
 - Open minor items: `milestones/plan.md` "Known problems" (M6 items).
 
