@@ -109,5 +109,5 @@ export function sharedAxisBlocked(response: CompareResponse, metric: string): bo
   return !response.rows.some((row) => row.metric_id === metric && row.indexed);
 }
 
-/** Fixed series colours, always paired with the ticker so colour is never the only cue. */
-export const SERIES_COLOURS = ["#6CB6FF", "#F2B33D", "#3FB68B", "#C792EA"] as const;
+/** Series colours (theme tokens in globals.css), always paired with the ticker so colour is never the only cue. */
+export const SERIES_COLOURS = ["var(--series-1)", "var(--series-2)", "var(--series-3)", "var(--series-4)"] as const;

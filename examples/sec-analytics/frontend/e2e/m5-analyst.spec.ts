@@ -9,6 +9,23 @@ test.afterEach(async ({ page }) => {
 // /api/ai/* call is mocked with page.route and the tests are named "(mocked backend)". The mocked replies are
 // SYNTHETIC: invented for tests, not real AI answers. The key below is a clearly fake test value.
 const KEY = "test-key-not-real-0000";
+
+/**
+ * The security property of M5-AC2, kept after M6 added a theme preference (brief §4.5): localStorage may hold only
+ * "sec-analytics.theme" with the value "dark" or "light", and no key or value holds the test key or any part of it.
+ */
+const KEY_PARTS = [KEY, ...KEY.split("-").filter((part) => part.length >= 4)];
+async function expectLocalStorageSafe(page: Page) {
+  const entries = await page.evaluate(() => Object.entries(localStorage));
+  for (const [name, value] of entries) {
+    expect(name).toBe("sec-analytics.theme");
+    expect(["dark", "light"]).toContain(value);
+    for (const part of KEY_PARTS) {
+      expect(name).not.toContain(part);
+      expect(value).not.toContain(part);
+    }
+  }
+}
 const APPLE = "/companies/0000320193";
 const APPLE_10K = "0000320193-26-000026";
 const READER = `${APPLE}/filings/${APPLE_10K}`;
@@ -209,10 +226,14 @@ test("no key: Overview, Filings, the reader and Compare work; the panel says AI 
   assertLocal();
 });
 
-test("settings: masked key, sessionStorage off by default with its warning, nothing in localStorage (M5-AC2, mocked backend)", async ({ page }) => {
+test("settings: masked key, sessionStorage off by default with its warning, no key in localStorage (M5-AC2, M6 §4.5, mocked backend)", async ({ page }) => {
   const assertLocal = recordRequests(page);
   await mockAi(page);
   await page.goto(APPLE);
+  // A theme choice first, so localStorage really holds the app's one allowed entry while the key is handled.
+  await page.getByTestId("theme-toggle").click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  expect(await page.evaluate(() => Object.entries(localStorage))).toEqual([["sec-analytics.theme", "light"]]);
   await openAnalyst(page);
   await panel(page).getByTestId("ai-settings-open").click();
   const settings = dialog(page);
@@ -244,7 +265,7 @@ test("settings: masked key, sessionStorage off by default with its warning, noth
   await expect(settings.getByTestId("ai-status")).toHaveText("Key set (memory only)");
   await expect(input).toHaveValue("");
 
-  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
+  await expectLocalStorageSafe(page);
   expect(await page.evaluate(() => Object.keys(sessionStorage))).toEqual([]);
   expect(await page.evaluate(() => document.cookie)).toBe("");
   expect(await page.content()).not.toContain(KEY);
@@ -260,7 +281,7 @@ test("settings: masked key, sessionStorage off by default with its warning, noth
   await remember.uncheck(); // turning it off applies at once: the stored copy is removed
   await expect(settings.getByTestId("ai-status")).toHaveText("Key set (memory only)");
   expect(await page.evaluate(() => Object.keys(sessionStorage))).toEqual([]);
-  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
+  await expectLocalStorageSafe(page);
 
   // Esc closes the dialog and returns focus to the button that opened it.
   await page.keyboard.press("Escape");
@@ -278,7 +299,7 @@ test("test connection warns about a charge first; models listed with prices and 
   await saveKey(page, { remember: true });
   const settings = dialog(page);
   expect(await page.evaluate(() => Object.keys(sessionStorage))).toEqual(["sec-analytics.ai"]);
-  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
+  await expectLocalStorageSafe(page);
 
   // The model list loads only once a key is set, sorted by id, with prices per million tokens; nothing chosen.
   const rows = settings.getByTestId("model-row");

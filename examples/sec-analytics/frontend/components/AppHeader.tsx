@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { ThemeToggle } from "@/components/ThemeToggle";
+
 type AppHeaderProps = {
   /** The header search (CompanySearch). The header only reserves the space; it has no search logic. */
   search?: ReactNode;
@@ -36,6 +38,7 @@ export function AppHeader({ search, mode, status, nav }: AppHeaderProps) {
         <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
           {mode}
           {status}
+          <ThemeToggle />
         </div>
       </div>
     </header>

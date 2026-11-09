@@ -1,19 +1,22 @@
 @import "tailwindcss";
 
 /*
-  SEC Analytics design tokens (brief §4). Components use colour ROLES, never raw hex:
-  `bg-panel`, `text-muted`, `border-line`, `text-accent` … (exposed below with @theme inline),
-  or `var(--panel)` directly.
+  SEC Analytics design tokens. Components use colour ROLES, never raw hex: `bg-panel`, `text-muted`,
+  `border-line`, `text-accent` … (exposed below with @theme inline), or `var(--panel)` directly.
 
-  Dark navy terminal is the default and the only theme checked at M1. Light is secondary: it applies only when
-  <html data-theme="light"> is set (it does NOT follow the system setting, so dark stays the default everywhere).
+  Two themes (M6, owner decision O1). Dark navy terminal is the default. Light applies when
+  <html data-theme="light"> is set: the pre-paint script in app/layout.tsx sets it from localStorage
+  ("sec-analytics.theme"); it does not follow the system setting, so dark stays the default everywhere.
 
-  Measured WCAG contrast (text colour on bg / panel / raised panel), all ≥ 4.5:1:
+  Measured WCAG contrast (on bg / panel / raised panel). lib/contrast.test.ts reads this file and fails
+  if any text role drops below 4.5:1 or any non-text role (control border, focus ring, chart series) below 3:1.
     dark   text 14.68/13.47/12.31  muted 6.67/6.12/5.59  accent 10.19/9.35/8.54  link 8.82/8.09/7.39
            positive 7.47/6.85/6.26  negative 5.90/5.41/4.95  warning 8.78/8.06/7.36
+           border-strong 3.69/3.38  series 8.82/10.19/7.47/7.88 (on bg)
     light  text 15.27/16.38/14.45  muted 6.70/7.19/6.34  accent 5.52/5.93/5.23  link 6.21/6.67/5.88
            positive 5.58/5.98/5.28  negative 6.13/6.57/5.80  warning 6.01/6.45/5.69
-  Any token change must keep these at or above 4.5:1.
+           border-strong 3.25/3.49  series 6.21/5.52/5.58/6.14 (on bg)
+  --border is a decorative divider (not checked); controls that must be found use --border-strong.
 */
 :root {
   color-scheme: dark;
@@ -21,26 +24,41 @@
   --panel: #0f1a2e;
   --panel-raised: #14223b;
   --border: #1f2e4a;
+  --border-strong: #5b6e91; /* input, select and button outlines */
   --text: #dce3ee;
   --text-muted: #8c9ab3;
   --accent: #f2b33d; /* focus rings, active tab, selected row */
   --on-accent: #0a1020; /* text drawn on an accent fill (10.19:1) */
+  --focus: var(--accent);
   --link: #6cb6ff;
   --positive: #3fb68b;
   --negative: #f0605d;
   --warning: #e8a33a;
-  /* Chart series (brief §4); also distinguished by name in legend and tooltip. */
+  /* Chart series; always paired with a name in the legend, tooltip or chip, so colour is never the only cue. */
   --series-revenue: #6cb6ff;
   --series-net-income: #f2b33d;
+  --series-1: #6cb6ff;
+  --series-2: #f2b33d;
+  --series-3: #3fb68b;
+  --series-4: #c792ea;
 
-  /* Aliases kept for the scaffold components until they are replaced (HealthStatus, home page). */
+  /* Elevation: in dark, a border plus a slight lift; in light, soft shadows. */
+  --elev-1: 0 1px 0 0 rgb(255 255 255 / 0.03) inset, 0 1px 2px 0 rgb(0 0 0 / 0.35);
+  --elev-2: 0 1px 0 0 rgb(255 255 255 / 0.04) inset, 0 8px 24px -8px rgb(0 0 0 / 0.6);
+  --hero-glow: color-mix(in srgb, var(--accent) 10%, transparent);
+
+  /* Motion: short and calm; prefers-reduced-motion turns it off (end of file). */
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Aliases kept for the scaffold components (HealthStatus). */
   --background: var(--bg);
   --surface: var(--panel);
   --foreground: var(--text);
   --muted: var(--text-muted);
   --ok: var(--positive);
   --error: var(--negative);
-  --focus: var(--accent);
 }
 
 :root[data-theme="light"] {
@@ -48,7 +66,8 @@
   --bg: #f5f7fa;
   --panel: #ffffff;
   --panel-raised: #edf1f7;
-  --border: #c9d2df;
+  --border: #d5dce6;
+  --border-strong: #7d8aa0;
   --text: #16202f;
   --text-muted: #4a5870;
   --accent: #8a5a00;
@@ -59,6 +78,13 @@
   --warning: #8f4e00;
   --series-revenue: #0b5cad;
   --series-net-income: #8a5a00;
+  --series-1: #0b5cad;
+  --series-2: #8a5a00;
+  --series-3: #16714f;
+  --series-4: #7a3db8;
+  --elev-1: 0 1px 2px 0 rgb(16 24 40 / 0.06), 0 1px 3px 0 rgb(16 24 40 / 0.08);
+  --elev-2: 0 4px 8px -2px rgb(16 24 40 / 0.08), 0 12px 24px -6px rgb(16 24 40 / 0.12);
+  --hero-glow: color-mix(in srgb, var(--link) 8%, transparent);
 }
 
 @theme inline {
@@ -66,6 +92,7 @@
   --color-panel: var(--panel);
   --color-panel-raised: var(--panel-raised);
   --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
   --color-fg: var(--text);
   --color-muted: var(--text-muted);
   --color-accent: var(--accent);
@@ -79,13 +106,31 @@
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* Type scale: label 11 px, small/table 13 px, base 14 px, title 16 px, page heading 20 px. */
+  /* Type scale (px): label 11, xs 12, table 13, base 14, title 16, heading 20, display 28, hero 40. */
   --text-label: 0.6875rem;
   --text-label--letter-spacing: 0.08em;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
   --text-table: 0.8125rem;
+  --text-table--line-height: 1.25rem;
   --text-base: 0.875rem;
+  --text-base--line-height: 1.375rem;
   --text-title: 1rem;
+  --text-title--line-height: 1.5rem;
   --text-heading: 1.25rem;
+  --text-heading--line-height: 1.75rem;
+  --text-display: 1.75rem;
+  --text-display--line-height: 2.25rem;
+  --text-hero: 2.5rem;
+  --text-hero--line-height: 1.1;
+
+  /* Spacing: Tailwind's 4 px step (p-1 = 4 px, p-2 = 8 px …). Radii 4 / 8 / 12. */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --shadow-card: var(--elev-1);
+  --shadow-pop: var(--elev-2);
 }
 
 /* ---------- Base ---------- */
@@ -123,7 +168,7 @@
 
   /* One visible amber focus ring for every control (keyboard users). */
   :focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--focus);
     outline-offset: 2px;
   }
 
