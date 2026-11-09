@@ -2,7 +2,7 @@
 
 **Repository:** <https://github.com/jfimbett/app-creator>
 
-**`main` contains M5 functionality** (tag `m5`), as of 2026-11-09, on the instructor's machine. **Until those commits are pushed, the GitHub copy of `main` contains M4.** M3–M5 were verified on Windows 11; the M5 AI analyst was verified with a mocked AI service only (live AI not verified, N1).
+**`main` contains M5 functionality** (tag `m5`), as of 2026-11-09. M3–M5 were verified on Windows 11; the M5 AI analyst was verified with a mocked AI service only (live AI not verified, N1).
 The old branch `wip/m3-filing-intelligence-unverified` is kept only as history; use `m3` instead.
 
 ## Versions

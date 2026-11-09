@@ -4,13 +4,13 @@ Resumable state for the autonomous build described in `GOAL.md`. Updated through
 
 ## Current phase
 
-**M5 complete (2026-11-09): tag `m5`, branch `milestone/05-ai-financial-analyst`; local `main` fast-forwarded to M5. Not pushed. All five milestones are built. Live AI not verified (N1). Wait for the instructor.**
+**M5 complete and pushed (2026-11-09). All five milestones are built. Live AI not verified (N1): the instructor will run the live test.**
 
 ## M5 completion (2026-11-09, newest)
 
 - Instruction: `runs/m5/m5-01-implement-main-session/PROMPT.md` ("push and start with m5"). Results: its `RESULT.json`.
 - Worktree `.worktrees/m5`, local branch `work/m5`, from `main` 40b0ea0 (tag `m4` plus one documentation commit).
-- **Not pushed.** GitHub still shows `main` = M4. Pushing `main`, `milestone/05-ai-financial-analyst` and `m5` waits for the instructor.
+- **Pushed 2026-11-09** at the instructor's request: `main`, `milestone/05-ai-financial-analyst` and tag `m5`.
 - **Live AI (N1):** M5-AC9 stays blocked until the owner runs one connection test and one chat with an authorized limited key.
 - Open minor items: `milestones/plan.md` "Known problems" (M5 items).
 
