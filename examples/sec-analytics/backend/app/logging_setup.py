@@ -37,6 +37,12 @@ class RedactingFilter(logging.Filter):
         redacted = _redact(message)
         if redacted != message:
             record.msg, record.args = redacted, ()
+        # Tracebacks are formatted after the filters run, so render and redact them here.
+        if record.exc_info:
+            record.exc_text = _redact(logging.Formatter().formatException(record.exc_info))
+            record.exc_info = None
+        if record.stack_info:
+            record.stack_info = _redact(record.stack_info)
         return True
 
 

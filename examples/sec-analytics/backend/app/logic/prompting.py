@@ -9,6 +9,9 @@
 
 from __future__ import annotations
 
+import re
+import unicodedata
+
 from app.logic.retrieval import Fact, Passage
 
 DATA_START = "<<<SEC_DATA"
@@ -30,8 +33,16 @@ SYSTEM_MESSAGE = (
 )
 
 
+_INVISIBLE = re.compile("[​-‏⁠-⁤﻿]")
+
+
 def _neutralise(text: str) -> str:
-    """Break any delimiter-like text so the data block has exactly one start and one end."""
+    """Break any delimiter-like text so the data block has exactly one start and one end.
+
+    Fullwidth and other lookalike characters are folded first (NFKC: "＞" → ">") and invisible
+    characters removed, so "＞＞＞" or ">​>>" cannot pass for the end of the block.
+    """
+    text = _INVISIBLE.sub("", unicodedata.normalize("NFKC", text))
     return text.replace("<<<", "< < <").replace(">>>", "> > >").replace("SEC_DATA", "SEC DATA")
 
 

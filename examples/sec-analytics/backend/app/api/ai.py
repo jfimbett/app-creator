@@ -60,6 +60,7 @@ MAX_CONCURRENT_CHATS = 2
 POLL_SECONDS = 0.2
 MODEL_ID = re.compile(r"^[A-Za-z0-9._:/-]{1,200}$")
 _LOCAL_ORIGIN = re.compile(r"^http://(127\.0\.0\.1|localhost):\d{1,5}$")
+LOCAL_HOSTS = frozenset({"127.0.0.1", "localhost"})
 _KEY_TEXT = re.compile(r"^[\x21-\x7e]{1,300}$")
 COMPARE_NAMES = {"fcf": "FCF", "fcf_margin": "FCF margin"}
 
@@ -99,8 +100,12 @@ def check_origin(request: Request) -> None:
     """403 unless the request comes from this app's own page (or a tool with no Origin)."""
     origin = request.headers.get("origin")
     site = request.headers.get("sec-fetch-site")
-    if (origin is not None and not _LOCAL_ORIGIN.match(origin)) or (
-        site is not None and site not in {"same-origin", "none"}
+    # The Host check stops DNS rebinding: a page on another name that resolves to 127.0.0.1.
+    host = (request.headers.get("host") or "").rsplit(":", 1)[0].lower()
+    if (
+        host not in LOCAL_HOSTS
+        or (origin is not None and not _LOCAL_ORIGIN.match(origin))
+        or (site is not None and site not in {"same-origin", "none"})
     ):
         raise AppError(
             "forbidden_origin", "AI requests are accepted only from this app's own pages.", 403
@@ -124,8 +129,8 @@ def _as_app_error(error: AiError) -> AppError:
     return AppError(error.code, error.message, error.status, error.details)
 
 
-async def run_upstream(request: Any, slots: ChatSlots, work: Coroutine[Any, Any, Any]) -> Any:
-    """Run the upstream call as a task, cancelled if the client goes away. Always frees the slot."""
+async def run_upstream(request: Any, work: Coroutine[Any, Any, Any]) -> Any:
+    """Run the upstream call as a task, cancelled if the client goes away."""
     task = asyncio.ensure_future(work)
     try:
         while True:
@@ -138,19 +143,25 @@ async def run_upstream(request: Any, slots: ChatSlots, work: Coroutine[Any, Any,
     finally:
         if not task.done():
             task.cancel()
-        slots.release()
 
 
 # ------------------------------------------------------------------ request parsing
 
 
 async def _json_body(request: Request) -> dict[str, Any]:
+    too_large = AppError("request_too_large", "The request is larger than 64 KB.", 413)
     declared = request.headers.get("content-length")
-    if declared and declared.isdigit() and int(declared) > MAX_BODY_BYTES:
-        raise AppError("request_too_large", "The request is larger than 64 KB.", 413)
-    raw = await request.body()
-    if len(raw) > MAX_BODY_BYTES:
-        raise AppError("request_too_large", "The request is larger than 64 KB.", 413)
+    if declared is not None and (not declared.isdigit() or int(declared) > MAX_BODY_BYTES):
+        raise too_large
+    # Read in pieces and stop past the limit, also when no Content-Length was sent (chunked).
+    parts: list[bytes] = []
+    size = 0
+    async for piece in request.stream():
+        size += len(piece)
+        if size > MAX_BODY_BYTES:
+            raise too_large
+        parts.append(piece)
+    raw = b"".join(parts)
     try:
         body = json.loads(raw or b"{}")
     except ValueError:
@@ -214,6 +225,7 @@ class _Scoped:
         self.loaded: list[KnownCompany] = []
         self.kind = ""
         self.filing_label = ""
+        self.has_document = False
 
 
 def _company(data: DataSource, cik: str, source: str) -> tuple[retrieval.FactSource, KnownCompany]:
@@ -242,7 +254,11 @@ def _document(data: DataSource, cik: str, ticker: str, filing: Any, source: str)
     )
 
 
-def _load_scope(data: DataSource, scope: dict[str, Any], source: str) -> _Scoped:
+def _load_scope(
+    data: DataSource, scope: dict[str, Any], source: str, *, with_document: bool = True
+) -> _Scoped:
+    """The scope's data. The preview passes `with_document=False`: it only says whether a 10-K
+    exists, so opening the panel never downloads a filing document."""
     scoped = _Scoped()
     scoped.kind = scope["kind"]
     today = datetime.now(timezone.utc).date()
@@ -265,15 +281,24 @@ def _load_scope(data: DataSource, scope: dict[str, Any], source: str) -> _Scoped
                 "This company has no 10-K or 10-Q with that accession number.",
                 404,
             )
-        scoped.document = _document(data, scope["cik"], fact_source.ticker, filing, source)
+        if with_document:
+            scoped.document = _document(data, scope["cik"], fact_source.ticker, filing, source)
+        scoped.has_document = True
         scoped.filing_label = f"{filing.form} {filing.accession}"
         return scoped
     annual = select_latest(rows, "").annual if rows else None
-    if annual is not None:
-        try:
-            scoped.document = _document(data, scope["cik"], fact_source.ticker, annual, source)
-        except AppError:
-            scoped.document = None  # no readable 10-K: facts only, and the line says so
+    if annual is None:
+        return scoped
+    if not with_document:
+        scoped.has_document = annual.document_url is not None and (
+            source == "live" or bool(annual.document_in_snapshot)
+        )
+        return scoped
+    try:
+        scoped.document = _document(data, scope["cik"], fact_source.ticker, annual, source)
+        scoped.has_document = True
+    except AppError:
+        scoped.document = None  # no readable 10-K: facts only, and the line says so
     return scoped
 
 
@@ -290,7 +315,7 @@ def _line(scoped: _Scoped, facts: tuple[retrieval.Fact, ...]) -> str:
         return f"Context: {', '.join(tickers)} facts for {', '.join(names)}"
     if scoped.kind == "filing":
         return f"Context: {tickers[0]} {scoped.filing_label} passages + {tickers[0]} facts"
-    passages = " + 10-K passages" if scoped.document is not None else " (no 10-K text available)"
+    passages = " + 10-K passages" if scoped.has_document else " (no 10-K text available)"
     return f"Context: {tickers[0]} facts {_years(facts)}{passages}"
 
 
@@ -339,7 +364,7 @@ async def context_preview(request: Request, data: DataDep) -> ContextInfo:
     """What a question in this scope would be grounded on. Needs no key and calls no model."""
     body = await _json_body(request)
     scope, source = _parse_scope(body.get("scope")), _parse_source(body.get("source"))
-    scoped = await asyncio.to_thread(_load_scope, data, scope, source)
+    scoped = await asyncio.to_thread(_load_scope, data, scope, source, with_document=False)
     context = retrieval.build_context(scoped.sources, scoped.metric_ids, None, "")
     return ContextInfo(
         line=_line(scoped, context.facts),
@@ -367,6 +392,20 @@ async def chat(request: Request, data: DataDep, store: StoreDep) -> ChatResponse
         )
     question = question.strip()
     scope, source = _parse_scope(body.get("scope")), _parse_source(body.get("source"))
+    # Price, valuation and advice questions are refused before any SEC data is loaded.
+    early = precheck(question, loaded=[], known=[], has_context=True)
+    if early is not None:
+        return ChatResponse(
+            answer="",
+            citations=[],
+            invalid_references=[],
+            citation_note=None,
+            refusal=Refusal(code=early.code, message=early.message),
+            context=ContextInfo(line="", facts=0, passages=0, chars=0),
+            model=model,
+            usage=None,
+            finish_reason=None,
+        )
 
     scoped = await asyncio.to_thread(_load_scope, data, scope, source)
     context = retrieval.build_context(scoped.sources, scoped.metric_ids, scoped.document, question)
@@ -396,20 +435,20 @@ async def chat(request: Request, data: DataDep, store: StoreDep) -> ChatResponse
             finish_reason=None,
         )
 
+    messages = build_messages(question, context.facts, context.passages)
     slots: ChatSlots = request.app.state.ai_slots
     if not slots.try_acquire():
         raise AppError("ai_busy", "Another question is still running; try again shortly.", 409)
-    messages = build_messages(question, context.facts, context.passages)
     try:
         reply = await run_upstream(
-            request,
-            slots,
-            _client(request).chat(key, model, messages, MAX_COMPLETION_TOKENS),
+            request, _client(request).chat(key, model, messages, MAX_COMPLETION_TOKENS)
         )
     except Cancelled:
         return Response(status_code=499)
     except AiError as error:
         raise _as_app_error(error) from None
+    finally:
+        slots.release()  # every path frees the slot: success, error, cancel
 
     checked = validate(reply.content, context.facts, context.passages)
     return ChatResponse(

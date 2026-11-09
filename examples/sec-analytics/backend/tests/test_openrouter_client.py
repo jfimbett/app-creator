@@ -170,7 +170,7 @@ async def test_m5_ac7_errors_map_to_plain_messages_with_exactly_one_call(
     assert (caught.value.code, caught.value.status, caught.value.message) == (code, http, message)
     assert route.call_count == 1  # never retried
     if status == 429:
-        assert caught.value.details == {"retry_after": "12"}
+        assert caught.value.details == {"retry_after": 12}
 
 
 async def test_other_403_is_forbidden_with_the_providers_reason(router, client) -> None:
@@ -228,3 +228,34 @@ async def test_a_key_error_never_contains_the_key(router, client) -> None:
     with pytest.raises(AiError) as caught:
         await client.key_info(KEY)
     assert KEY not in str(caught.value) and KEY not in repr(caught.value.details)
+
+
+# ------------------------------------------------------------------ security review 2026-11-09
+
+
+@pytest.mark.parametrize(
+    ("status", "body"),
+    [
+        (403, {"error": {"metadata": "x"}}),
+        (200, {"error": "boom"}),
+        (200, {"choices": ["x"]}),
+        (200, {"choices": [{"message": "hi"}]}),
+        (200, {"choices": [{"message": {"content": 42}}]}),
+        (200, ["not", "an", "object"]),
+    ],
+)
+async def test_malformed_replies_are_unavailable_not_a_crash(router, client, status, body) -> None:
+    router.post(f"{BASE_URL}/chat/completions").mock(return_value=httpx.Response(status, json=body))
+    with pytest.raises(AiError) as caught:
+        await client.chat(KEY, "m/x", MESSAGES, 800)
+    assert caught.value.code in {"ai_unavailable", "ai_forbidden"}
+
+
+async def test_retry_after_is_kept_only_as_a_small_number(router, client) -> None:
+    for header, expected in (("12", {"retry_after": 12}), ("x" * 5000, None), ("99999", None)):
+        router.post(f"{BASE_URL}/chat/completions").mock(
+            return_value=httpx.Response(429, json={}, headers={"Retry-After": header})
+        )
+        with pytest.raises(AiError) as caught:
+            await client.chat(KEY, "m/x", MESSAGES, 800)
+        assert caught.value.details == expected

@@ -29,7 +29,7 @@ NOTICE = "Source links are checked; the claims themselves may still be wrong."
 
 @pytest.fixture(scope="module")
 def client() -> TestClient:
-    return TestClient(create_app(Settings(data_mode="fixtures")))
+    return TestClient(create_app(Settings(data_mode="fixtures")), base_url="http://127.0.0.1")
 
 
 @pytest.fixture

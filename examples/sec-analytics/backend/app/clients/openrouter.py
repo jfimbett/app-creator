@@ -91,10 +91,23 @@ def _day(value: Any) -> date | None:
         return None
 
 
+def _dict(value: Any) -> dict[str, Any]:
+    """The value if it is a JSON object, else an empty one: replies are never trusted."""
+    return value if isinstance(value, dict) else {}
+
+
+def _retry_after(value: str | None) -> int | None:
+    """Retry-After in whole seconds, only when it is a small number (never reflected unbounded)."""
+    if value is None or not value.strip().isdigit() or len(value.strip()) > 4:
+        return None
+    seconds = int(value.strip())
+    return seconds if seconds <= 3600 else None
+
+
 def _map_error(status: int, body: Any, headers: httpx.Headers | None = None) -> AiError:
     """An OpenRouter failure as one of the app's error codes and plain messages."""
-    error = body.get("error") if isinstance(body, dict) else None
-    metadata = (error or {}).get("metadata") or {} if isinstance(error, dict) else {}
+    error = _dict(_dict(body).get("error"))
+    metadata = _dict(error.get("metadata"))
     if status == 401:
         return AiError("ai_key_invalid", KEY_REJECTED, 401)
     if status == 402 or (status == 403 and metadata.get("limit_source") in CREDIT_SOURCES):
@@ -109,12 +122,12 @@ def _map_error(status: int, body: Any, headers: httpx.Headers | None = None) -> 
     if status == 408:
         return AiError("ai_timeout", TIMED_OUT, 504)
     if status == 429:
-        retry_after = headers.get("Retry-After") if headers is not None else None
+        retry_after = _retry_after(headers.get("Retry-After") if headers is not None else None)
         return AiError(
             "ai_rate_limited",
             RATE_LIMITED,
             429,
-            {"retry_after": retry_after} if retry_after else None,
+            {"retry_after": retry_after} if retry_after is not None else None,
         )
     return AiError("ai_unavailable", UNAVAILABLE, 502)
 
@@ -157,7 +170,8 @@ class OpenRouterClient:
     async def list_models(self, key: str) -> list[ModelInfo]:
         body = await self._request("GET", "/models", key)
         models = []
-        for item in body.get("data") or []:
+        items = body.get("data")
+        for item in items if isinstance(items, list) else []:
             if not isinstance(item, dict) or not isinstance(item.get("id"), str):
                 continue
             pricing = item.get("pricing") if isinstance(item.get("pricing"), dict) else {}
@@ -175,7 +189,7 @@ class OpenRouterClient:
         return sorted(models, key=lambda m: m.id)
 
     async def key_info(self, key: str) -> KeyInfo:
-        data = (await self._request("GET", "/key", key)).get("data") or {}
+        data = _dict((await self._request("GET", "/key", key)).get("data"))
         remaining = data.get("limit_remaining")
         label = data.get("label")
         return KeyInfo(
@@ -195,20 +209,26 @@ class OpenRouterClient:
         }
         body = await self._request("POST", "/chat/completions", key, payload)
         choices = body.get("choices")
-        if body.get("error") and not choices:
-            code = (body.get("error") or {}).get("code")
+        error = _dict(body.get("error"))
+        if body.get("error") is not None and not choices:
+            code = error.get("code")
             raise _map_error(code if isinstance(code, int) else 502, body)
-        choice = choices[0] if isinstance(choices, list) and choices else {}
-        if isinstance(choice.get("error"), dict):
-            code = choice["error"].get("code")
+        choice = _dict(choices[0]) if isinstance(choices, list) and choices else {}
+        if choice.get("error") is not None:
+            code = _dict(choice.get("error")).get("code")
             raise _map_error(code if isinstance(code, int) else 502, {"error": choice["error"]})
-        content = ((choice.get("message") or {}).get("content") or "").strip()
+        content = _dict(choice.get("message")).get("content")
+        content = content.strip() if isinstance(content, str) else ""
         if not content:
             raise AiError("ai_unavailable", EMPTY_ANSWER, 502)
-        usage = body.get("usage") if isinstance(body.get("usage"), dict) else None
+        usage = _dict(body.get("usage")) or None
         return ChatReply(
             content=content,
-            finish_reason=choice.get("finish_reason"),
+            finish_reason=(
+                choice.get("finish_reason")
+                if isinstance(choice.get("finish_reason"), str)
+                else None
+            ),
             model=body.get("model") if isinstance(body.get("model"), str) else None,
             usage=(
                 {

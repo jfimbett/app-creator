@@ -35,7 +35,7 @@ QUESTION = {
 
 @pytest.fixture
 def app_client():
-    return TestClient(create_app(Settings(data_mode="fixtures")))
+    return TestClient(create_app(Settings(data_mode="fixtures")), base_url="http://127.0.0.1")
 
 
 @pytest.fixture
@@ -176,7 +176,7 @@ def test_m5_e6_a_third_concurrent_chat_is_busy_and_slots_are_freed(upstream) -> 
 
     upstream.post(f"{BASE_URL}/chat/completions").mock(side_effect=slow)
     app = create_app(Settings(data_mode="fixtures"))
-    client = TestClient(app)
+    client = TestClient(app, base_url="http://127.0.0.1")
     results: list[int] = []
 
     def ask() -> None:
@@ -202,7 +202,7 @@ def test_a_failed_upstream_call_frees_its_slot(app_client, upstream) -> None:
     assert app_client.app.state.ai_slots.in_use == 0
 
 
-def test_a_disconnect_cancels_the_upstream_task_and_frees_the_slot(monkeypatch) -> None:
+def test_a_disconnect_cancels_the_upstream_task() -> None:
     # Drives the endpoint's waiting loop directly: the client goes away while the model is slow.
     cancelled = asyncio.Event()
 
@@ -217,13 +217,88 @@ def test_a_disconnect_cancels_the_upstream_task_and_frees_the_slot(monkeypatch) 
         async def is_disconnected(self) -> bool:
             return True
 
-    slots = ai_api.ChatSlots(2)
-
     async def run() -> None:
-        assert slots.try_acquire()
         with pytest.raises(ai_api.Cancelled):
-            await ai_api.run_upstream(GoneRequest(), slots, slow_chat())
+            await ai_api.run_upstream(GoneRequest(), slow_chat())
         await asyncio.wait_for(cancelled.wait(), 2)
 
     asyncio.run(run())
-    assert slots.in_use == 0
+
+
+def test_a_cancelled_chat_frees_its_slot(upstream, monkeypatch) -> None:
+    async def gone(_request, work):
+        work.close()
+        raise ai_api.Cancelled()
+
+    monkeypatch.setattr(ai_api, "run_upstream", gone)
+    app = create_app(Settings(data_mode="fixtures"))
+    client = TestClient(app, base_url="http://127.0.0.1")
+    assert client.post("/api/ai/chat", json=QUESTION, headers=HEADERS).status_code == 499
+    assert app.state.ai_slots.in_use == 0
+
+
+# ------------------------------------------------------------------ security review 2026-11-09
+
+
+def test_a_chunked_body_over_64_kb_is_refused_without_content_length(app_client, upstream) -> None:
+    def chunks():
+        for _ in range(80):
+            yield b"x" * 1024
+
+    response = app_client.post(
+        "/api/ai/chat", content=chunks(), headers={**HEADERS, "Content-Type": "application/json"}
+    )
+    error(response, 413, "request_too_large")
+
+
+def test_a_foreign_host_is_refused(upstream) -> None:
+    # DNS rebinding: a page on another name that resolves to 127.0.0.1 sends its own Host.
+    client = TestClient(
+        create_app(Settings(data_mode="fixtures")), base_url="http://evil.test:8000"
+    )
+    error(client.get("/api/ai/models", headers=HEADERS), 403, "forbidden_origin")
+
+
+def test_tracebacks_are_redacted_too() -> None:
+    try:
+        raise RuntimeError("upstream said Authorization: Bearer sk-or-v1-secretsecret")
+    except RuntimeError:
+        import sys
+
+        record = logging.LogRecord("x", logging.ERROR, __file__, 1, "failed", (), sys.exc_info())
+    RedactingFilter().filter(record)
+    rendered = logging.Formatter().format(record)
+    assert "secretsecret" not in rendered and "[REDACTED]" in rendered
+
+
+def test_out_of_scope_questions_load_no_sec_data(upstream, monkeypatch) -> None:
+    app = create_app(Settings(data_mode="fixtures"))
+    calls: list[str] = []
+    original = app.state.data.companyfacts
+
+    def counting(cik, source):
+        calls.append(cik)
+        return original(cik, source)
+
+    monkeypatch.setattr(app.state.data, "companyfacts", counting)
+    client = TestClient(app, base_url="http://127.0.0.1")
+    body = client.post(
+        "/api/ai/chat", json={**QUESTION, "question": "Should I buy MSFT?"}, headers=HEADERS
+    ).json()
+    assert body["refusal"]["code"] == "out_of_scope"
+    assert calls == [] and upstream.calls.call_count == 0
+
+
+def test_context_preview_reads_no_filing_document(monkeypatch) -> None:
+    app = create_app(Settings(data_mode="fixtures"))
+
+    def refuse(*_args, **_kwargs):
+        raise AssertionError("the preview must not read a filing document")
+
+    monkeypatch.setattr(app.state.data, "parsed_filing", refuse)
+    client = TestClient(app, base_url="http://127.0.0.1")
+    response = client.post(
+        "/api/ai/context", json={"scope": {"kind": "company", "cik": APPLE}, "source": "demo"}
+    )
+    assert response.status_code == 200
+    assert response.json()["line"] == "Context: AAPL facts FY2022–FY2026 + 10-K passages"
