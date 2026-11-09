@@ -72,7 +72,7 @@ export function FilingHistory({ data }: { data: FilingsResponse }) {
                 <th scope="col" className="label-caps py-1 pr-3 font-normal">Form</th>
                 <th scope="col" className="label-caps py-1 pr-3 font-normal whitespace-nowrap">Filed</th>
                 <th scope="col" className="label-caps py-1 pr-3 font-normal whitespace-nowrap">Period</th>
-                <th scope="col" className="label-caps py-1 pr-3 font-normal">Accession</th>
+                <th scope="col" className="label-caps hidden py-1 pr-3 font-normal sm:table-cell">Accession</th>
                 <th scope="col" className="label-caps py-1 font-normal">Open</th>
               </tr>
             </thead>
@@ -84,7 +84,7 @@ export function FilingHistory({ data }: { data: FilingsResponse }) {
                   </td>
                   <td className="py-1 pr-3 tabular-nums whitespace-nowrap">{row.filing_date}</td>
                   <td className="py-1 pr-3 tabular-nums whitespace-nowrap">{row.report_date ?? "not stated"}</td>
-                  <td className="code-id py-1 pr-3 whitespace-nowrap">{row.accession}</td>
+                  <td className="code-id hidden py-1 pr-3 whitespace-nowrap sm:table-cell">{row.accession}</td>
                   <td className="py-1 whitespace-nowrap">
                     <span className="inline-flex gap-3">
                       <Link href={href(`/companies/${data.cik}/filings/${row.accession}`)} aria-label={`Read ${row.form} filed ${row.filing_date}`}>

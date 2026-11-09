@@ -110,7 +110,11 @@ def filing_document(
     """A filing's primary document as sanitized plain text blocks with detected sections."""
     normalized = parse_cik(cik)
     if not is_valid_accession(accession):
-        raise AppError("invalid_accession", "This is not a valid accession number.", 422)
+        raise AppError(
+            "invalid_accession",
+            "An accession number looks like 0000320193-26-000026: 10 digits, 2 digits, 6 digits.",
+            422,
+        )
     found = _load(data, normalized, source)
     filing = next((row for row in found.rows if row.accession == accession), None)
     if filing is None:
